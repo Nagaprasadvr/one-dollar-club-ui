@@ -77,7 +77,7 @@ export const MobDrawer = () => {
         >
           <Button
             sx={{
-              color: nav.color,
+              color: "white",
               backgroundColor: "transparent",
               textTransform: "none",
               "&:hover": {
