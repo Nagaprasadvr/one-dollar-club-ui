@@ -65,6 +65,7 @@ export const Projects = () => {
           alignItems: "center",
           padding: "10px",
           overflowY: "auto",
+          overflowX: "hidden",
           width: "100%",
           mb: "50px",
           mt: "20px",
