@@ -31,6 +31,8 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         border: "1px solid white",
         alignItems: "center",
         justifyContent: "center",
+        margin: "20px",
+        width: "fit-content",
       }}
     >
       <Typography variant="h4" fontWeight={"bold"}>
@@ -46,6 +48,7 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "20px",
         }}
       >
         {/* <TextWithValue

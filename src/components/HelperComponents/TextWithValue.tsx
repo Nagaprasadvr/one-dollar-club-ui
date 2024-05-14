@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 
 export const TextWithValue = ({
   text,
@@ -15,6 +15,8 @@ export const TextWithValue = ({
   justifyContent?: string;
   separator?: string;
 }) => {
+  const { breakpoints } = useTheme();
+  const mobScreen = useMediaQuery(breakpoints.down("sm"));
   const { palette } = useTheme();
   return (
     <Box
@@ -30,7 +32,7 @@ export const TextWithValue = ({
         sx={{
           color: palette.primary.main,
           fontWeight: "bold",
-          fontSize: "14px",
+          fontSize: mobScreen ? "13px" : "16px",
         }}
       >
         {text}
@@ -51,7 +53,13 @@ export const TextWithValue = ({
           alignItems: "center",
         }}
       >
-        <Typography color="inherit" fontWeight={"bold"}>
+        <Typography
+          color="inherit"
+          fontWeight={"bold"}
+          sx={{
+            fontSize: mobScreen ? "18px" : "24px",
+          }}
+        >
           {value}
         </Typography>
       </Box>

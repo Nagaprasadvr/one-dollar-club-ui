@@ -32,6 +32,11 @@ body {
   width: 10px;
   height: 10px;
 }
+::-webkit-scrollbar-track {
+  margin-block: 10px;
+  border-radius: 99px;
+}
+
 ::-webkit-scrollbar-thumb {
   background-color: #202629;
   border: 2px solid #080c0e;

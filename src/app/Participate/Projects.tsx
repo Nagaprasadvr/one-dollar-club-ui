@@ -86,6 +86,8 @@ export const Projects = () => {
                 padding: "5px 10px",
                 gap: "40px",
                 width: "100%",
+                overflowX: "auto",
+                overflowY: "hidden",
               }}
             >
               <TextWithValue text="Project" value={project} gap="5px" />
