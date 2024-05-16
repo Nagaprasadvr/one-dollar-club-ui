@@ -27,7 +27,7 @@ const Admin = () => {
       });
       setPoolConfig(updatedPoolConfig);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       toast.error("Failed to activate pool", {
         id: "activate-pool",
       });
@@ -45,7 +45,7 @@ const Admin = () => {
       });
       setPoolConfig(updatedPoolConfig);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       toast.error("Failed to inactivate pool", {
         id: "inactivate-pool",
       });

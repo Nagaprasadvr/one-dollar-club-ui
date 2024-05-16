@@ -1,10 +1,13 @@
+import { AppContext } from "@/components/Context/AppContext";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
 import { PoolConfig } from "@/sdk/poolConfig";
 import { getExpiry, minimizePubkey } from "@/utils/helpers";
 import { Box, Typography } from "@mui/material";
+import { useContext } from "react";
 import { useTimer } from "react-timer-hook";
 
 export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
+  const { poolServerId } = useContext(AppContext);
   const {
     seconds,
     minutes,
@@ -35,8 +38,15 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         width: "fit-content",
       }}
     >
-      <Typography variant="h4" fontWeight={"bold"}>
-        Active Round
+      <Typography variant="h5" fontWeight={"bold"}>
+        Pool:{" "}
+        <span
+          style={{
+            color: "#87cefa",
+          }}
+        >
+          {poolConfig.poolState}
+        </span>
       </Typography>
       <Typography variant="h6" fontWeight={"bold"}>
         Ends in : {hours} Hours {minutes} Minutes {seconds} Seconds
@@ -59,9 +69,9 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         /> */}
         <TextWithValue
           justifyContent="flex-start"
-          text="Pool State"
+          text="Pool Id"
           gap="5px"
-          value={poolConfig.poolState}
+          value={poolServerId ?? ""}
         />
         {/* <TextWithValue
           justifyContent="flex-start"
@@ -71,9 +81,9 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         /> */}
         <TextWithValue
           justifyContent="flex-start"
-          text="Pool Deposit"
+          text="Price Pool"
           gap="5px"
-          value={poolConfig.poolDepositPerUser.toLocaleString() + "USDC"}
+          value={poolConfig.poolBalance.toLocaleString() + "USDC"}
         />
 
         <TextWithValue

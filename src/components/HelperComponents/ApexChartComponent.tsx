@@ -59,12 +59,7 @@ const chart = {
 };
 
 function ApexChartComponent() {
-  const randomSeriesY = [];
-
-  for (let i = 0; i < 10; i++) {
-    randomSeriesY.push(Math.random() * 10);
-  }
-  const yAxis = randomSeriesY;
+  const yAxis = [5, 2, 10, 20, 3, 2, 5, 3, 1, 6];
   const xAxis = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   if (!yAxis || yAxis?.length === 0) {
     return null;

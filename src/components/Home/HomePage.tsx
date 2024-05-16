@@ -13,8 +13,6 @@ import {
 } from "@mui/material";
 
 import { useRouter } from "next/navigation";
-import { Card } from "../HelperComponents/Card";
-import { Logo } from "../Logo/Logo";
 const mobileStyles: SxProps = {
   display: "flex",
   flexDirection: "column",

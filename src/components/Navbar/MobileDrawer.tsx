@@ -5,15 +5,16 @@ import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 
 import { NavLinks } from "./Navbar";
-import Link from "next/link";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRouter } from "next/navigation";
 import { Wallet } from "./Wallet";
 import { CHARCOAL } from "@/utils/constants";
+import { Typography } from "@mui/material";
+import { AppContext } from "../Context/AppContext";
 
 export const MobDrawer = () => {
   const [open, setOpen] = React.useState(false);
-
+  const { pointsRemaining } = React.useContext(AppContext);
   const router = useRouter();
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -90,6 +91,24 @@ export const MobDrawer = () => {
           </Button>
         </Box>
       ))}
+      {pointsRemaining && (
+        <Typography
+          fontWeight={"bold"}
+          fontSize={"18px"}
+          sx={{
+            ml: "24px",
+          }}
+        >
+          Points:{" "}
+          <span
+            style={{
+              color: "#87cefa",
+            }}
+          >
+            {pointsRemaining}
+          </span>
+        </Typography>
+      )}
       <Box
         sx={{
           display: "flex",

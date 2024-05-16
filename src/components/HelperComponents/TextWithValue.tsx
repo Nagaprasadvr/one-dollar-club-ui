@@ -7,6 +7,8 @@ export const TextWithValue = ({
   gap = "2px",
   justifyContent = "space-between",
   separator = "",
+  startComponent,
+  endComponent,
 }: {
   text: string;
   value: string;
@@ -14,6 +16,8 @@ export const TextWithValue = ({
   gap?: string;
   justifyContent?: string;
   separator?: string;
+  startComponent?: React.ReactElement;
+  endComponent?: React.ReactElement;
 }) => {
   const { breakpoints } = useTheme();
   const mobScreen = useMediaQuery(breakpoints.down("sm"));
@@ -49,10 +53,11 @@ export const TextWithValue = ({
         sx={{
           display: "flex",
           flexDirection: "row",
-          gap: "10px",
+          gap: "2px",
           alignItems: "center",
         }}
       >
+        {startComponent}
         <Typography
           color="inherit"
           fontWeight={"bold"}
@@ -62,6 +67,7 @@ export const TextWithValue = ({
         >
           {value}
         </Typography>
+        {endComponent}
       </Box>
     </Box>
   );

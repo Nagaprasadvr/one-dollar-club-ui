@@ -3,6 +3,7 @@ import type { PoolState } from "./types";
 import type { RawPoolConfig, SDK } from "./sdk";
 import * as solana from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
+import { API_BASE_URL } from "@/utils/constants";
 
 export class PoolConfig {
   private sdk: SDK;
@@ -49,6 +50,19 @@ export class PoolConfig {
         tokenProgram: spl.TOKEN_PROGRAM_ID,
       })
       .rpc();
+
+    const response = await fetch(`${API_BASE_URL}/poolDeposit`, {
+      method: "POST",
+      body: JSON.stringify({
+        pubkey: this.sdk.wallet.publicKey.toBase58(),
+      }),
+    });
+
+    const responseJson = await response.json();
+
+    if (response.status !== 200) {
+      throw new Error(responseJson.error);
+    }
 
     return this.reload();
   }

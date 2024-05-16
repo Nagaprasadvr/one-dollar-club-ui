@@ -1,4 +1,5 @@
 "use client";
+import { CHARCOAL } from "@/utils/constants";
 import { ThemeProvider, createTheme } from "@mui/material";
 
 const darkTheme = createTheme({
@@ -75,7 +76,7 @@ const darkTheme = createTheme({
             color: "black",
           },
           "&:disabled": {
-            backgroundColor: "#aff6ff",
+            backgroundColor: "#87cefa",
             color: "grey",
           },
         },
@@ -97,6 +98,33 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           fontSize: "15px",
+        },
+      },
+    },
+    MuiInput: {
+      defaultProps: {
+        disableUnderline: true,
+      },
+      styleOverrides: {
+        root: {
+          paddingTop: "13px",
+        },
+        input: {
+          "::placeholder": {
+            fontSize: "14px",
+          },
+          backgroundColor: CHARCOAL,
+          borderRadius: "10px",
+          padding: "10px",
+          fontSize: "16px",
+        },
+      },
+    },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        label: {
+          fontSize: "15px",
+          fontWeight: "bold",
         },
       },
     },

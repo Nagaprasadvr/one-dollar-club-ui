@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -11,7 +12,9 @@ import Image from "next/image";
 import { Logo } from "../Logo/Logo";
 import { Wallet } from "./Wallet";
 import { MobileNav } from "./MobileNav";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { TextWithValue } from "../HelperComponents/TextWithValue";
+import { AppContext } from "../Context/AppContext";
 
 export const NavLinks = [
   { name: "Home", link: "/" },
@@ -24,7 +27,7 @@ export const NavLinks = [
 export const Navbar = () => {
   const { breakpoints } = useTheme();
   const mobileScreen = useMediaQuery(breakpoints.down("md"));
-
+  const { pointsRemaining } = useContext(AppContext);
   const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
@@ -142,19 +145,28 @@ export const Navbar = () => {
             sx={{
               mr: "20px",
               ml: "20px",
+              gap: "20px",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
+            {pointsRemaining !== null && (
+              <Typography fontWeight={"bold"} fontSize={"18px"}>
+                Points:{" "}
+                <span
+                  style={{
+                    color: "#87cefa",
+                  }}
+                >
+                  {pointsRemaining ?? 0}
+                </span>
+              </Typography>
+            )}
+
             <Wallet setOpen={null} />
           </Box>
         )}
       </Box>
-      {/* <Divider
-        sx={{
-          borderBottomWidth: "3px",
-          // ml: "-10px",
-          // mr: "-10px",
-        }}
-      /> */}
     </nav>
   );
 };

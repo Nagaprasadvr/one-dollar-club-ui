@@ -1,4 +1,5 @@
 import {
+  API_BASE_URL,
   DEVNET_POOL_CONFIG_PUBKEY,
   HELIUS_RPC_ENDPOINT,
 } from "@/utils/constants";
@@ -9,6 +10,7 @@ import * as solana from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { PoolConfig } from "@/sdk/poolConfig";
 import { SDK, UIWallet } from "@/sdk/sdk";
+import { Position } from "@/sdk/Position";
 
 interface AppContextType {
   connection: Connection;
@@ -17,6 +19,14 @@ interface AppContextType {
   isFetchingPoolConfig: boolean | null;
   setSdk: (sdk: SDK | null) => void;
   setPoolConfig: (poolConfig: PoolConfig | null) => void;
+  poolServerId: string | null;
+  setPoolServerId: (poolServerId: string | null) => void;
+  isAllowedToPlay: boolean;
+  setIsAllowedToPlay: (isAllowedToPlay: boolean) => void;
+  pointsRemaining: number | null;
+  setPointsRemaining: (pointsRemaining: number) => void;
+  positions: Position[];
+  setPositions: (positions: Position[]) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -26,6 +36,14 @@ export const AppContext = createContext<AppContextType>({
   isFetchingPoolConfig: false,
   setSdk: () => {},
   setPoolConfig: () => {},
+  poolServerId: null,
+  setPoolServerId: () => {},
+  isAllowedToPlay: false,
+  setIsAllowedToPlay: () => {},
+  pointsRemaining: null,
+  setPointsRemaining: () => {},
+  positions: [],
+  setPositions: () => {},
 });
 
 export const AppContextProvider = ({
@@ -37,6 +55,8 @@ export const AppContextProvider = ({
   const [isFetchingPoolConfig, setIsFetchingPoolConfig] = useState<
     boolean | null
   >(null);
+
+  const [isAllowedToPlay, setIsAllowedToPlay] = useState<boolean>(false);
   const connection = useMemo(
     () => new Connection(HELIUS_RPC_ENDPOINT, "confirmed"),
     []
@@ -44,10 +64,71 @@ export const AppContextProvider = ({
 
   const [poolConfig, setPoolConfig] = useState<PoolConfig | null>(null);
   const [sdk, setSdk] = useState<SDK | null>(null);
+  const [poolServerId, setPoolServerId] = useState<string | null>(null);
   const wallet = useWallet();
+  const [pointsRemaining, setPointsRemaining] = useState<number | null>(null);
+
+  const [positions, setPositions] = useState<Position[]>([]);
+  useEffect(() => {
+    const fetchPoolServerId = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/poolServerId`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const responseJson = await response.json();
+        setPoolServerId(responseJson.poolServerId);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchPoolServerId();
+  }, []);
 
   useEffect(() => {
+    const fetchData = async () => {
+      if (!poolServerId || !publicKey) return;
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/isAllowedToPlay?pubkey=${publicKey.toBase58()}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const responseJson = await response.json();
+        const isAllowedToPlay = Boolean(responseJson.data);
+
+        setIsAllowedToPlay(isAllowedToPlay);
+
+        const responsePoints = await fetch(
+          `${API_BASE_URL}/poolPoints?pubkey=${publicKey.toBase58()}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const responsePointsJson = await responsePoints.json();
+        setPointsRemaining(responsePointsJson.data);
+
+        const fetchedPositions = await Position.fetchMultiplePositions(
+          publicKey.toBase58()
+        );
+        setPositions(fetchedPositions);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     if (
+      poolServerId &&
       connected &&
       publicKey &&
       wallet.signAllTransactions &&
@@ -62,11 +143,13 @@ export const AppContextProvider = ({
         new SDK(connection, uiWallet, { preflightCommitment: "confirmed" })
       );
     }
+    fetchData();
   }, [
     connected,
     publicKey,
     wallet.signAllTransactions,
     wallet.signTransaction,
+    poolServerId,
   ]);
 
   useEffect(() => {
@@ -78,10 +161,9 @@ export const AppContextProvider = ({
           sdk,
           new solana.PublicKey(DEVNET_POOL_CONFIG_PUBKEY)
         );
-        console.log("poolConfig", poolConfig);
         setPoolConfig(poolConfig);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       } finally {
         setIsFetchingPoolConfig(false);
       }
@@ -89,7 +171,6 @@ export const AppContextProvider = ({
     if (sdk) fetchPoolConfig();
   }, [sdk]);
 
-  console.log("sdk", sdk);
   return (
     <AppContext.Provider
       value={{
@@ -99,6 +180,14 @@ export const AppContextProvider = ({
         isFetchingPoolConfig,
         setSdk,
         setPoolConfig,
+        poolServerId,
+        setPoolServerId,
+        isAllowedToPlay,
+        setIsAllowedToPlay,
+        pointsRemaining,
+        setPointsRemaining,
+        positions,
+        setPositions,
       }}
     >
       {children}
