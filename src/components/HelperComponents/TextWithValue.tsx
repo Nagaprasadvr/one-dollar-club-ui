@@ -62,7 +62,7 @@ export const TextWithValue = ({
           color="inherit"
           fontWeight={"bold"}
           sx={{
-            fontSize: mobScreen ? "18px" : "24px",
+            fontSize: mobScreen ? "18px" : "22px",
           }}
         >
           {value}

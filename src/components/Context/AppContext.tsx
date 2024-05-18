@@ -2,6 +2,7 @@ import {
   API_BASE_URL,
   DEVNET_POOL_CONFIG_PUBKEY,
   HELIUS_RPC_ENDPOINT,
+  PROJECTS_TO_PLAY,
 } from "@/utils/constants";
 import { Connection } from "@solana/web3.js";
 import { createContext, useEffect, useMemo, useState } from "react";
@@ -11,7 +12,9 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PoolConfig } from "@/sdk/poolConfig";
 import { SDK, UIWallet } from "@/sdk/sdk";
 import { Position } from "@/sdk/Position";
-
+import { BirdeyeTokenPriceData, TokenPriceHistory } from "@/utils/types";
+import axios from "axios";
+import { fetchTokenChartData } from "@/utils/helpers";
 interface AppContextType {
   connection: Connection;
   poolConfig: PoolConfig | null;
@@ -27,6 +30,10 @@ interface AppContextType {
   setPointsRemaining: (pointsRemaining: number) => void;
   positions: Position[];
   setPositions: (positions: Position[]) => void;
+  tokensPrices: BirdeyeTokenPriceData[];
+  setTokensPrices: (tokenPrices: BirdeyeTokenPriceData[]) => void;
+  tokensPriceHistory: TokenPriceHistory[];
+  setTokensPriceHistory: (tokenPriceHistory: TokenPriceHistory[]) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -44,7 +51,12 @@ export const AppContext = createContext<AppContextType>({
   setPointsRemaining: () => {},
   positions: [],
   setPositions: () => {},
+  tokensPrices: [],
+  setTokensPrices: () => {},
+  tokensPriceHistory: [],
+  setTokensPriceHistory: () => {},
 });
+export const API_URL = "/api/birdeye";
 
 export const AppContextProvider = ({
   children,
@@ -67,6 +79,16 @@ export const AppContextProvider = ({
   const [poolServerId, setPoolServerId] = useState<string | null>(null);
   const wallet = useWallet();
   const [pointsRemaining, setPointsRemaining] = useState<number | null>(null);
+  const [tokensPrices, setTokensPrices] = useState<BirdeyeTokenPriceData[]>([]);
+  const [fetchedTokensPrices, setFetchedTokensPrices] =
+    useState<boolean>(false);
+  const [fetchedChartsData, setFetchedChartsData] = useState<boolean>(false);
+  const [tokensPriceHistory, setTokensPriceHistory] = useState<
+    TokenPriceHistory[]
+  >([]);
+  const [tokenPriceLastUpdated, setTokenPriceLastUpdated] = useState<number>(0);
+  const [tokenPriceHistoryLastUpdated, setTokenPriceHistoryLastUpdated] =
+    useState<number>(0);
 
   const [positions, setPositions] = useState<Position[]>([]);
   useEffect(() => {
@@ -80,13 +102,66 @@ export const AppContextProvider = ({
         });
 
         const responseJson = await response.json();
+
         setPoolServerId(responseJson.poolServerId);
       } catch (e) {
         console.error(e);
       }
     };
-    fetchPoolServerId();
-  }, []);
+    const fetchTokenPrices = async () => {
+      if (tokensPrices.length > 0) return;
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            requestType: "fetchTokensPrice",
+            lastUpdated: tokenPriceLastUpdated,
+            tokenAddressArray: PROJECTS_TO_PLAY.map((project) => project.mint),
+          }),
+        });
+
+        if (response.status !== 200) return;
+
+        const responseJson = await response.json();
+        const fetchedTokensPrices: BirdeyeTokenPriceData[] = responseJson.data;
+        if (fetchedTokensPrices?.length > 0) {
+          setFetchedTokensPrices(true);
+          setTokenPriceLastUpdated(Math.round(Date.now() / 1000));
+          setTokensPrices(fetchedTokensPrices);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const fetchChartsData = async () => {
+      if (tokensPriceHistory.length > 0) return;
+      try {
+        const data = await Promise.all(
+          PROJECTS_TO_PLAY.map((project) =>
+            fetchTokenChartData(project.mint, tokenPriceHistoryLastUpdated)
+          )
+        );
+
+        if (data) {
+          setTokensPriceHistory(data);
+          setFetchedChartsData(true);
+          setTokenPriceHistoryLastUpdated(Math.floor(Date.now() / 1000));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    if (!poolServerId) fetchPoolServerId();
+    if (!fetchedTokensPrices && tokensPrices.length == 0) fetchTokenPrices();
+    if (!fetchedChartsData && tokensPriceHistory.length === 0)
+      fetchChartsData();
+  }, [
+    fetchedTokensPrices,
+    fetchedChartsData,
+    tokenPriceHistoryLastUpdated,
+    tokenPriceLastUpdated,
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -188,6 +263,10 @@ export const AppContextProvider = ({
         setPointsRemaining,
         positions,
         setPositions,
+        tokensPrices,
+        setTokensPrices,
+        tokensPriceHistory,
+        setTokensPriceHistory,
       }}
     >
       {children}

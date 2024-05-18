@@ -10,23 +10,27 @@ import {
   Input,
   Radio,
   RadioGroup,
+  Slider,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { CallMade, Close as CloseIcon, ContentCopy } from "@mui/icons-material";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { API_BASE_URL, birdeyeUrl } from "@/utils/constants";
 import { AppContext } from "@/components/Context/AppContext";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { minimizePubkey } from "@/utils/helpers";
+import { minimizePubkey, safeDivide } from "@/utils/helpers";
+import { BirdeyeTokenPriceData } from "@/utils/types";
+import { Message } from "@/components/HelperComponents/Message";
+import { Position } from "@/sdk/Position";
 
 type PositionInputData = {
   positionType: "long" | "short";
-  leverage: number | string;
+  leverage: number;
   pointsAllocated: number | string;
-  liquidationPrice: number | string;
 };
 
 type PositionData = {
@@ -39,7 +43,6 @@ type PositionData = {
   positionType: "long" | "short";
   liquidationPrice: number;
 };
-const PositionData = ["leverage", "pointsAllocated", "liquidationPrice"];
 
 export const getPlaceHolder = (data: string) => {
   switch (data) {
@@ -63,7 +66,7 @@ const getLabel = (data: string) => {
     case "leverage":
       return "Leverage";
     case "pointsAllocated":
-      return "Points Allocated";
+      return "Points to Allocate";
     case "liquidationPrice":
       return "Liquidation Price";
     default:
@@ -97,31 +100,39 @@ export const CreatePositionModal = ({
   tokenSymbol: string;
   tokenAddress: string;
 }) => {
-  const { pointsRemaining } = useContext(AppContext);
+  const { pointsRemaining, tokensPrices, setPositions } =
+    useContext(AppContext);
   const wallet = useWallet();
   const { connected, publicKey } = useWallet();
+  const [activeTokenData, setActiveTokenData] =
+    useState<BirdeyeTokenPriceData | null>(null);
   const [positionInputData, setPositionInputData] = useState<PositionInputData>(
     {
       positionType: "long",
-      leverage: "",
+      leverage: 1,
       pointsAllocated: "",
-      liquidationPrice: "",
     }
   );
 
+  useEffect(() => {
+    const tokenPriceData = tokensPrices.find(
+      (tokenPrice) => tokenPrice.address === tokenAddress
+    );
+    if (!tokenPriceData) return;
+    setActiveTokenData(tokenPriceData);
+  }, [tokensPrices]);
+
   const validateData = () => {
     if (
-      positionInputData.leverage === "" ||
-      positionInputData.pointsAllocated === "" ||
-      positionInputData.liquidationPrice === ""
+      positionInputData.leverage === 0 ||
+      positionInputData.pointsAllocated === ""
     ) {
       toast.error("Please fill all the fields");
       return false;
     }
     if (
       Number(positionInputData.leverage) <= 0 ||
-      Number(positionInputData.pointsAllocated) <= 0 ||
-      Number(positionInputData.liquidationPrice) <= 0
+      Number(positionInputData.pointsAllocated) <= 0
     ) {
       toast.error("Please fill all the fields with Non zero positive values");
       return false;
@@ -139,17 +150,23 @@ export const CreatePositionModal = ({
       toast.error("Please connect your wallet");
       return;
     }
+    if (!activeTokenData) {
+      toast.error("Token data not available");
+      return;
+    }
     if (!validateData()) return;
     try {
       const position: PositionData = {
         pubkey: publicKey.toBase58(),
         tokenName: tokenSymbol,
         tokenMint: tokenAddress,
-        entryPrice: Math.random() * 100,
+        entryPrice: activeTokenData.value,
         leverage: Number(positionInputData.leverage),
         pointsAllocated: Number(positionInputData.pointsAllocated),
         positionType: positionInputData.positionType,
-        liquidationPrice: Number(positionInputData.liquidationPrice),
+        liquidationPrice:
+          activeTokenData.value -
+          safeDivide(activeTokenData.value, Number(positionInputData.leverage)),
       };
       toast.loading("Creating Position...", {
         id: "createPosition",
@@ -191,6 +208,10 @@ export const CreatePositionModal = ({
           toast.success("Position created successfully", {
             id: "createPosition",
           });
+          const fetchedPositions = await Position.fetchMultiplePositions(
+            publicKey.toBase58()
+          );
+          setPositions(fetchedPositions);
         } else {
           toast.error(
             `Error while creating position:${createPositionResponseJson.error}`,
@@ -204,15 +225,55 @@ export const CreatePositionModal = ({
       toast.error("Error while creating position", {
         id: "createPosition",
       });
+    } finally {
+      setOpen(false);
     }
   };
 
+  const midScreen = useMediaQuery("(max-width:1450px)");
+
+  const marks = [
+    {
+      value: 5,
+      label: "5x",
+    },
+    {
+      value: 15,
+      label: "15x",
+    },
+    {
+      value: 25,
+      label: "25x",
+    },
+    {
+      value: 50,
+      label: "50x",
+    },
+    {
+      value: 75,
+      label: "75x",
+    },
+    {
+      value: 100,
+      label: "100x",
+    },
+  ];
+
+  const handleLeverageChange = (event: any, newValue: number | number[]) => {
+    setPositionInputData({
+      ...positionInputData,
+      leverage: newValue as number,
+    });
+  };
+
+  if (!activeTokenData) return <Message message="Loading..." />;
   return (
     <Modal isOpen={open}>
       <ModalContent
         sx={{
-          width: "25vw",
+          width: "30vw",
           padding: "20px",
+          minWidth: "250px",
         }}
       >
         <Box
@@ -244,7 +305,7 @@ export const CreatePositionModal = ({
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              flexDirection: midScreen ? "column" : "row",
               justifyContent: "space-between",
               width: "100%",
               gap: "20px",
@@ -298,6 +359,34 @@ export const CreatePositionModal = ({
           <Box
             sx={{
               display: "flex",
+              flexDirection: midScreen ? "column" : "row",
+              justifyContent: "space-between",
+              width: "100%",
+              gap: "20px",
+            }}
+          >
+            <TextWithValue
+              text="Current Price"
+              value={
+                activeTokenData.value.toLocaleString("en-US", {
+                  maximumFractionDigits: 9,
+                }) ?? ""
+              }
+              gap="5px"
+            />
+            <TextWithValue
+              text="24Hr Change"
+              value={
+                activeTokenData?.priceChange24h.toLocaleString("en-US", {
+                  maximumFractionDigits: 4,
+                }) ?? ""
+              }
+              gap="5px"
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
               flexDirection: "column",
               gap: "24px",
               alignItems: "flex-start",
@@ -340,29 +429,62 @@ export const CreatePositionModal = ({
                 />
               </RadioGroup>
             </FormControl>
-            {PositionData.map((data) => (
-              <Box key={data}>
-                <Typography
-                  fontSize={"15px"}
-                  key={data}
-                  color="primary"
-                  fontWeight={"bold"}
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                alignItems: "flex-start",
+              }}
+            >
+              <Typography
+                color={"primary"}
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: "15px",
+                }}
+              >
+                Levergae :{" "}
+                <span
+                  style={{
+                    color: "white",
+                  }}
                 >
-                  {getLabel(data)}
-                </Typography>
-                <Input
-                  value={positionInputData[data as keyof PositionInputData]}
-                  placeholder={getPlaceHolder(data)}
-                  type={getType(data)}
-                  onChange={(e) =>
-                    setPositionInputData({
-                      ...positionInputData,
-                      [data]: e.target.value,
-                    })
-                  }
-                />
-              </Box>
-            ))}
+                  {positionInputData.leverage}x
+                </span>
+              </Typography>
+              <Slider
+                defaultValue={1}
+                aria-label="Default"
+                valueLabelDisplay="auto"
+                sx={{
+                  width: "90%",
+                }}
+                marks={marks}
+                onChange={handleLeverageChange}
+              />
+            </Box>
+            <Box>
+              <Typography fontSize={"15px"} color="primary" fontWeight={"bold"}>
+                {getLabel("pointsAllocated")} (Remaining: {pointsRemaining})
+              </Typography>
+              <Input
+                value={
+                  positionInputData[
+                    "pointsAllocated" as keyof PositionInputData
+                  ]
+                }
+                placeholder={getPlaceHolder("pointsAllocated")}
+                type={getType("pointsAllocated")}
+                onChange={(e) =>
+                  setPositionInputData({
+                    ...positionInputData,
+                    ["pointsAllocated"]: e.target.value,
+                  })
+                }
+              />
+            </Box>
           </Box>
           <Button onClick={handleCreatePosition}>Confirm</Button>
         </Box>

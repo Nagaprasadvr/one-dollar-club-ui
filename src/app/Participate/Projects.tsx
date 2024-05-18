@@ -1,24 +1,12 @@
 import { AppContext } from "@/components/Context/AppContext";
-import ApexChartComponent from "@/components/HelperComponents/ApexChartComponent";
-import { Card } from "@/components/HelperComponents/Card";
 import { Message } from "@/components/HelperComponents/Message";
-import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
-import { birdeyeUrl, PROJECTS_TO_PLAY } from "@/utils/constants";
-import {
-  Box,
-  Button,
-  Divider,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { API_BASE_URL, PROJECTS_TO_PLAY } from "@/utils/constants";
+import { Box, Button, Typography } from "@mui/material";
 import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { CreatePositionModal } from "./CreatePositionModal";
-import { minimizePubkey } from "@/utils/helpers";
-import ContentCopy from "@mui/icons-material/ContentCopy";
-import { CallMade } from "@mui/icons-material";
-import { RenderPositionStats } from "./RenderPositionStats";
+
+import { RenderProject } from "./RenderProject";
 
 export const Projects = () => {
   const {
@@ -27,7 +15,7 @@ export const Projects = () => {
     setIsAllowedToPlay,
     pointsRemaining,
     isAllowedToPlay,
-    positions,
+    setPointsRemaining,
   } = useContext(AppContext);
 
   const [modelOpen, setModelOpen] = useState(false);
@@ -50,6 +38,17 @@ export const Projects = () => {
           id: "depositing",
         });
         setIsAllowedToPlay(true);
+        const responsePoints = await fetch(
+          `${API_BASE_URL}/poolPoints?pubkey=${sdk.wallet.publicKey.toBase58()}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const responsePointsJson = await responsePoints.json();
+        setPointsRemaining(responsePointsJson.data);
       } catch (err) {
         toast.error("Error while depositing to play", {
           id: "depositing",
@@ -58,9 +57,6 @@ export const Projects = () => {
     }
   };
 
-  const getActivePosition = (tokenName: string) => {
-    return positions.find((position) => position.tokenName === tokenName);
-  };
   return (
     <Box
       sx={{
@@ -110,108 +106,23 @@ export const Projects = () => {
         }}
       >
         {PROJECTS_TO_PLAY.map((project) => (
-          <Card
+          <RenderProject
             key={project.mint}
-            sx={{
-              width: "90%",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "5px 10px",
-                gap: "40px",
-                width: "100%",
-                overflowX: "auto",
-                overflowY: "hidden",
-              }}
-            >
-              <TextWithValue
-                text="Project"
-                value={project.name}
-                gap="5px"
-                endComponent={
-                  <Tooltip title="Click to view project on Birdeye">
-                    <IconButton
-                      onClick={() => {
-                        window.open(
-                          `${birdeyeUrl}${project.mint}?chain=solana`,
-                          "_blank"
-                        );
-                      }}
-                    >
-                      <CallMade
-                        sx={{
-                          fontSize: "20px",
-                        }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-
-              <TextWithValue
-                text="Mint"
-                value={minimizePubkey(project.mint)}
-                gap="5px"
-                startComponent={
-                  <Tooltip title="Copy Token Address">
-                    <IconButton
-                      onClick={() => {
-                        navigator.clipboard.writeText(project.mint);
-                        toast.success("Copied to clipboard");
-                      }}
-                    >
-                      <ContentCopy
-                        sx={{
-                          fontSize: "20px",
-                        }}
-                      />
-                    </IconButton>
-                  </Tooltip>
-                }
-              />
-
-              <TextWithValue
-                text="Price"
-                value={`$${Math.floor(
-                  Math.random() * 100
-                )}`.toLocaleLowerCase()}
-                gap="5px"
-              />
-              <TextWithValue
-                text="24 hour change"
-                value={Math.floor(Math.random() * 100).toLocaleString()}
-                gap="5px"
-              />
-              <ApexChartComponent />
-              {!getActivePosition(project.name) && isAllowedToPlay && (
-                <Button
-                  disabled={pointsRemaining === 0}
-                  onClick={() => {
-                    setModelOpen(true);
-                    setSelectedToken(project.name);
-                    setSelectedTokenAddress(project.mint);
-                  }}
-                >
-                  Create Position
-                </Button>
-              )}
-            </Box>
-
-            <RenderPositionStats projectName={project.name} />
-          </Card>
+            project={project}
+            setModalOpen={setModelOpen}
+            setSelectedToken={setSelectedToken}
+            setSelectedTokenAddress={setSelectedTokenAddress}
+          />
         ))}
       </Box>
-      <CreatePositionModal
-        open={modelOpen}
-        setOpen={setModelOpen}
-        tokenAddress={selectedTokenAddress}
-        tokenSymbol={selectedToken}
-      />
+      {modelOpen && (
+        <CreatePositionModal
+          open={modelOpen}
+          setOpen={setModelOpen}
+          tokenAddress={selectedTokenAddress}
+          tokenSymbol={selectedToken}
+        />
+      )}
     </Box>
   );
 };

@@ -1,20 +1,29 @@
 import { AppContext } from "@/components/Context/AppContext";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
+import { safeDivide } from "@/utils/helpers";
+import { BirdeyeTokenPriceData } from "@/utils/types";
 import { Divider, Box } from "@mui/material";
 import { useContext, useMemo } from "react";
+import { Position } from "@/sdk/Position";
 
 export const RenderPositionStats = ({
   projectName,
+  tokenPriceData,
+  activePosition,
 }: {
   projectName: string;
+  tokenPriceData: BirdeyeTokenPriceData;
+  activePosition: Position;
 }) => {
-  const { positions } = useContext(AppContext);
+  const percentageChange = useMemo(() => {
+    const change =
+      safeDivide(
+        tokenPriceData.value - activePosition.entryPrice,
+        activePosition.entryPrice
+      ) * 100;
 
-  const activePosition = useMemo(() => {
-    return positions.find((position) => position.tokenName === projectName);
-  }, [positions, projectName]);
-
-  if (!activePosition) return null;
+    return change.toLocaleString() + "%";
+  }, [tokenPriceData, activePosition.entryPrice]);
 
   return (
     <>
@@ -54,17 +63,25 @@ export const RenderPositionStats = ({
         />
         <TextWithValue
           text="Entry Price"
-          value={activePosition.entryPrice.toLocaleString() ?? ""}
+          value={
+            activePosition.entryPrice.toLocaleString("en-US", {
+              maximumFractionDigits: 9,
+            }) ?? ""
+          }
           gap="5px"
         />
         <TextWithValue
           text="Current Price"
-          value={`$${Math.floor(Math.random() * 100)}`.toLocaleLowerCase()}
+          value={
+            tokenPriceData.value.toLocaleString("en-US", {
+              maximumFractionDigits: 9,
+            }) ?? ""
+          }
           gap="5px"
         />
         <TextWithValue
           text="Percentage Change"
-          value={Math.floor(Math.random() * 100).toLocaleString() + "%"}
+          value={percentageChange ?? ""}
           gap="5px"
         />
       </Box>

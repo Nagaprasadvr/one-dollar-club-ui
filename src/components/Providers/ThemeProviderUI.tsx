@@ -128,6 +128,22 @@ const darkTheme = createTheme({
         },
       },
     },
+    MuiSlider: {
+      defaultProps: {
+        valueLabelDisplay: "on",
+      },
+      styleOverrides: {
+        valueLabel: {
+          backgroundColor: "black",
+          border: `2px solid ${CHARCOAL}`,
+          color: "#87cefa",
+        },
+        markLabel: {
+          fontSize: "14px",
+          fontWeight: "bold",
+        },
+      },
+    },
   },
 });
 

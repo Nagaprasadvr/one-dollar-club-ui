@@ -1,6 +1,7 @@
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
-import React from "react";
+import React, { useContext, useMemo } from "react";
+import { AppContext } from "../Context/AppContext";
 
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
@@ -15,6 +16,7 @@ const chart = {
       },
     },
     xaxis: {
+      type: "datetime",
       labels: {
         show: true,
       },
@@ -48,7 +50,9 @@ const chart = {
           },
         },
         formatter: function (value) {
-          return value.toLocaleString();
+          return value.toLocaleString("en-US", {
+            maximumFractionDigits: 9,
+          });
         },
       },
       marker: {
@@ -58,9 +62,22 @@ const chart = {
   } as ApexOptions,
 };
 
-function ApexChartComponent() {
-  const yAxis = [5, 2, 10, 20, 3, 2, 5, 3, 1, 6];
-  const xAxis = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+function ApexChartComponent({ tokenAddress }: { tokenAddress: string }) {
+  const { tokensPriceHistory } = useContext(AppContext);
+
+  const tokenPriceHistory = useMemo(() => {
+    const data = tokensPriceHistory.find(
+      (token) => token.address === tokenAddress
+    );
+    if (!data) return { address: "", data: [] };
+    return data;
+  }, [tokensPriceHistory, tokenAddress]);
+
+  if (!tokenPriceHistory) return null;
+
+  const yAxis = tokenPriceHistory.data.map((price) => price.value);
+  const xAxis = tokenPriceHistory.data.map((price) => price.unixTime);
+
   if (!yAxis || yAxis?.length === 0) {
     return null;
   }
@@ -83,7 +100,7 @@ function ApexChartComponent() {
         options={chart.options}
         series={series}
         type="area"
-        width={"150px"}
+        width={"250px"}
       />
     </div>
   );

@@ -58,6 +58,10 @@ export class Position {
       const responseJson = await response.json();
 
       const positionData: PositionType[] = responseJson.data;
+
+      if (!positionData || positionData?.length === 0) {
+        return [];
+      }
       const positions = positionData.map((position) => new Position(position));
       return positions;
     } catch (e) {
