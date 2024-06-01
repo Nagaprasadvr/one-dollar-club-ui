@@ -7,8 +7,6 @@ import { useContext } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Projects } from "./Projects";
 
-import toast from "react-hot-toast";
-
 const Participate = () => {
   const { poolConfig, isFetchingPoolConfig, sdk } = useContext(AppContext);
 

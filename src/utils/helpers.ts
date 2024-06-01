@@ -123,3 +123,74 @@ export const fetchTokenChartData = async (
     };
   }
 };
+
+export const get24Change = (_24Change: number) => {
+  if (_24Change > 0) {
+    return (
+      "+" +
+      _24Change.toLocaleString("en-US", {
+        maximumFractionDigits: 4,
+      }) +
+      "%"
+    );
+  }
+  return (
+    _24Change.toLocaleString("en-US", {
+      maximumFractionDigits: 4,
+    }) + "%"
+  );
+};
+
+type PositionResult = {
+  entryPrice: number;
+  leverage: number;
+  currentPrice: number;
+  liquidationPrice: number;
+  pointsAllocated: number;
+  positionType: string;
+};
+
+export const calculateResult = (result: PositionResult) => {
+  const { entryPrice, leverage, currentPrice, pointsAllocated, positionType } =
+    result;
+
+  const pointsPerEntryPrice = safeDivide(pointsAllocated, entryPrice);
+
+  const mulCurrentPrice = pointsPerEntryPrice * currentPrice;
+
+  let resultingDiff = 0;
+  switch (positionType) {
+    case "long":
+      resultingDiff = mulCurrentPrice - pointsAllocated;
+      break;
+    case "short":
+      resultingDiff = pointsAllocated - mulCurrentPrice;
+      break;
+  }
+
+  const withLeverage = resultingDiff * leverage;
+
+  const finalResult = withLeverage + pointsAllocated;
+
+  if (finalResult < 0) {
+    return 0;
+  }
+  return finalResult;
+};
+
+export const getLiquidationPrice = ({
+  positionType,
+  entryPrice,
+  leverage,
+}: {
+  positionType: "long" | "short";
+  entryPrice: number;
+  leverage: number;
+}) => {
+  switch (positionType) {
+    case "long":
+      return entryPrice - safeDivide(entryPrice, leverage);
+    case "short":
+      return entryPrice + safeDivide(entryPrice, leverage);
+  }
+};

@@ -13,38 +13,43 @@ import {
 } from "@mui/material";
 
 import { useRouter } from "next/navigation";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 const mobileStyles: SxProps = {
   display: "flex",
   flexDirection: "column",
-  gap: "10px",
+  gap: "40px",
   alignItems: "flex-start",
-  marginTop: "50px",
+  marginTop: "20px",
   textWrap: "wrap",
-  width: "95%",
+  width: "100%",
+  paddingLeft: "25px",
 };
 
 export const HomePage = () => {
   const { breakpoints } = useTheme();
   const mobileScreen = useMediaQuery(breakpoints.down("sm"));
-
   const router = useRouter();
-  const handleOnClickPublish = () => {
-    router.push("/Publish");
+  const { connected } = useWallet();
+  const { setVisible } = useWalletModal();
+  const handleLaunchGame = () => {
+    if (!connected) {
+      setVisible(true);
+    }
+    router.push("/Participate");
   };
-  const handleOnClickRead = () => {
-    router.push("/Read");
-  };
+
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         gap: "40px",
-        width: "100%",
         alignItems: "center",
-        height: "70vh",
+        height: "80vh",
         overflow: "auto",
         overflowX: "hidden",
+        width: "95%",
       }}
     >
       <Box
@@ -52,20 +57,37 @@ export const HomePage = () => {
           mobileScreen
             ? {
                 ...mobileStyles,
-                marginLeft: "20px",
               }
             : {
                 display: "flex",
                 flexDirection: "column",
-                gap: "10px",
+                gap: "40px",
                 alignItems: "center",
                 marginTop: "50px",
                 width: "100%",
+                justifyContent: "center",
+                padding: "20px",
               }
         }
       >
-        <Typography variant="h3">Welcome to One Dollar Club</Typography>
-        <Typography variant="body1">LFG</Typography>
+        <Typography
+          variant="h3"
+          sx={{
+            fontWeight: "bold",
+            textAlign: mobileScreen ? "start" : "center",
+          }}
+        >
+          One Dollar Club, LFG!
+        </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            fontWeight: "bold",
+            textWrap: "wrap",
+          }}
+        >
+          No Pump, No Rug, Just Fun{" "}
+        </Typography>
 
         {/* <Typography
           variant={mobileScreen ? "h4" : "h2"}
@@ -129,6 +151,7 @@ export const HomePage = () => {
           research, share your insights, and be part of a decentralized future
           with Øxpublish on Solana and Arweave.
         </Typography> */}
+        <Button onClick={handleLaunchGame}>Launch Game</Button>
       </Box>
     </Box>
   );

@@ -4,9 +4,9 @@ import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import MenuIcon from "@mui/icons-material/Menu";
 
-import { NavLinks } from "./Navbar";
+// import { NavLinks } from "./Navbar";
 import CloseIcon from "@mui/icons-material/Close";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Wallet } from "./Wallet";
 import { CHARCOAL } from "@/utils/constants";
 import { Typography } from "@mui/material";
@@ -17,6 +17,10 @@ export const MobDrawer = () => {
   const { pointsRemaining } = React.useContext(AppContext);
   const router = useRouter();
 
+  const pathName = usePathname();
+  const isHomePage = React.useMemo(() => {
+    return pathName === "/";
+  }, [pathName]);
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -58,7 +62,7 @@ export const MobDrawer = () => {
           <CloseIcon />
         </Button>
       </Box>
-      {NavLinks.map((nav) => (
+      {/* {NavLinks.map((nav) => (
         <Box
           key={nav.name}
           sx={{
@@ -90,34 +94,44 @@ export const MobDrawer = () => {
             {nav.name}
           </Button>
         </Box>
-      ))}
-      {pointsRemaining && (
-        <Typography
-          fontWeight={"bold"}
-          fontSize={"18px"}
-          sx={{
-            ml: "24px",
-          }}
-        >
-          Points:{" "}
-          <span
-            style={{
-              color: "#87cefa",
-            }}
-          >
-            {pointsRemaining}
-          </span>
-        </Typography>
-      )}
+      ))} */}
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
+          display: isHomePage ? "none" : "flex",
+          flexDirection: "column",
+          gap: "20px",
           alignItems: "center",
-          padding: "20px",
+          justifyContent: "center",
         }}
       >
-        <Wallet setOpen={setOpen} />
+        {pointsRemaining && (
+          <Typography
+            fontWeight={"bold"}
+            fontSize={"18px"}
+            sx={{
+              ml: "24px",
+            }}
+          >
+            Points:{" "}
+            <span
+              style={{
+                color: "#87cefa",
+              }}
+            >
+              {pointsRemaining}
+            </span>
+          </Typography>
+        )}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "20px",
+          }}
+        >
+          <Wallet setOpen={setOpen} />
+        </Box>
       </Box>
     </Box>
   );

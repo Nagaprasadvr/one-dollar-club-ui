@@ -1,21 +1,28 @@
 import ApexChartComponent from "@/components/HelperComponents/ApexChartComponent";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
 import { birdeyeUrl } from "@/utils/constants";
-import { minimizePubkey } from "@/utils/helpers";
-import { CallMade, ContentCopy } from "@mui/icons-material";
+import { get24Change, minimizePubkey } from "@/utils/helpers";
+import {
+  ArrowDownward,
+  ArrowUpward,
+  CallMade,
+  ContentCopy,
+} from "@mui/icons-material";
 import { Box, Tooltip, IconButton, Button } from "@mui/material";
 import { Card } from "@/components/HelperComponents/Card";
 import toast from "react-hot-toast";
 import { RenderPositionStats } from "./RenderPositionStats";
 import { useContext, useMemo } from "react";
 import { AppContext } from "@/components/Context/AppContext";
-import { BirdeyeTokenPriceData } from "@/utils/types";
+import { BirdeyeTokenPriceData, PositionInputData } from "@/utils/types";
 
 export const RenderProject = ({
   project,
   setModalOpen,
   setSelectedToken,
   setSelectedTokenAddress,
+  setSelectedTokenData,
+  positionsInputData,
 }: {
   project: {
     name: string;
@@ -24,6 +31,8 @@ export const RenderProject = ({
   setModalOpen: (value: boolean) => void;
   setSelectedToken: (value: string) => void;
   setSelectedTokenAddress: (value: string) => void;
+  setSelectedTokenData: (value: BirdeyeTokenPriceData) => void;
+  positionsInputData: PositionInputData[];
 }) => {
   const defaultTokenPriceData: BirdeyeTokenPriceData = {
     address: project.mint,
@@ -33,8 +42,23 @@ export const RenderProject = ({
     priceChange24h: 0,
   };
 
+  const positionInputData = useMemo(() => {
+    const position = positionsInputData.find(
+      (position) => position.tokenName === project.name
+    );
+    if (!position) return null;
+    return position;
+  }, [positionsInputData, project.name]);
+
   const { isAllowedToPlay, pointsRemaining, positions, tokensPrices } =
     useContext(AppContext);
+
+  const activePosition = useMemo(() => {
+    const position = positions.find(
+      (position) => position.tokenMint === project.mint
+    );
+    return position;
+  }, [positions, project.mint]);
 
   const tokenDetails = useMemo(() => {
     const tokenPriceData = tokensPrices.find(
@@ -43,10 +67,6 @@ export const RenderProject = ({
     if (!tokenPriceData) return defaultTokenPriceData;
     return tokenPriceData;
   }, [tokensPrices, project.mint]);
-
-  const activePosition = useMemo(() => {
-    return positions.find((position) => position.tokenName === project.name);
-  }, [positions, project.name]);
 
   return (
     <Card
@@ -115,38 +135,72 @@ export const RenderProject = ({
         />
 
         <TextWithValue
-          text="Price"
-          value={tokenDetails.value.toLocaleString("en-US", {
-            maximumFractionDigits: 9,
-          })}
+          text="Current Price"
+          value={
+            "$" +
+            tokenDetails.value.toLocaleString("en-US", {
+              maximumFractionDigits: 9,
+            })
+          }
           gap="5px"
         />
+
         <TextWithValue
-          text="24 hour change"
-          value={tokenDetails.priceChange24h.toLocaleString() + "%"}
+          text="24Hr Change"
+          value={get24Change(tokenDetails.priceChange24h)}
           gap="5px"
+          endComponent={
+            tokenDetails.priceChange24h > 0 ? (
+              <ArrowUpward sx={{ color: "lightgreen", fontSize: "20px" }} />
+            ) : (
+              <ArrowDownward sx={{ color: "red", fontSize: "20px" }} />
+            )
+          }
         />
+
         <ApexChartComponent tokenAddress={project.mint} />
-        {!activePosition && isAllowedToPlay && (
-          <Button
-            disabled={pointsRemaining === 0}
-            onClick={() => {
-              setModalOpen(true);
-              setSelectedToken(project.name);
-              setSelectedTokenAddress(project.mint);
-            }}
-          >
-            Create Position
-          </Button>
-        )}
+
+        {isAllowedToPlay &&
+          !activePosition &&
+          (positionInputData ? (
+            <Button
+              disabled={pointsRemaining === 0}
+              onClick={() => {
+                setModalOpen(true);
+                setSelectedToken(project.name);
+                setSelectedTokenAddress(project.mint);
+                setSelectedTokenData(tokenDetails);
+              }}
+            >
+              Update Position
+            </Button>
+          ) : (
+            <Button
+              disabled={pointsRemaining === 0}
+              onClick={() => {
+                setModalOpen(true);
+                setSelectedToken(project.name);
+                setSelectedTokenAddress(project.mint);
+                setSelectedTokenData(tokenDetails);
+              }}
+            >
+              Create Position
+            </Button>
+          ))}
       </Box>
-      {activePosition && (
+      {activePosition ? (
         <RenderPositionStats
-          projectName={project.name}
-          activePosition={activePosition}
+          positionInputData={activePosition}
           tokenPriceData={tokenDetails}
+          positionExists={true}
         />
-      )}
+      ) : positionInputData ? (
+        <RenderPositionStats
+          positionInputData={positionInputData}
+          tokenPriceData={tokenDetails}
+          positionExists={false}
+        />
+      ) : null}
     </Card>
   );
 };

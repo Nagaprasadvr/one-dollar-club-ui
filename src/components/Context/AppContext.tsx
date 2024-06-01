@@ -15,6 +15,8 @@ import { Position } from "@/sdk/Position";
 import { BirdeyeTokenPriceData, TokenPriceHistory } from "@/utils/types";
 import axios from "axios";
 import { fetchTokenChartData } from "@/utils/helpers";
+import toast from "react-hot-toast";
+import { useUpdateTokenPrices } from "../hooks/useUpdateTokenPrices";
 interface AppContextType {
   connection: Connection;
   poolConfig: PoolConfig | null;
@@ -27,13 +29,19 @@ interface AppContextType {
   isAllowedToPlay: boolean;
   setIsAllowedToPlay: (isAllowedToPlay: boolean) => void;
   pointsRemaining: number | null;
-  setPointsRemaining: (pointsRemaining: number) => void;
+  setPointsRemaining: (pointsRemaining: number | null) => void;
   positions: Position[];
   setPositions: (positions: Position[]) => void;
   tokensPrices: BirdeyeTokenPriceData[];
   setTokensPrices: (tokenPrices: BirdeyeTokenPriceData[]) => void;
   tokensPriceHistory: TokenPriceHistory[];
   setTokensPriceHistory: (tokenPriceHistory: TokenPriceHistory[]) => void;
+  triggerRefetchUserData: boolean;
+  setTriggerRefetchUserData: (triggerRefetchUserData: boolean) => void;
+  fetchedTokensPrices: boolean;
+  setFetchedTokensPrices: (fetchedTokensPrices: boolean) => void;
+  tokenPriceLastUpdated: number;
+  setTokenPriceLastUpdated: (tokenPriceLastUpdated: number) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -55,6 +63,12 @@ export const AppContext = createContext<AppContextType>({
   setTokensPrices: () => {},
   tokensPriceHistory: [],
   setTokensPriceHistory: () => {},
+  triggerRefetchUserData: false,
+  setTriggerRefetchUserData: () => {},
+  fetchedTokensPrices: false,
+  setFetchedTokensPrices: () => {},
+  tokenPriceLastUpdated: 0,
+  setTokenPriceLastUpdated: () => {},
 });
 export const API_URL = "/api/birdeye";
 
@@ -91,81 +105,15 @@ export const AppContextProvider = ({
     useState<number>(0);
 
   const [positions, setPositions] = useState<Position[]>([]);
-  useEffect(() => {
-    const fetchPoolServerId = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/poolServerId`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        const responseJson = await response.json();
-
-        setPoolServerId(responseJson.poolServerId);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    const fetchTokenPrices = async () => {
-      if (tokensPrices.length > 0) return;
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            requestType: "fetchTokensPrice",
-            lastUpdated: tokenPriceLastUpdated,
-            tokenAddressArray: PROJECTS_TO_PLAY.map((project) => project.mint),
-          }),
-        });
-
-        if (response.status !== 200) return;
-
-        const responseJson = await response.json();
-        const fetchedTokensPrices: BirdeyeTokenPriceData[] = responseJson.data;
-        if (fetchedTokensPrices?.length > 0) {
-          setFetchedTokensPrices(true);
-          setTokenPriceLastUpdated(Math.round(Date.now() / 1000));
-          setTokensPrices(fetchedTokensPrices);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    const fetchChartsData = async () => {
-      if (tokensPriceHistory.length > 0) return;
-      try {
-        const data = await Promise.all(
-          PROJECTS_TO_PLAY.map((project) =>
-            fetchTokenChartData(project.mint, tokenPriceHistoryLastUpdated)
-          )
-        );
-
-        if (data) {
-          setTokensPriceHistory(data);
-          setFetchedChartsData(true);
-          setTokenPriceHistoryLastUpdated(Math.floor(Date.now() / 1000));
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    if (!poolServerId) fetchPoolServerId();
-    if (!fetchedTokensPrices && tokensPrices.length == 0) fetchTokenPrices();
-    if (!fetchedChartsData && tokensPriceHistory.length === 0)
-      fetchChartsData();
-  }, [
-    fetchedTokensPrices,
-    fetchedChartsData,
-    tokenPriceHistoryLastUpdated,
-    tokenPriceLastUpdated,
-  ]);
+  const [triggerRefetchUserData, setTriggerRefetchUserData] =
+    useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!poolServerId || !publicKey) return;
+      toast.loading("Fetching user data...", {
+        id: "fetchUserData",
+      });
       try {
         const response = await fetch(
           `${API_BASE_URL}/isAllowedToPlay?pubkey=${publicKey.toBase58()}`,
@@ -191,14 +139,21 @@ export const AppContextProvider = ({
           }
         );
         const responsePointsJson = await responsePoints.json();
+
         setPointsRemaining(responsePointsJson.data);
 
         const fetchedPositions = await Position.fetchMultiplePositions(
           publicKey.toBase58()
         );
         setPositions(fetchedPositions);
+        toast.success("User data fetched successfully", {
+          id: "fetchUserData",
+        });
       } catch (e) {
         console.error(e);
+        toast.error("Error while fetching user data", {
+          id: "fetchUserData",
+        });
       }
     };
 
@@ -207,7 +162,8 @@ export const AppContextProvider = ({
       connected &&
       publicKey &&
       wallet.signAllTransactions &&
-      wallet.signTransaction
+      wallet.signTransaction &&
+      !sdk
     ) {
       const uiWallet: UIWallet = {
         publicKey,
@@ -225,6 +181,94 @@ export const AppContextProvider = ({
     wallet.signAllTransactions,
     wallet.signTransaction,
     poolServerId,
+    triggerRefetchUserData,
+  ]);
+
+  useEffect(() => {
+    if (!sdk || !connected) return;
+    const fetchTokenPrices = async () => {
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            requestType: "fetchTokensPrice",
+            lastUpdated: tokenPriceLastUpdated,
+            tokenAddressArray: PROJECTS_TO_PLAY.map((project) => project.mint),
+          }),
+        });
+
+        if (response.status !== 200) return;
+
+        const responseJson = await response.json();
+        const fetchedTokensPrices: BirdeyeTokenPriceData[] = responseJson.data;
+        if (fetchedTokensPrices?.length > 0) {
+          setFetchedTokensPrices(true);
+          setTokenPriceLastUpdated(Math.round(Date.now() / 1000));
+          setTokensPrices(fetchedTokensPrices);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    // if (tokenPriceHistoryLastUpdated === 0) {
+    //   fetchTokenPrices();
+    // }
+    const tokenPricesFetchInterval = setInterval(() => {
+      // fetch token prices
+      if (Math.round(Date.now() / 1000) - tokenPriceLastUpdated < 60) return;
+      fetchTokenPrices();
+    }, 1000 * 60 * 60);
+
+    return () => {
+      clearInterval(tokenPricesFetchInterval);
+    };
+  }, [connected, sdk, setTokensPrices]);
+
+  useEffect(() => {
+    const fetchPoolServerId = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/poolServerId`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const responseJson = await response.json();
+
+        setPoolServerId(responseJson.poolServerId);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const fetchChartsData = async () => {
+      if (tokensPriceHistory.length > 0) return;
+      try {
+        const data = await Promise.all(
+          PROJECTS_TO_PLAY.map((project) =>
+            fetchTokenChartData(project.mint, tokenPriceHistoryLastUpdated)
+          )
+        );
+
+        if (data) {
+          setTokensPriceHistory(data);
+          setFetchedChartsData(true);
+          setTokenPriceHistoryLastUpdated(Math.floor(Date.now() / 1000));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    if (!poolServerId) fetchPoolServerId();
+    // if (!fetchedChartsData && tokensPriceHistory.length === 0)
+    //   fetchChartsData();
+  }, [
+    fetchedTokensPrices,
+    fetchedChartsData,
+    tokenPriceHistoryLastUpdated,
+    tokenPriceLastUpdated,
   ]);
 
   useEffect(() => {
@@ -267,6 +311,12 @@ export const AppContextProvider = ({
         setTokensPrices,
         tokensPriceHistory,
         setTokensPriceHistory,
+        triggerRefetchUserData,
+        setTriggerRefetchUserData,
+        fetchedTokensPrices,
+        setFetchedTokensPrices,
+        tokenPriceLastUpdated,
+        setTokenPriceLastUpdated,
       }}
     >
       {children}

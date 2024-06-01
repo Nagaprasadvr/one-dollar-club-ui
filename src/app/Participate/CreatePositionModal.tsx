@@ -22,27 +22,20 @@ import toast from "react-hot-toast";
 import { API_BASE_URL, birdeyeUrl } from "@/utils/constants";
 import { AppContext } from "@/components/Context/AppContext";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { minimizePubkey, safeDivide } from "@/utils/helpers";
-import { BirdeyeTokenPriceData } from "@/utils/types";
+import {
+  get24Change,
+  getLiquidationPrice,
+  minimizePubkey,
+  safeDivide,
+} from "@/utils/helpers";
+import {
+  BirdeyeTokenPriceData,
+  PositionData,
+  PositionInputData,
+} from "@/utils/types";
 import { Message } from "@/components/HelperComponents/Message";
 import { Position } from "@/sdk/Position";
-
-type PositionInputData = {
-  positionType: "long" | "short";
-  leverage: number;
-  pointsAllocated: number | string;
-};
-
-type PositionData = {
-  pubkey: string;
-  tokenName: string;
-  tokenMint: string;
-  entryPrice: number;
-  leverage: number;
-  pointsAllocated: number;
-  positionType: "long" | "short";
-  liquidationPrice: number;
-};
+import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
 
 export const getPlaceHolder = (data: string) => {
   switch (data) {
@@ -94,33 +87,62 @@ export const CreatePositionModal = ({
   setOpen,
   tokenSymbol,
   tokenAddress,
+  activeTokenData,
+  appendPositionInputData,
+  positionsInputData,
+  updatePositionInputData,
 }: {
   open: boolean;
   setOpen: (value: boolean) => void;
   tokenSymbol: string;
   tokenAddress: string;
+  activeTokenData: BirdeyeTokenPriceData;
+  appendPositionInputData: (data: PositionInputData) => void;
+  positionsInputData: PositionInputData[];
+  updatePositionInputData: (data: PositionInputData) => void;
 }) => {
   const { pointsRemaining, tokensPrices, setPositions } =
     useContext(AppContext);
   const wallet = useWallet();
   const { connected, publicKey } = useWallet();
-  const [activeTokenData, setActiveTokenData] =
-    useState<BirdeyeTokenPriceData | null>(null);
   const [positionInputData, setPositionInputData] = useState<PositionInputData>(
     {
+      tokenName: tokenSymbol,
       positionType: "long",
-      leverage: 1,
+      leverage: 0,
       pointsAllocated: "",
+      entryPrice: activeTokenData.value,
+      tokenMint: tokenAddress,
     }
   );
 
+  const [liquidationPrice, setLiquidationPrice] = useState<number>(0);
+
   useEffect(() => {
-    const tokenPriceData = tokensPrices.find(
-      (tokenPrice) => tokenPrice.address === tokenAddress
+    if (!positionsInputData || positionsInputData.length === 0) return;
+    const previousPosition = positionsInputData.find(
+      (position) => position.tokenName === tokenSymbol
     );
-    if (!tokenPriceData) return;
-    setActiveTokenData(tokenPriceData);
-  }, [tokensPrices]);
+    if (previousPosition) {
+      setPositionInputData(previousPosition);
+    }
+  }, [positionsInputData, tokenSymbol]);
+
+  useEffect(() => {
+    if (activeTokenData) {
+      setLiquidationPrice(
+        getLiquidationPrice({
+          entryPrice: activeTokenData.value,
+          leverage: Number(positionInputData.leverage),
+          positionType: positionInputData.positionType,
+        })
+      );
+    }
+  }, [
+    activeTokenData,
+    positionInputData.leverage,
+    positionInputData.positionType,
+  ]);
 
   const validateData = () => {
     if (
@@ -155,79 +177,35 @@ export const CreatePositionModal = ({
       return;
     }
     if (!validateData()) return;
-    try {
-      const position: PositionData = {
-        pubkey: publicKey.toBase58(),
-        tokenName: tokenSymbol,
-        tokenMint: tokenAddress,
+
+    const position: PositionData = {
+      pubkey: publicKey.toBase58(),
+      tokenName: tokenSymbol,
+      tokenMint: tokenAddress,
+      entryPrice: activeTokenData.value,
+      leverage: Number(positionInputData.leverage),
+      pointsAllocated: Number(positionInputData.pointsAllocated),
+      positionType: positionInputData.positionType,
+      liquidationPrice: getLiquidationPrice({
         entryPrice: activeTokenData.value,
         leverage: Number(positionInputData.leverage),
-        pointsAllocated: Number(positionInputData.pointsAllocated),
         positionType: positionInputData.positionType,
-        liquidationPrice:
-          activeTokenData.value -
-          safeDivide(activeTokenData.value, Number(positionInputData.leverage)),
-      };
-      toast.loading("Creating Position...", {
-        id: "createPosition",
-      });
-      if (wallet.signMessage) {
-        await wallet.signMessage(
-          new Uint8Array(
-            JSON.stringify(position)
-              .split("")
-              .map((c) => c.charCodeAt(0))
-          )
-        );
-        toast.success("signature success", {
-          id: "createPosition",
-        });
+      }),
+    };
 
-        toast.loading("Recording Position...", {
-          id: "createPosition",
-        });
+    const previousPositionExists = positionsInputData?.find(
+      (position) => position.tokenName === tokenSymbol
+    );
 
-        const createPositionResponse = await fetch(
-          `${API_BASE_URL}/poolCreatePosition`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              position: {
-                ...position,
-              },
-            }),
-          }
-        );
-
-        const createPositionResponseJson = await createPositionResponse.json();
-
-        if (createPositionResponse.status === 200) {
-          toast.success("Position created successfully", {
-            id: "createPosition",
-          });
-          const fetchedPositions = await Position.fetchMultiplePositions(
-            publicKey.toBase58()
-          );
-          setPositions(fetchedPositions);
-        } else {
-          toast.error(
-            `Error while creating position:${createPositionResponseJson.error}`,
-            {
-              id: "createPosition",
-            }
-          );
-        }
-      }
-    } catch (err) {
-      toast.error("Error while creating position", {
-        id: "createPosition",
-      });
-    } finally {
+    if (previousPositionExists) {
+      updatePositionInputData(position);
+      toast.success("Position updated successfully");
       setOpen(false);
+      return;
     }
+    appendPositionInputData(position);
+    toast.success("Position saved successfully");
+    setOpen(false);
   };
 
   const midScreen = useMediaQuery("(max-width:1450px)");
@@ -376,12 +354,15 @@ export const CreatePositionModal = ({
             />
             <TextWithValue
               text="24Hr Change"
-              value={
-                activeTokenData?.priceChange24h.toLocaleString("en-US", {
-                  maximumFractionDigits: 4,
-                }) ?? ""
-              }
+              value={get24Change(activeTokenData.priceChange24h)}
               gap="5px"
+              endComponent={
+                activeTokenData.priceChange24h > 0 ? (
+                  <ArrowUpward sx={{ color: "lightgreen", fontSize: "20px" }} />
+                ) : (
+                  <ArrowDownward sx={{ color: "red", fontSize: "20px" }} />
+                )
+              }
             />
           </Box>
           <Box
@@ -407,8 +388,8 @@ export const CreatePositionModal = ({
                 Position
               </FormLabel>
               <RadioGroup
+                value={positionInputData.positionType}
                 row
-                defaultValue="long"
                 name="radio-buttons-group"
                 onChange={(e) => {
                   setPositionInputData({
@@ -429,6 +410,13 @@ export const CreatePositionModal = ({
                 />
               </RadioGroup>
             </FormControl>
+            <TextWithValue
+              text="Liquidation Price"
+              value={liquidationPrice.toLocaleString("en-US", {
+                maximumFractionDigits: 9,
+              })}
+              gap="5px"
+            />
             <Box
               sx={{
                 width: "100%",
@@ -455,7 +443,7 @@ export const CreatePositionModal = ({
                 </span>
               </Typography>
               <Slider
-                defaultValue={1}
+                defaultValue={positionInputData.leverage}
                 aria-label="Default"
                 valueLabelDisplay="auto"
                 sx={{

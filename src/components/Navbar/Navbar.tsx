@@ -1,34 +1,39 @@
 "use client";
 import {
   Box,
-  Button,
   CircularProgress,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Link from "next/link";
-import Image from "next/image";
 import { Logo } from "../Logo/Logo";
 import { Wallet } from "./Wallet";
 import { MobileNav } from "./MobileNav";
-import React, { useContext, useEffect } from "react";
-import { TextWithValue } from "../HelperComponents/TextWithValue";
+import React, { useContext, useEffect, useMemo } from "react";
 import { AppContext } from "../Context/AppContext";
+import { usePathname, useRouter } from "next/navigation";
 
-export const NavLinks = [
-  { name: "Home", link: "/" },
-  {
-    name: "Participate",
-    link: "/Participate",
-  },
-];
+// export const NavLinks = [
+//   { name: "Home", link: "/" },
+//   {
+//     name: "Participate",
+//     link: "/Participate",
+//   },
+// ];
 
 export const Navbar = () => {
   const { breakpoints } = useTheme();
   const mobileScreen = useMediaQuery(breakpoints.down("md"));
   const { pointsRemaining } = useContext(AppContext);
   const [isLoading, setIsLoading] = React.useState(true);
+  const router = useRouter();
+
+  const pathName = usePathname();
+  console.log(pathName);
+
+  const isHomePage = useMemo(() => {
+    return pathName === "/";
+  }, [pathName]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -48,7 +53,8 @@ export const Navbar = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent:
+            !mobileScreen && isHomePage ? "flex-start" : "space-around",
           alignItems: "center",
           width: "100%",
           height: "50px",
@@ -62,6 +68,7 @@ export const Navbar = () => {
             display: "flex",
             flexDirection: "row",
             gap: "20px",
+            ml: !mobileScreen && isHomePage ? "100px" : "0px",
           }}
         >
           <Box
@@ -76,11 +83,14 @@ export const Navbar = () => {
             sx={{
               cursor: "pointer",
             }}
+            onClick={() => {
+              router.push("/");
+            }}
           >
             <Logo size={30} />
           </Box>
 
-          <Box
+          {/* <Box
             sx={{
               display: mobileScreen ? "none" : "flex",
               gap: "10px",
@@ -110,7 +120,7 @@ export const Navbar = () => {
                 </Button>
               </Link>
             ))}
-          </Box>
+          </Box> */}
         </Box>
 
         {isLoading ? (
@@ -141,7 +151,7 @@ export const Navbar = () => {
           </Box>
         ) : (
           <Box
-            display={mobileScreen ? "none" : "flex"}
+            display={mobileScreen || isHomePage ? "none" : "flex"}
             sx={{
               mr: "20px",
               ml: "20px",
@@ -151,16 +161,24 @@ export const Navbar = () => {
             }}
           >
             {pointsRemaining !== null && (
-              <Typography fontWeight={"bold"} fontSize={"18px"}>
-                Points:{" "}
-                <span
-                  style={{
-                    color: "#87cefa",
-                  }}
-                >
-                  {pointsRemaining ?? 0}
-                </span>
-              </Typography>
+              <Box
+                sx={{
+                  p: "10px",
+                  backgroundColor: "#aff6ff",
+                  borderRadius: "10px",
+                }}
+              >
+                <Typography fontWeight={"bold"} fontSize={"18px"} color="black">
+                  Points:{" "}
+                  <span
+                    style={{
+                      color: "black",
+                    }}
+                  >
+                    {pointsRemaining ?? 0}
+                  </span>
+                </Typography>
+              </Box>
             )}
 
             <Wallet setOpen={null} />

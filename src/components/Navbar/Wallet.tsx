@@ -20,7 +20,7 @@ export const Wallet = ({
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>> | null;
 }) => {
-  const { setSdk } = useContext(AppContext);
+  const { setSdk, setPointsRemaining } = useContext(AppContext);
   const { setVisible } = useWalletModal();
   const handleConnect = () => {
     if (setOpen) {
@@ -46,6 +46,7 @@ export const Wallet = ({
     });
     setSdk(null);
     setAnchorEl(null);
+    setPointsRemaining(null);
   };
 
   return (
