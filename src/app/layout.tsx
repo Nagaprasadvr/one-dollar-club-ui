@@ -4,6 +4,8 @@ import "../styles/globals.css";
 import { ProviderUI } from "@/components/Providers/ProviderUI";
 import { Box } from "@mui/material";
 import { Navbar } from "@/components/Navbar/Navbar";
+import { Footer } from "@/components/Footer/Footer";
+import { FooterModal } from "@/components/Footer/FooterModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,7 +37,19 @@ export default function RootLayout({
           >
             <Navbar />
 
-            <Box>{children}</Box>
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                height: "90vh",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {children}
+            </Box>
+            <Footer />
           </Box>
         </ProviderUI>
       </body>

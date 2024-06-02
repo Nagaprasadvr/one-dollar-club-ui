@@ -34,6 +34,11 @@ const Participate = () => {
         alignItems: "center",
         width: "100%",
         height: "80vh",
+        overflowY: "auto",
+        overflowX: "hidden",
+        "::-webkit-scrollbar": {
+          display: "none",
+        },
       }}
     >
       <ActiveRound poolConfig={poolConfig} />

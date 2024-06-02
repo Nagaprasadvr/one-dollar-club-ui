@@ -144,6 +144,15 @@ const darkTheme = createTheme({
         },
       },
     },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontSize: "15px",
+          fontWeight: "bold",
+          fontFamily: '"Roboto Mono", sans-serif',
+        },
+      },
+    },
   },
 });
 

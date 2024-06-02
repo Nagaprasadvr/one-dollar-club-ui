@@ -29,7 +29,6 @@ export const Navbar = () => {
   const router = useRouter();
 
   const pathName = usePathname();
-  console.log(pathName);
 
   const isHomePage = useMemo(() => {
     return pathName === "/";

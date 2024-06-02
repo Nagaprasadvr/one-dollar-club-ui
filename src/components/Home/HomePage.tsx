@@ -22,8 +22,7 @@ const mobileStyles: SxProps = {
   alignItems: "flex-start",
   marginTop: "20px",
   textWrap: "wrap",
-  width: "100%",
-  paddingLeft: "25px",
+  padding: "10px",
 };
 
 export const HomePage = () => {
@@ -49,7 +48,7 @@ export const HomePage = () => {
         height: "80vh",
         overflow: "auto",
         overflowX: "hidden",
-        width: "95%",
+        width: "100%",
       }}
     >
       <Box
@@ -75,6 +74,7 @@ export const HomePage = () => {
           sx={{
             fontWeight: "bold",
             textAlign: mobileScreen ? "start" : "center",
+            width: "100%",
           }}
         >
           One Dollar Club, LFG!
@@ -84,6 +84,8 @@ export const HomePage = () => {
           sx={{
             fontWeight: "bold",
             textWrap: "wrap",
+            width: "100%",
+            textAlign: mobileScreen ? "start" : "center",
           }}
         >
           No Pump, No Rug, Just Fun{" "}

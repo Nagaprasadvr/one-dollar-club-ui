@@ -42,6 +42,10 @@ interface AppContextType {
   setFetchedTokensPrices: (fetchedTokensPrices: boolean) => void;
   tokenPriceLastUpdated: number;
   setTokenPriceLastUpdated: (tokenPriceLastUpdated: number) => void;
+  footerModalOpen: boolean;
+  setFooterModalOpen: (footerOpen: boolean) => void;
+  footerDataToDisplay: string;
+  setFooterDataToDisplay: (footerDataToDisplay: string) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -69,6 +73,10 @@ export const AppContext = createContext<AppContextType>({
   setFetchedTokensPrices: () => {},
   tokenPriceLastUpdated: 0,
   setTokenPriceLastUpdated: () => {},
+  footerModalOpen: true,
+  setFooterModalOpen: () => {},
+  footerDataToDisplay: "Steps",
+  setFooterDataToDisplay: () => {},
 });
 export const API_URL = "/api/birdeye";
 
@@ -88,6 +96,8 @@ export const AppContextProvider = ({
     []
   );
 
+  const [footerModalOpen, setFooterModalOpen] = useState<boolean>(true);
+
   const [poolConfig, setPoolConfig] = useState<PoolConfig | null>(null);
   const [sdk, setSdk] = useState<SDK | null>(null);
   const [poolServerId, setPoolServerId] = useState<string | null>(null);
@@ -103,6 +113,9 @@ export const AppContextProvider = ({
   const [tokenPriceLastUpdated, setTokenPriceLastUpdated] = useState<number>(0);
   const [tokenPriceHistoryLastUpdated, setTokenPriceHistoryLastUpdated] =
     useState<number>(0);
+
+  const [footerDataToDisplay, setFooterDataToDisplay] =
+    useState<string>("Steps");
 
   const [positions, setPositions] = useState<Position[]>([]);
   const [triggerRefetchUserData, setTriggerRefetchUserData] =
@@ -317,6 +330,10 @@ export const AppContextProvider = ({
         setFetchedTokensPrices,
         tokenPriceLastUpdated,
         setTokenPriceLastUpdated,
+        footerModalOpen,
+        setFooterModalOpen,
+        footerDataToDisplay,
+        setFooterDataToDisplay,
       }}
     >
       {children}
