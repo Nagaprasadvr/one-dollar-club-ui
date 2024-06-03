@@ -1,7 +1,7 @@
 "use client";
 import "../styles/globals.css";
 import { ProviderUI } from "@/components/Providers/ProviderUI";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { Footer } from "@/components/Footer/Footer";
 import { Message } from "@/components/HelperComponents/Message";
@@ -11,7 +11,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isMobile = window && window.innerWidth <= 600;
+  const isMobile = useMediaQuery("(max-width:600px)");
   return (
     <html lang="en">
       <head>
