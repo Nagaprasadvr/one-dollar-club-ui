@@ -34,6 +34,8 @@ export const Footer = () => {
         alignItems: "center",
         height: "100px",
         borderTop: `1px solid ${CHARCOAL}`,
+        overflowX: "auto",
+        width: "100%",
       }}
     >
       <Box
