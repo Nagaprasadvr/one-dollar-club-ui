@@ -13,7 +13,7 @@ export const MAX_RESEARCH_PAPER_SIZE_IN_BYTES = 100 * 1024 * 1024;
 export const MAX_IMAGE_SIZE_IN_BYTES = 10 * 1024 * 1024;
 
 export const DEVNET_POOL_CONFIG_PUBKEY =
-  "3ZsiWpKCoADMkz9w72A78Z6c6NnAoqwyDyQk1puMXPHe";
+  "7d9QiPPQ4q9DV4UyLS3j9ZSR71NRwCQ4NMYeHaCkXByz";
 export const POOL_AUTH_PUBKEY = new PublicKey(
   "CNiF4Y8VdsA7aMftkF6kumEBz67AsCAyvnZDr6zopYSC"
 );
