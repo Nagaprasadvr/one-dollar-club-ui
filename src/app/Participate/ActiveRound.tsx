@@ -88,7 +88,7 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           justifyContent="flex-start"
           text="Price Pool"
           gap="5px"
-          value={poolConfig.poolBalance.toLocaleString() + "USDC"}
+          value={poolConfig.poolBalance.toLocaleString() + " " + "BONK"}
         />
 
         <TextWithValue
@@ -98,7 +98,9 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           value={
             (
               poolConfig.poolRoundWinAllocation * poolConfig.poolBalance
-            ).toLocaleString() + "USDC"
+            ).toLocaleString() +
+            " " +
+            "BONK"
           }
         />
       </Box>

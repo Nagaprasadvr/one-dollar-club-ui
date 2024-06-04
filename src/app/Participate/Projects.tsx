@@ -251,7 +251,7 @@ export const Projects = () => {
           </Typography>
         )}
         {!isAllowedToPlay && (
-          <Button onClick={handlePoolDeposit}>Deposit 1 USDC to Play</Button>
+          <Button onClick={handlePoolDeposit}>Deposit 50k BONK to Play</Button>
         )}
         <Tooltip title="Refresh">
           <Button
