@@ -250,7 +250,7 @@ export const Projects = () => {
               : "Create Positions"}
           </Typography>
         )}
-        {!isAllowedToPlay && (
+        {poolConfig.poolState === "Active" && !isAllowedToPlay && (
           <Button onClick={handlePoolDeposit}>Deposit 50k BONK to Play</Button>
         )}
         <Tooltip title="Refresh">
@@ -295,6 +295,7 @@ export const Projects = () => {
         ))}
       </Box>
       {isAllowedToPlay &&
+        poolConfig.poolState === "Active" &&
         positions.length !== PROJECTS_TO_PLAY.length &&
         positionsInputData.length > 0 && (
           <Box

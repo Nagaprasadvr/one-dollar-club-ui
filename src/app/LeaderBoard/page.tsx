@@ -1,49 +1,36 @@
 "use client";
-import { LeaderBoardDataType } from "@/utils/types";
+import { ExtendedLeaderBoardDataType, type LeaderBoard } from "@/utils/types";
 import { useEffect, useState } from "react";
-import { generateDummyData } from "./dummyData";
+// import { generateDummyData } from "./dummyData";
 import React from "react";
 import { DataGrid, GridColDef, GridKeyValue } from "@mui/x-data-grid";
 import { Box, Button, Tooltip, Typography } from "@mui/material";
-import { getRow, minimizePubkey } from "@/utils/helpers";
+import { fetchLeaderBoards, getRow, minimizePubkey } from "@/utils/helpers";
 import CopyIcon from "@mui/icons-material/ContentCopy";
 const LeaderBoardHeaders = [
   {
-    name: "id",
-    key: "id",
-  },
-  {
     name: "Rank",
-    key: "rank",
+    key: "id",
   },
   {
     name: "Pubkey",
     key: "pubkey",
   },
   {
-    name: "Total Points",
-    key: "totalPoints",
+    name: "Points Allocated",
+    key: "pointsAllocated",
   },
+
   {
-    name: "Top Gainer",
-    key: "topGainer",
+    name: "Pool Id",
+    key: "poolId",
   },
+
   {
-    name: "Total Positions",
-    key: "totalPositions",
+    name: "Final Points",
+    key: "finalPoints",
   },
-  {
-    name: "Total Wins",
-    key: "totalWins",
-  },
-  {
-    name: "Total Losses",
-    key: "totalLosses",
-  },
-  {
-    name: "Avg Leverage",
-    key: "avgLeverage",
-  },
+
   {
     name: "Top 3 Positions",
     key: "top3Positions",
@@ -52,50 +39,47 @@ const LeaderBoardHeaders = [
 
 const yourStats = [
   {
-    name: "Rank",
-    value: 1,
-  },
-  {
     name: "Pubkey",
-    value: "F3L3Wq7vK2JZ7L6V5y9X",
+    value: "pubkey",
   },
   {
-    name: "Total Points",
+    name: "Rank",
+    value: "rank",
+  },
+  {
+    name: "Final Points",
     value: 100,
   },
   {
-    name: "Total Positions",
-    value: 10,
+    name: "Poins Allocated",
+    value: 80,
   },
   {
-    name: "Total Wins",
-    value: 5,
-  },
-  {
-    name: "Total Losses",
-    value: 5,
-  },
-  {
-    name: "Avg Leverage",
-    value: 10,
-  },
-  {
-    name: "Top Gainer",
-    value: "SAMO",
+    name: "Pool Id",
+    value: "poolId",
   },
   {
     name: "Top 3 Positions",
-    value: "SAMO, COPE, WOOP",
+    value: "top3Positions",
   },
 ];
 
 const LeaderBoard = () => {
-  const [leaderboardData, setLeaderboardData] = useState<LeaderBoardDataType[]>(
-    []
-  );
+  const [leaderboardData, setLeaderboardData] = useState<
+    ExtendedLeaderBoardDataType[]
+  >([]);
 
   useEffect(() => {
-    setLeaderboardData(generateDummyData());
+    const getLeaderBoardData = async () => {
+      const leaderBoardData: LeaderBoard[] = await fetchLeaderBoards();
+      if (leaderBoardData.length === 0) return;
+      const extendedLeaderBoardData = leaderBoardData.map((data, index) => ({
+        ...data,
+        rank: index,
+      }));
+      setLeaderboardData(extendedLeaderBoardData);
+    };
+    getLeaderBoardData();
   }, []);
 
   const columns: GridColDef[] = LeaderBoardHeaders.map((header) => {

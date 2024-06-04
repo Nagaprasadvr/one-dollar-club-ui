@@ -34,6 +34,7 @@ export const RenderProject = ({
   setSelectedTokenData: (value: BirdeyeTokenPriceData) => void;
   positionsInputData: PositionInputData[];
 }) => {
+  const { poolConfig } = useContext(AppContext);
   const defaultTokenPriceData: BirdeyeTokenPriceData = {
     address: project.mint,
     value: 0,
@@ -160,7 +161,8 @@ export const RenderProject = ({
 
         <ApexChartComponent tokenAddress={project.mint} />
 
-        {isAllowedToPlay &&
+        {poolConfig &&
+          poolConfig.poolState === "Active" &&
           !activePosition &&
           (positionInputData ? (
             <Button

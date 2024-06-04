@@ -19,6 +19,7 @@ import axios from "axios";
 
 import { BirdeyeTokenPriceData, TokenPriceHistory } from "./types";
 import { API_URL } from "@/components/Context/AppContext";
+import { API_BASE_URL } from "./constants";
 
 export const minimizePubkey = (pubkey: string) => {
   return pubkey.slice(0, 5) + "..." + pubkey.slice(-5);
@@ -192,5 +193,15 @@ export const getLiquidationPrice = ({
       return entryPrice - safeDivide(entryPrice, leverage);
     case "short":
       return entryPrice + safeDivide(entryPrice, leverage);
+  }
+};
+
+export const fetchLeaderBoards = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/leaderBoard`);
+    return response.data;
+  } catch (e) {
+    console.error(e);
+    return [];
   }
 };
