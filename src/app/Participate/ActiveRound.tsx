@@ -23,7 +23,6 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
     onExpire: () => console.warn("onExpire"),
   });
   const smallScreen = useMediaQuery("(max-width:800px)");
-  console.log("smallScreen", smallScreen);
   return (
     <Box
       sx={{
