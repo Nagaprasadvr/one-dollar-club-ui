@@ -148,8 +148,9 @@ export const FooterModal = ({ content }: { content: string }) => {
           return <Typography>{content.contentData}</Typography>;
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {content.contentData.map((data) => (
+            {content.contentData.map((data, index) => (
               <Typography
+                key={index}
                 sx={{
                   fontWeight: "bold",
                   fontSize: "20px",
