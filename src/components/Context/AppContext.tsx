@@ -224,14 +224,14 @@ export const AppContextProvider = ({
       }
     };
 
-    // if (tokenPriceHistoryLastUpdated === 0) {
-    //   fetchTokenPrices();
-    // }
+    if (tokenPriceHistoryLastUpdated === 0) {
+      fetchTokenPrices();
+    }
     const tokenPricesFetchInterval = setInterval(() => {
       // fetch token prices
       if (Math.round(Date.now() / 1000) - tokenPriceLastUpdated < 60) return;
       fetchTokenPrices();
-    }, 1000 * 60 * 60);
+    }, 1000 * 60 * 5);
 
     return () => {
       clearInterval(tokenPricesFetchInterval);
