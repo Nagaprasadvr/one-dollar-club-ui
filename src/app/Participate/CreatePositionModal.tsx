@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { CallMade, Close as CloseIcon, ContentCopy } from "@mui/icons-material";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { API_BASE_URL, birdeyeUrl } from "@/utils/constants";
 import { AppContext } from "@/components/Context/AppContext";
@@ -91,6 +91,7 @@ export const CreatePositionModal = ({
   appendPositionInputData,
   positionsInputData,
   updatePositionInputData,
+  deletePositionInputData,
 }: {
   open: boolean;
   setOpen: (value: boolean) => void;
@@ -100,6 +101,7 @@ export const CreatePositionModal = ({
   appendPositionInputData: (data: PositionInputData) => void;
   positionsInputData: PositionInputData[];
   updatePositionInputData: (data: PositionInputData) => void;
+  deletePositionInputData: (tokenName: string) => void;
 }) => {
   const { pointsRemaining, tokensPrices, setPositions } =
     useContext(AppContext);
@@ -143,6 +145,12 @@ export const CreatePositionModal = ({
     positionInputData.leverage,
     positionInputData.positionType,
   ]);
+
+  const positionExists = useMemo(() => {
+    return Boolean(
+      positionsInputData?.find((position) => position.tokenName === tokenSymbol)
+    );
+  }, [positionsInputData, tokenSymbol]);
 
   const validateData = () => {
     if (
@@ -207,6 +215,8 @@ export const CreatePositionModal = ({
     toast.success("Position saved successfully");
     setOpen(false);
   };
+
+  const handleDeletePosition = () => {};
 
   const midScreen = useMediaQuery("(max-width:1450px)");
 
@@ -474,7 +484,27 @@ export const CreatePositionModal = ({
               />
             </Box>
           </Box>
-          <Button onClick={handleCreatePosition}>Confirm</Button>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Button onClick={handleCreatePosition}>Confirm</Button>
+            {positionExists && (
+              <Button
+                onClick={() => {
+                  deletePositionInputData(tokenSymbol);
+                  setOpen(false);
+                }}
+              >
+                Delete
+              </Button>
+            )}
+          </Box>
         </Box>
       </ModalContent>
     </Modal>

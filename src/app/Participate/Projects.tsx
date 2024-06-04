@@ -71,6 +71,12 @@ export const Projects = () => {
     );
   };
 
+  const deletePositionInputData = (tokenName: string) => {
+    setPositionsInputData((prev) =>
+      prev.filter((position) => position.tokenName !== tokenName)
+    );
+  };
+
   const handleConfirmAllpositions = async () => {
     if (!wallet.publicKey || !pointsRemaining) {
       toast.error(
@@ -220,7 +226,7 @@ export const Projects = () => {
         flexDirection: "column",
         gap: "20px",
         alignItems: "center",
-        width: "80%",
+        width: "90%",
       }}
     >
       <Box
@@ -312,6 +318,7 @@ export const Projects = () => {
           appendPositionInputData={appendPositionInputData}
           positionsInputData={positionsInputData}
           updatePositionInputData={updatePositionInputData}
+          deletePositionInputData={deletePositionInputData}
         />
       )}
     </Box>

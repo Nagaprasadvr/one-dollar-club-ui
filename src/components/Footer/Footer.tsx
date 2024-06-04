@@ -32,10 +32,15 @@ export const Footer = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100px",
+        height: "60px",
         borderTop: `1px solid ${CHARCOAL}`,
         overflowX: "auto",
         width: "100%",
+        left: 0,
+        bottom: 0,
+        position: "fixed",
+        backdropFilter: "blur(5px)",
+        backgroundColor: "transparent",
       }}
     >
       <Box
@@ -43,9 +48,12 @@ export const Footer = () => {
           display: "flex",
           flexDirection: "row",
           gap: "30px",
-          width: "70%",
+          width: "90%",
+          paddingLeft: "20px",
+          paddingRight: "20px",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "space-around",
+          padding: "10px",
         }}
       >
         {footerContents.map((content) => (
@@ -55,6 +63,8 @@ export const Footer = () => {
               fontSize: "20px",
               fontWeight: "bold",
               cursor: "pointer",
+              paddingLeft: "10px",
+              paddingRight: "10px",
               ":hover": {
                 color: palette.primary.main,
               },

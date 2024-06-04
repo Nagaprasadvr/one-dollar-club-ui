@@ -46,7 +46,6 @@ export default function RootLayout({
                   height: "90vh",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
                 }}
               >
                 {children}

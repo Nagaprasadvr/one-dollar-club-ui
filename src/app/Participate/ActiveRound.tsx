@@ -2,7 +2,7 @@ import { AppContext } from "@/components/Context/AppContext";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
 import { PoolConfig } from "@/sdk/poolConfig";
 import { getExpiry, minimizePubkey } from "@/utils/helpers";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 import { useContext } from "react";
 import { useTimer } from "react-timer-hook";
 
@@ -22,6 +22,8 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
     expiryTimestamp: getExpiry(),
     onExpire: () => console.warn("onExpire"),
   });
+  const smallScreen = useMediaQuery("(max-width:800px)");
+  console.log("smallScreen", smallScreen);
   return (
     <Box
       sx={{
@@ -34,8 +36,12 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         border: "1px solid white",
         alignItems: "center",
         justifyContent: "center",
-        margin: "20px",
+        marginLeft: "40px",
+        marginRight: "40px",
+        marginTop: "20px",
+        marginBottom: "20px",
         width: "fit-content",
+        flexWrap: smallScreen ? "wrap" : "nowrap",
       }}
     >
       <Typography variant="h5" fontWeight={"bold"}>

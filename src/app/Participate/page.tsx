@@ -30,12 +30,12 @@ const Participate = () => {
         display: "flex",
         flexDirection: "column",
         gap: "40px",
-
         alignItems: "center",
         width: "100%",
         height: "80vh",
         overflowY: "auto",
         overflowX: "hidden",
+        justifyContent: "flex-start",
         "::-webkit-scrollbar": {
           display: "none",
         },
