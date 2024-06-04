@@ -36,9 +36,6 @@ const Participate = () => {
         overflowY: "auto",
         overflowX: "hidden",
         justifyContent: "flex-start",
-        "::-webkit-scrollbar": {
-          display: "none",
-        },
       }}
     >
       <ActiveRound poolConfig={poolConfig} />
