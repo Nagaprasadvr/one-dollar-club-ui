@@ -210,7 +210,7 @@ const LeaderBoard = () => {
     >
       <Box
         sx={{
-          display: "flex",
+          display: yourStats ? "flex" : "none",
           flexDirection: "column",
           gap: "20px",
           alignItems: "center",
