@@ -10,7 +10,6 @@ const footerContents = [
   "Steps",
   "Game Time",
   "Prizes and Contributions",
-  "Caution",
 ];
 
 export const Footer = () => {
