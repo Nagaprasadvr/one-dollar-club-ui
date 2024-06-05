@@ -13,10 +13,9 @@ import { PoolConfig } from "@/sdk/poolConfig";
 import { SDK, UIWallet } from "@/sdk/sdk";
 import { Position } from "@/sdk/Position";
 import { BirdeyeTokenPriceData, TokenPriceHistory } from "@/utils/types";
-import axios from "axios";
 import { fetchTokenChartData } from "@/utils/helpers";
 import toast from "react-hot-toast";
-import { useUpdateTokenPrices } from "../hooks/useUpdateTokenPrices";
+
 interface AppContextType {
   connection: Connection;
   poolConfig: PoolConfig | null;

@@ -15,6 +15,7 @@ export class PoolConfig {
   public poolRoundWinAllocation: number;
   public squadsAuthorityPubkey: PublicKey;
   public poolBalance: number;
+  public poolDepositsPaused: boolean;
 
   constructor(_sdk: SDK, data: RawPoolConfig) {
     this.sdk = _sdk;
@@ -26,6 +27,7 @@ export class PoolConfig {
     this.squadsAuthorityPubkey = data.squadsAuthorityPubkey;
     this.poolBalance = data.poolBalance;
     this.poolState = data.poolState.active ? "Active" : "Inactive";
+    this.poolDepositsPaused = data.poolDepositsPaused;
   }
 
   async deposit(): Promise<PoolConfig> {
