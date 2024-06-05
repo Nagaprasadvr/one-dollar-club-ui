@@ -1,6 +1,7 @@
 "use client";
 import {
   Box,
+  Button,
   CircularProgress,
   Typography,
   useMediaQuery,
@@ -12,14 +13,7 @@ import { MobileNav } from "./MobileNav";
 import React, { useContext, useEffect, useMemo } from "react";
 import { AppContext } from "../Context/AppContext";
 import { usePathname, useRouter } from "next/navigation";
-
-// export const NavLinks = [
-//   { name: "Home", link: "/" },
-//   {
-//     name: "Participate",
-//     link: "/Participate",
-//   },
-// ];
+import Link from "next/link";
 
 export const Navbar = () => {
   const { breakpoints } = useTheme();
@@ -29,10 +23,6 @@ export const Navbar = () => {
   const router = useRouter();
 
   const pathName = usePathname();
-
-  const isHomePage = useMemo(() => {
-    return pathName === "/";
-  }, [pathName]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -53,7 +43,7 @@ export const Navbar = () => {
         sx={{
           display: "flex",
           justifyContent:
-            !mobileScreen && isHomePage ? "flex-start" : "space-around",
+            !mobileScreen && pathName === "/" ? "flex-start" : "space-around",
           alignItems: "center",
           width: "100%",
           height: "50px",
@@ -67,7 +57,7 @@ export const Navbar = () => {
             display: "flex",
             flexDirection: "row",
             gap: "20px",
-            ml: !mobileScreen && isHomePage ? "100px" : "0px",
+            ml: !mobileScreen && pathName === "/" ? "100px" : "0px",
           }}
         >
           <Box
@@ -89,37 +79,52 @@ export const Navbar = () => {
             <Logo size={30} />
           </Box>
 
-          {/* <Box
+          <Box
+            display={pathName === "/" ? "none" : "flex"}
+            flexDirection={"row"}
+            gap="10px"
+            ml="10px"
+            width={mobileScreen ? "10%" : "20%"}
+            minWidth={"250px"}
+            justifyContent={"flex-start"}
+            alignItems={"center"}
             sx={{
-              display: mobileScreen ? "none" : "flex",
-              gap: "10px",
-              justifyContent: "center",
-              paddingRight: "20px",
+              cursor: "pointer",
             }}
           >
-            {NavLinks.map((nav) => (
-              <Link
-                href={nav.link}
-                key={nav.name}
-                style={{
-                  width: "auto",
-                }}
-              >
+            {pathName === "/Participate" && (
+              <Link href="/LeaderBoard">
                 <Button
                   sx={{
                     color: "white",
                     backgroundColor: "transparent",
                     "&:hover": {
-                      color: "white",
+                      color: "#87cefa",
                       backgroundColor: "transparent",
                     },
                   }}
                 >
-                  {nav.name}
+                  LeaderBoard
                 </Button>
               </Link>
-            ))}
-          </Box> */}
+            )}
+            {pathName === "/LeaderBoard" && (
+              <Link href="/Participate">
+                <Button
+                  sx={{
+                    color: "white",
+                    backgroundColor: "transparent",
+                    "&:hover": {
+                      color: "#87cefa",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Participate
+                </Button>
+              </Link>
+            )}
+          </Box>
         </Box>
 
         {isLoading ? (
@@ -150,7 +155,7 @@ export const Navbar = () => {
           </Box>
         ) : (
           <Box
-            display={mobileScreen || isHomePage ? "none" : "flex"}
+            display={mobileScreen || pathName === "/" ? "none" : "flex"}
             sx={{
               mr: "20px",
               ml: "20px",

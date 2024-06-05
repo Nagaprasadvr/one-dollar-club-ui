@@ -1,12 +1,20 @@
 "use client";
-import { ExtendedLeaderBoardDataType, type LeaderBoard } from "@/utils/types";
+import {
+  ExtendedLeaderBoardDataType,
+  LeaderBoardDataType,
+} from "@/utils/types";
 import { useEffect, useState } from "react";
-// import { generateDummyData } from "./dummyData";
 import React from "react";
 import { DataGrid, GridColDef, GridKeyValue } from "@mui/x-data-grid";
 import { Box, Button, Tooltip, Typography } from "@mui/material";
-import { fetchLeaderBoards, getRow, minimizePubkey } from "@/utils/helpers";
+import {
+  fetchLeaderBoards,
+  fetchYourStats,
+  getRow,
+  minimizePubkey,
+} from "@/utils/helpers";
 import CopyIcon from "@mui/icons-material/ContentCopy";
+import { useWallet } from "@solana/wallet-adapter-react";
 const LeaderBoardHeaders = [
   {
     name: "Rank",
@@ -27,7 +35,7 @@ const LeaderBoardHeaders = [
   },
 
   {
-    name: "Final Points",
+    name: "Resulting Points",
     key: "finalPoints",
   },
 
@@ -37,50 +45,53 @@ const LeaderBoardHeaders = [
   },
 ];
 
-const yourStats = [
-  {
-    name: "Pubkey",
-    value: "pubkey",
-  },
-  {
-    name: "Rank",
-    value: "rank",
-  },
-  {
-    name: "Final Points",
-    value: 100,
-  },
-  {
-    name: "Poins Allocated",
-    value: 80,
-  },
-  {
-    name: "Pool Id",
-    value: "poolId",
-  },
-  {
-    name: "Top 3 Positions",
-    value: "top3Positions",
-  },
-];
+const YourStatsHeadingMap = {
+  pubkey: "Pubkey",
+  pointsAllocated: "Points Allocated",
+  poolId: "Pool Id",
+  finalPoints: "Resulting Points",
+  top3Positions: "Top 3 Positions",
+};
 
 const LeaderBoard = () => {
   const [leaderboardData, setLeaderboardData] = useState<
     ExtendedLeaderBoardDataType[]
   >([]);
 
+  const wallet = useWallet();
+  const [yourStats, setYourStats] =
+    useState<ExtendedLeaderBoardDataType | null>(null);
+
   useEffect(() => {
     const getLeaderBoardData = async () => {
-      const leaderBoardData: LeaderBoard[] = await fetchLeaderBoards();
+      const leaderBoardData: LeaderBoardDataType[] = await fetchLeaderBoards();
+
       if (leaderBoardData.length === 0) return;
       const extendedLeaderBoardData = leaderBoardData.map((data, index) => ({
         ...data,
-        rank: index,
+        id: index + 1,
       }));
       setLeaderboardData(extendedLeaderBoardData);
     };
-    getLeaderBoardData();
-  }, []);
+    const getYourStats = async () => {
+      if (!wallet?.connected || !wallet?.publicKey) return;
+      const yourStats = await fetchYourStats(wallet.publicKey.toString());
+      if (!yourStats) return;
+      setYourStats(yourStats);
+    };
+
+    if (leaderboardData.length === 0) getLeaderBoardData();
+    if (wallet?.connected && wallet?.publicKey && !yourStats) getYourStats();
+
+    const id = setInterval(() => {
+      getLeaderBoardData();
+      if (wallet?.connected && wallet?.publicKey) getYourStats();
+    }, 1000 * 60 * 10);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [wallet]);
 
   const columns: GridColDef[] = LeaderBoardHeaders.map((header) => {
     if (header.key === "top3Positions") {
@@ -109,7 +120,7 @@ const LeaderBoard = () => {
       return {
         field: header.key,
         headerName: header.name,
-        width: 200,
+        width: 250,
         renderCell: (params) => {
           const thisRow: Record<string, GridKeyValue> = getRow(params);
           return (
@@ -169,10 +180,17 @@ const LeaderBoard = () => {
         },
       };
     }
+    if (header.key === "poolId") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 300,
+      };
+    }
     return {
       field: header.key,
       headerName: header.name,
-      width: 150,
+      width: 250,
     };
   });
 
@@ -185,6 +203,9 @@ const LeaderBoard = () => {
         width: "100%",
         flexDirection: "column",
         gap: "20px",
+        height: "auto",
+        maxHeight: "80vh",
+        overflow: "auto",
       }}
     >
       <Box
@@ -210,7 +231,7 @@ const LeaderBoard = () => {
           sx={{
             border: "1px solid white",
             width: "90%",
-            display: "flex",
+            display: yourStats ? "flex" : "none",
             flexDirection: "row",
             borderRadius: "10px",
             padding: "20px",
@@ -220,56 +241,61 @@ const LeaderBoard = () => {
             alignItems: "center",
           }}
         >
-          {yourStats.map((stat) => (
-            <Box
-              key={stat.name}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "10px",
-              }}
-            >
-              <Typography
+          {yourStats &&
+            Object.entries(yourStats).map((stat) => (
+              <Box
+                key={stat[0]}
                 sx={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  width: "100%",
-                  textAlign: "left",
-                  color: "#aff6ff",
-                  textWrap: "nowrap",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "10px",
                 }}
               >
-                {stat.name}
-              </Typography>
-              {stat.name === "Pubkey" ? (
                 <Typography
                   sx={{
                     fontSize: "20px",
+                    fontWeight: "bold",
                     width: "100%",
                     textAlign: "left",
-                    fontWeight: "bold",
+                    color: "#aff6ff",
                     textWrap: "nowrap",
                   }}
                 >
-                  {minimizePubkey(String(stat.value))}
+                  {
+                    YourStatsHeadingMap[
+                      stat[0] as keyof typeof YourStatsHeadingMap
+                    ]
+                  }
                 </Typography>
-              ) : (
-                <Typography
-                  sx={{
-                    fontSize: "20px",
-                    width: "100%",
-                    textAlign: "left",
-                    fontWeight: "bold",
-                    textWrap: "nowrap",
-                  }}
-                >
-                  {stat.value}
-                </Typography>
-              )}
-            </Box>
-          ))}
+                {stat[0] === "pubkey" ? (
+                  <Typography
+                    sx={{
+                      fontSize: "20px",
+                      width: "100%",
+                      textAlign: "left",
+                      fontWeight: "bold",
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {minimizePubkey(String(stat[1]))}
+                  </Typography>
+                ) : (
+                  <Typography
+                    sx={{
+                      fontSize: "20px",
+                      width: "100%",
+                      textAlign: "left",
+                      fontWeight: "bold",
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {stat[1]}
+                  </Typography>
+                )}
+              </Box>
+            ))}
         </Box>
       </Box>
       <Typography

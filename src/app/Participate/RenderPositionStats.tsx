@@ -80,6 +80,7 @@ export const RenderPositionStats = ({
           alignItems: "flex-start",
           gap: "10px",
           width: "100%",
+          overflowX: "auto",
         }}
       >
         <Box

@@ -2,7 +2,7 @@
 import { AppContext } from "@/components/Context/AppContext";
 import { ActiveRound } from "./ActiveRound";
 import { Message } from "@/components/HelperComponents/Message";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import { useContext } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Projects } from "./Projects";

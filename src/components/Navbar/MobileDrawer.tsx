@@ -11,6 +11,7 @@ import { Wallet } from "./Wallet";
 import { CHARCOAL } from "@/utils/constants";
 import { Typography } from "@mui/material";
 import { AppContext } from "../Context/AppContext";
+import Link from "next/link";
 
 export const MobDrawer = () => {
   const [open, setOpen] = React.useState(false);
@@ -62,39 +63,57 @@ export const MobDrawer = () => {
           <CloseIcon />
         </Button>
       </Box>
-      {/* {NavLinks.map((nav) => (
-        <Box
-          key={nav.name}
-          sx={{
-            display: "flex",
-            backgroundColor: "transparent",
-            p: "15px",
-            width: "100%",
-            borderBottom: `1px solid ${CHARCOAL}`,
-            "&:hover": {
-              backgroundColor: CHARCOAL,
-            },
-          }}
-          onClick={() => {
-            handleOnClick(nav.link);
-            toggleDrawer(false);
-          }}
-        >
-          <Button
-            sx={{
-              color: "white",
-              backgroundColor: "transparent",
-              textTransform: "none",
-              "&:hover": {
-                color: "white",
-                backgroundColor: "transparent",
-              },
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "20px",
+          width: "100%",
+          borderBottom: `1px solid ${CHARCOAL}`,
+        }}
+      >
+        {pathName === "/Participate" && (
+          <Link
+            href="/LeaderBoard"
+            style={{
+              paddingBottom: "20px",
             }}
           >
-            {nav.name}
-          </Button>
-        </Box>
-      ))} */}
+            <Button
+              sx={{
+                color: "white",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  color: "#87cefa",
+                  backgroundColor: "transparent",
+                },
+              }}
+              onClick={handleClose}
+            >
+              LeaderBoard
+            </Button>
+          </Link>
+        )}
+        {pathName === "/LeaderBoard" && (
+          <Link href="/Participate">
+            <Button
+              sx={{
+                color: "white",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  color: "#87cefa",
+                  backgroundColor: "transparent",
+                },
+              }}
+              onClick={handleClose}
+            >
+              Participate
+            </Button>
+          </Link>
+        )}
+      </Box>
+
       <Box
         sx={{
           display: isHomePage ? "none" : "flex",
@@ -102,16 +121,11 @@ export const MobDrawer = () => {
           gap: "20px",
           alignItems: "center",
           justifyContent: "center",
+          width: "100%",
         }}
       >
         {pointsRemaining && (
-          <Typography
-            fontWeight={"bold"}
-            fontSize={"18px"}
-            sx={{
-              ml: "24px",
-            }}
-          >
+          <Typography fontWeight={"bold"} fontSize={"18px"}>
             Points:{" "}
             <span
               style={{

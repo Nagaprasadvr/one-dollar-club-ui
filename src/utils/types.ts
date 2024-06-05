@@ -54,7 +54,7 @@ export type PositionData = {
 //   top3Positions: string;
 // };
 
-export type LeaderBoard = {
+export type LeaderBoardDataType = {
   pubkey: string;
   pointsAllocated: number;
   poolId: string;
@@ -62,6 +62,6 @@ export type LeaderBoard = {
   top3Positions: string;
 };
 
-export type ExtendedLeaderBoardDataType = LeaderBoard & {
-  rank: number;
+export type ExtendedLeaderBoardDataType = LeaderBoardDataType & {
+  id: number;
 };
