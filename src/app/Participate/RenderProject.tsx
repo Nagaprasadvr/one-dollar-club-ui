@@ -161,7 +161,8 @@ export const RenderProject = ({
 
         <ApexChartComponent tokenAddress={project.mint} />
 
-        {poolConfig &&
+        {isAllowedToPlay &&
+          poolConfig &&
           poolConfig.poolState === "Active" &&
           !activePosition &&
           (positionInputData ? (
