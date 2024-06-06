@@ -299,6 +299,7 @@ export const Projects = () => {
         ))}
       </Box>
       {pointsRemaining &&
+        pointsRemaining > 0 &&
         isAllowedToPlay &&
         poolConfig.poolState === "Active" &&
         positions.length !== PROJECTS_TO_PLAY.length &&
