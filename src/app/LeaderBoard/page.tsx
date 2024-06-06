@@ -6,7 +6,14 @@ import {
 import { useEffect, useState } from "react";
 import React from "react";
 import { DataGrid, GridColDef, GridKeyValue } from "@mui/x-data-grid";
-import { Box, Button, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Icon,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   fetchLeaderBoards,
   fetchYourStats,
@@ -15,6 +22,7 @@ import {
 } from "@/utils/helpers";
 import CopyIcon from "@mui/icons-material/ContentCopy";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { InfoRounded } from "@mui/icons-material";
 const LeaderBoardHeaders = [
   {
     name: "Rank",
@@ -218,15 +226,27 @@ const LeaderBoard = () => {
           width: "100%",
         }}
       >
-        <Typography
+        <Box
           sx={{
-            fontSize: "30px",
-            fontWeight: "bold",
+            display: "flex",
+            flexDirection: "row",
+            gap: "20px",
           }}
         >
-          Your Stats
-        </Typography>
-
+          <Typography
+            sx={{
+              fontSize: "30px",
+              fontWeight: "bold",
+            }}
+          >
+            Your Stats
+          </Typography>
+          <Tooltip title="Stats and LeaderBoard Data is updated every 10 minutes">
+            <IconButton>
+              <InfoRounded />
+            </IconButton>
+          </Tooltip>
+        </Box>
         <Box
           sx={{
             border: "1px solid white",
