@@ -82,10 +82,18 @@ export const getTotalNumberOfDaysInAMonth = (month: number, year: number) => {
 };
 
 export const getExpiry = () => {
-  let date = new Date();
-  date.setDate(date.getDate() + 1);
-  date.setHours(23, 0, 0, 0);
-  return date;
+  const now = new Date();
+  let expiryTime = new Date(now);
+
+  expiryTime.setUTCHours(23, 0, 0, 0);
+
+  if (now >= expiryTime) {
+    // If the current time is past today's 23:00:00 UTC, set expiry to tomorrow
+    expiryTime.setUTCDate(expiryTime.getUTCDate() + 1);
+  }
+  console.log(expiryTime.toISOString());
+
+  return expiryTime;
 };
 
 interface PriceHistoryChartData {
