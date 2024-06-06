@@ -91,7 +91,6 @@ export const getExpiry = () => {
     // If the current time is past today's 23:00:00 UTC, set expiry to tomorrow
     expiryTime.setUTCDate(expiryTime.getUTCDate() + 1);
   }
-  console.log(expiryTime.toISOString());
 
   return expiryTime;
 };
