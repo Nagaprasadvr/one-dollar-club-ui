@@ -141,4 +141,27 @@ export class PoolConfig {
 
     return this.reload();
   }
+
+  async pauseDeposits(): Promise<PoolConfig> {
+    await this.sdk.program.methods
+      .pauseDeposits()
+      .accountsStrict({
+        poolAuthority: this.poolAuthority,
+        poolConfig: this.poolAddress,
+      })
+      .rpc();
+
+    return this.reload();
+  }
+  async activateDeposits(): Promise<PoolConfig> {
+    await this.sdk.program.methods
+      .resumeDeposits()
+      .accountsStrict({
+        poolAuthority: this.poolAuthority,
+        poolConfig: this.poolAddress,
+      })
+      .rpc();
+
+    return this.reload();
+  }
 }

@@ -52,6 +52,42 @@ const Admin = () => {
     }
   };
 
+  const handlePauseDeposit = async () => {
+    toast.loading("Pausing deposits", {
+      id: "pause-deposit",
+    });
+    try {
+      const updatedPoolConfig = await poolConfig.pauseDeposits();
+      toast.success("Deposits paused", {
+        id: "pause-deposit",
+      });
+      setPoolConfig(updatedPoolConfig);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to pause deposits", {
+        id: "pause-deposit",
+      });
+    }
+  };
+
+  const handleResumeDeposit = async () => {
+    toast.loading("Resuming deposits", {
+      id: "resume-deposit",
+    });
+    try {
+      const updatedPoolConfig = await poolConfig.activateDeposits();
+      toast.success("Deposits resumed", {
+        id: "resume-deposit",
+      });
+      setPoolConfig(updatedPoolConfig);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to resume deposits", {
+        id: "resume-deposit",
+      });
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -71,6 +107,14 @@ const Admin = () => {
         <Button onClick={handleInactivatePool}>Inactivate Pool</Button>
       ) : (
         <Button onClick={handleActivatePool}>Activate Pool</Button>
+      )}
+      <Typography fontWeight={"bold"}>
+        Pool Deposits Paused:{poolConfig.poolDepositsPaused ? "Yes" : "No"}
+      </Typography>
+      {poolConfig.poolDepositsPaused ? (
+        <Button onClick={handleResumeDeposit}>Resume Deposits</Button>
+      ) : (
+        <Button onClick={handlePauseDeposit}>Pause Deposits</Button>
       )}
     </Box>
   );
