@@ -309,18 +309,24 @@ export const AppContextProvider = ({
       sdk.connection.onAccountChange(
         new solana.PublicKey(DEVNET_POOL_CONFIG_PUBKEY),
         async () => {
-          console.log("triggered pool config update");
-          const newPoolConfigAccount: PoolConfigAccount | null =
-            await fetchPoolConfigFromAPI();
+          toast.loading("Updating state", {
+            id: "update-pool-config",
+          });
 
-          console.log("newPoolConfigAccount", newPoolConfigAccount);
-          if (!newPoolConfigAccount) return;
-          const newPoolConfigInstance = PoolConfig.fromPoolConfigAccount(
-            newPoolConfigAccount,
-            sdk
-          );
-          console.log("Pool config updated");
-          setPoolConfig(newPoolConfigInstance);
+          setTimeout(async () => {
+            const newPoolConfigAccount: PoolConfigAccount | null =
+              await fetchPoolConfigFromAPI();
+
+            if (!newPoolConfigAccount) return;
+            const newPoolConfigInstance = PoolConfig.fromPoolConfigAccount(
+              newPoolConfigAccount,
+              sdk
+            );
+            setPoolConfig(newPoolConfigInstance);
+            toast.success("State updated", {
+              id: "update-pool-config",
+            });
+          }, 2000);
         }
       );
     }
