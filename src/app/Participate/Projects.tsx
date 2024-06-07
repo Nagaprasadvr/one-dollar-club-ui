@@ -58,6 +58,66 @@ export const Projects = () => {
     }
   }, [tokensPrices]);
 
+  const RenderHeader = useMemo(() => {
+    if (!poolConfig) return null;
+    if (poolConfig.poolState === "Inactive" || poolConfig.poolDepositsPaused) {
+      if (resultingPoints) {
+        return (
+          <Typography variant="h6" fontWeight={"bold"}>
+            Resulting Points:{" "}
+            {resultingPoints.toLocaleString("en-US", {
+              maximumFractionDigits: 4,
+            })}
+          </Typography>
+        );
+      }
+    }
+
+    if (!isAllowedToPlay && !poolConfig.poolDepositsPaused) {
+      return (
+        <Button onClick={handlePoolDeposit}>Deposit 50k BONK to Play</Button>
+      );
+    }
+
+    if (isAllowedToPlay && pointsRemaining) {
+      return (
+        <Typography variant="h6" fontWeight={"bold"}>
+          Create Positions
+        </Typography>
+      );
+    }
+
+    if (resultingPoints !== null) {
+      return (
+        <Typography variant="h6" fontWeight={"bold"}>
+          Resulting Points:
+          {resultingPoints.toLocaleString("en-US", {
+            maximumFractionDigits: 4,
+          })}
+        </Typography>
+      );
+    }
+
+    return null;
+  }, [poolConfig, resultingPoints, isAllowedToPlay, pointsRemaining]);
+
+  const canDisplayConfirmButton = useMemo(() => {
+    if (!poolConfig) return false;
+    return (
+      isAllowedToPlay &&
+      pointsRemaining !== 0 &&
+      poolConfig.poolState === "Active" &&
+      positions.length !== PROJECTS_TO_PLAY.length &&
+      positionsInputData.length > 0
+    );
+  }, [
+    isAllowedToPlay,
+    pointsRemaining,
+    poolConfig,
+    positions.length,
+    positionsInputData.length,
+  ]);
+
   const appendPositionInputData = (positionInputData: PositionInputData) => {
     setPositionsInputData((prev) => [...prev, positionInputData]);
   };
@@ -182,11 +242,8 @@ export const Projects = () => {
     }
   };
 
-  if (!sdk || !poolConfig) {
-    return <Message message="Loading..." />;
-  }
-
   const handlePoolDeposit = async () => {
+    if (!poolConfig) return;
     if (sdk) {
       toast.loading("Depositing to play...", {
         id: "depositing",
@@ -220,69 +277,9 @@ export const Projects = () => {
     }
   };
 
-  const RenderHeader = useMemo(() => {
-    if (poolConfig.poolState === "Inactive" || poolConfig.poolDepositsPaused) {
-      if (resultingPoints) {
-        return (
-          <Typography variant="h5" fontWeight={"bold"}>
-            Resulting Points:{" "}
-            {resultingPoints.toLocaleString("en-US", {
-              maximumFractionDigits: 4,
-            })}
-          </Typography>
-        );
-      }
-    }
-
-    if (!isAllowedToPlay && !poolConfig.poolDepositsPaused) {
-      return (
-        <Button onClick={handlePoolDeposit}>Deposit 50k BONK to Play</Button>
-      );
-    }
-
-    if (isAllowedToPlay && pointsRemaining) {
-      return (
-        <Typography variant="h5" fontWeight={"bold"}>
-          Create Positions
-        </Typography>
-      );
-    }
-
-    if (resultingPoints !== null) {
-      return (
-        <Typography variant="h5" fontWeight={"bold"}>
-          Resulting Points:
-          {resultingPoints.toLocaleString("en-US", {
-            maximumFractionDigits: 4,
-          })}
-        </Typography>
-      );
-    }
-
-    return null;
-  }, [
-    poolConfig.poolState,
-    poolConfig.poolDepositsPaused,
-    resultingPoints,
-    isAllowedToPlay,
-    pointsRemaining,
-  ]);
-
-  const canDisplayConfirmButton = useMemo(() => {
-    return (
-      isAllowedToPlay &&
-      pointsRemaining !== 0 &&
-      poolConfig.poolState === "Active" &&
-      positions.length !== PROJECTS_TO_PLAY.length &&
-      positionsInputData.length > 0
-    );
-  }, [
-    isAllowedToPlay,
-    pointsRemaining,
-    poolConfig.poolState,
-    positions.length,
-    positionsInputData.length,
-  ]);
+  if (!sdk || !poolConfig) {
+    return <Message message="Loading..." />;
+  }
 
   return (
     <Box

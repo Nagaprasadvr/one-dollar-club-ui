@@ -13,6 +13,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import {
   calculateTop3Positions,
@@ -68,7 +69,7 @@ const LeaderBoard = () => {
   const [leaderboardData, setLeaderboardData] = useState<
     ExtendedLeaderBoardDataType[]
   >([]);
-
+  const smallScreen = useMediaQuery("(max-width:800px)");
   const wallet = useWallet();
   const { resultingPoints, positions, poolServerId, tokensPrices } =
     useContext(AppContext);
@@ -266,7 +267,7 @@ const LeaderBoard = () => {
         <Box
           sx={{
             border: "1px solid white",
-            width: "90%",
+            width: smallScreen ? "80%" : "90%",
             display: yourStats ? "flex" : "none",
             flexDirection: "row",
             borderRadius: "10px",

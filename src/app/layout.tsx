@@ -27,32 +27,28 @@ export default function RootLayout({
           type="text/css"
         ></link>
         <ProviderUI>
-          {isMobile ? (
-            <Message message="Mobile view is not optimized yet, stay tuned!" />
-          ) : (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+            }}
+          >
+            <Navbar />
+
             <Box
               sx={{
                 display: "flex",
+                width: "100%",
+                height: "90vh",
                 flexDirection: "column",
-                gap: "20px",
+                alignItems: "center",
               }}
             >
-              <Navbar />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  height: "90vh",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                {children}
-              </Box>
-              <Footer />
+              {children}
             </Box>
-          )}
+            <Footer />
+          </Box>
         </ProviderUI>
       </body>
     </html>

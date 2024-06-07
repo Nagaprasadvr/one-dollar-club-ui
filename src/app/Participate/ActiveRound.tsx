@@ -39,7 +39,8 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         marginRight: "40px",
         marginTop: "20px",
         marginBottom: "20px",
-        width: "fit-content",
+        width: smallScreen ? "80%" : "fit-content",
+
         flexWrap: smallScreen ? "wrap" : "nowrap",
       }}
     >
@@ -77,6 +78,7 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           justifyContent: "space-between",
           alignItems: "center",
           gap: "20px",
+          overflowX: smallScreen ? "auto" : "hidden",
         }}
       >
         {/* <TextWithValue

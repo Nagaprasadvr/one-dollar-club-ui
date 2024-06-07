@@ -106,6 +106,7 @@ export const CreatePositionModal = ({
   const { pointsRemaining, tokensPrices, setPositions } =
     useContext(AppContext);
   const wallet = useWallet();
+  const mobileScreen = useMediaQuery("(max-width:800px)");
   const { connected, publicKey } = useWallet();
   const [positionInputData, setPositionInputData] = useState<PositionInputData>(
     {
@@ -275,7 +276,7 @@ export const CreatePositionModal = ({
     <Modal isOpen={open}>
       <ModalContent
         sx={{
-          width: "30vw",
+          width: mobileScreen ? "80vw" : "30vw",
           padding: "20px",
           minWidth: "250px",
           overflowY: "auto",

@@ -6,7 +6,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import React, { useContext, useEffect } from "react";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, Typography, useMediaQuery } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AppContext } from "../Context/AppContext";
 import { useTheme } from "@mui/material";
@@ -67,6 +67,8 @@ export const FooterModal = ({ content }: { content: string }) => {
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   };
+
+  const mobileScreen = useMediaQuery("(max-width:800px)");
 
   const RenderTabPanelContent = (contentName: string) => {
     const content = ModalContentData.find(
@@ -170,7 +172,7 @@ export const FooterModal = ({ content }: { content: string }) => {
     <Modal isOpen={footerModalOpen}>
       <ModalContent
         sx={{
-          width: "30vw",
+          width: mobileScreen ? "80vw" : "30vw",
           padding: "20px",
           minWidth: "250px",
           minHeight: "600px",

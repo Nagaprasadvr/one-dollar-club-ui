@@ -80,7 +80,7 @@ export const Navbar = () => {
           </Box>
 
           <Box
-            display={pathName === "/" ? "none" : "flex"}
+            display={mobileScreen || pathName === "/" ? "none" : "flex"}
             flexDirection={"row"}
             gap="10px"
             ml="10px"

@@ -1,4 +1,4 @@
-import { Modal as MuiModal } from "@mui/material";
+import { Modal as MuiModal, useMediaQuery } from "@mui/material";
 import React, { useRef } from "react";
 export const Modal = ({
   isOpen,
@@ -8,6 +8,7 @@ export const Modal = ({
   children: React.ReactElement;
 }) => {
   const modalRef = useRef(null);
+  const smallScreen = useMediaQuery("(max-width:600px)");
   return (
     <MuiModal
       ref={modalRef}
@@ -18,7 +19,7 @@ export const Modal = ({
       sx={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: smallScreen ? "start" : "center",
         minWidth: "500px",
         minHeight: "600px",
         gap: "16px",
