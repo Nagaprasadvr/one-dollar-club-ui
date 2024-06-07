@@ -12,7 +12,7 @@ import { API_BASE_URL } from "@/utils/constants";
 import * as sha256 from "js-sha256";
 
 const Admin = () => {
-  const { sdk, poolConfig, setPoolConfig } = useContext(AppContext);
+  const { sdk, poolConfig } = useContext(AppContext);
   const { connected, publicKey } = useWallet();
 
   const [authSecret, setAuthSecret] = useState("");
@@ -34,7 +34,6 @@ const Admin = () => {
       toast.success("Pool activated", {
         id: "activate-pool",
       });
-      setPoolConfig(updatedPoolConfig);
     } catch (e) {
       console.error(e);
       toast.error("Failed to activate pool", {
@@ -52,7 +51,6 @@ const Admin = () => {
       toast.success("Pool inactivated", {
         id: "inactivate-pool",
       });
-      setPoolConfig(updatedPoolConfig);
     } catch (e) {
       console.error(e);
       toast.error("Failed to inactivate pool", {
@@ -70,7 +68,6 @@ const Admin = () => {
       toast.success("Deposits paused", {
         id: "pause-deposit",
       });
-      setPoolConfig(updatedPoolConfig);
     } catch (e) {
       console.error(e);
       toast.error("Failed to pause deposits", {
@@ -88,7 +85,6 @@ const Admin = () => {
       toast.success("Deposits resumed", {
         id: "resume-deposit",
       });
-      setPoolConfig(updatedPoolConfig);
     } catch (e) {
       console.error(e);
       toast.error("Failed to resume deposits", {

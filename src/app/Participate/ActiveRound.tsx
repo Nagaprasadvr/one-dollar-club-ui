@@ -58,9 +58,17 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           Deposits are paused, please wait for the next round
         </Typography>
       )}
-      <Typography variant="h6" fontWeight={"bold"}>
-        Ends in : {hours} Hours {minutes} Minutes {seconds} Seconds
-      </Typography>
+      {poolConfig.poolState === "Active" ? (
+        <Typography variant="h6" fontWeight={"bold"}>
+          Ends in : {hours} Hours {minutes} Minutes {seconds} Seconds
+        </Typography>
+      ) : (
+        <Typography variant="h6" fontWeight={"bold"}>
+          Next Round Starts in : {24 - hours} Hours {minutes} Minutes {seconds}{" "}
+          Seconds
+        </Typography>
+      )}
+
       <Box
         sx={{
           width: "100%",

@@ -1,9 +1,11 @@
-import type { PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import type { PoolState } from "./types";
 import type { RawPoolConfig, SDK } from "./sdk";
 import * as solana from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
 import { API_BASE_URL } from "@/utils/constants";
+import { PoolConfigAccount } from "@/utils/types";
+import { fromRawConfigPoolDataToHumanReadableData } from "@/utils/helpers";
 
 export class PoolConfig {
   private sdk: SDK;
@@ -17,17 +19,36 @@ export class PoolConfig {
   public poolBalance: number;
   public poolDepositsPaused: boolean;
 
-  constructor(_sdk: SDK, data: RawPoolConfig) {
+  constructor({
+    _sdk,
+    humanReadableData,
+  }: {
+    _sdk: SDK;
+    humanReadableData: PoolConfigAccount;
+  }) {
     this.sdk = _sdk;
-    this.poolAddress = data.poolAddress;
-    this.poolAuthority = data.poolAuthority;
-    this.poolActiveMint = data.poolActiveMint;
-    this.poolDepositPerUser = data.poolDepositPerUser;
-    this.poolRoundWinAllocation = data.poolRoundWinAllocation;
-    this.squadsAuthorityPubkey = data.squadsAuthorityPubkey;
-    this.poolBalance = data.poolBalance;
-    this.poolState = data.poolState.active ? "Active" : "Inactive";
-    this.poolDepositsPaused = data.poolDepositsPaused;
+
+    this.poolState = humanReadableData.poolState;
+    this.poolAddress = new PublicKey(humanReadableData.poolAddress);
+    this.poolAuthority = new PublicKey(humanReadableData.poolAuthority);
+    this.poolActiveMint = new PublicKey(humanReadableData.poolActiveMint);
+    this.poolDepositPerUser = humanReadableData.poolDepositPerUser;
+    this.poolRoundWinAllocation = humanReadableData.poolRoundWinAllocation;
+    this.squadsAuthorityPubkey = new PublicKey(
+      humanReadableData.squadsAuthorityPubkey
+    );
+    this.poolBalance = humanReadableData.poolBalance;
+    this.poolDepositsPaused = humanReadableData.poolDepositsPaused;
+  }
+
+  static fromPoolConfigAccount(
+    poolConfigAccountData: PoolConfigAccount,
+    sdk: SDK
+  ): PoolConfig {
+    return new PoolConfig({
+      _sdk: sdk,
+      humanReadableData: poolConfigAccountData,
+    });
   }
 
   async deposit(): Promise<PoolConfig> {
@@ -75,7 +96,12 @@ export class PoolConfig {
 
   static async fetch(sdk: SDK, address: PublicKey): Promise<PoolConfig> {
     const poolConfigAcc = await sdk.program.account.poolConfig.fetch(address);
-    return new PoolConfig(sdk, poolConfigAcc);
+    const humanReadableData =
+      fromRawConfigPoolDataToHumanReadableData(poolConfigAcc);
+    return new PoolConfig({
+      _sdk: sdk,
+      humanReadableData,
+    });
   }
 
   async pausePool(): Promise<PoolConfig> {

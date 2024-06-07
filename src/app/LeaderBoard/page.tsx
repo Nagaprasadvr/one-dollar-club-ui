@@ -241,7 +241,7 @@ const LeaderBoard = () => {
           >
             Your Stats
           </Typography>
-          <Tooltip title="Stats and LeaderBoard Data is updated every 10 minutes">
+          <Tooltip title="Stats and LeaderBoard Data is updated every 10 minutes, also theres some delay bettween your stats data and leaderboard data and they are not in sync">
             <IconButton>
               <InfoRounded />
             </IconButton>

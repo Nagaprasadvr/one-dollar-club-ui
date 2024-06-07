@@ -17,9 +17,14 @@ import toast from "react-hot-toast";
 
 import axios from "axios";
 
-import { BirdeyeTokenPriceData, TokenPriceHistory } from "./types";
+import {
+  BirdeyeTokenPriceData,
+  PoolConfigAccount,
+  TokenPriceHistory,
+} from "./types";
 import { API_URL } from "@/components/Context/AppContext";
 import { API_BASE_URL } from "./constants";
+import { RawPoolConfig } from "@/sdk/sdk";
 
 export const minimizePubkey = (pubkey: string) => {
   return pubkey.slice(0, 5) + "..." + pubkey.slice(-5);
@@ -228,4 +233,31 @@ export const fetchYourStats = async (pubkey: string) => {
     console.error(e);
     return null;
   }
+};
+
+export const fetchPoolConfigFromAPI = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/poolConfig`);
+    if (!response.data.data) return null;
+    return response.data.data;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
+export const fromRawConfigPoolDataToHumanReadableData = (
+  rawConfig: RawPoolConfig
+): PoolConfigAccount => {
+  return {
+    poolActiveMint: rawConfig.poolActiveMint.toBase58(),
+    poolAddress: rawConfig.poolAddress.toBase58(),
+    poolAuthority: rawConfig.poolAuthority.toBase58(),
+    poolState: rawConfig.poolState.active ? "Active" : "Inactive",
+    poolDepositsPaused: rawConfig.poolDepositsPaused,
+    poolBalance: rawConfig.poolBalance,
+    poolDepositPerUser: rawConfig.poolDepositPerUser,
+    poolRoundWinAllocation: rawConfig.poolRoundWinAllocation,
+    squadsAuthorityPubkey: rawConfig.squadsAuthorityPubkey.toBase58(),
+  };
 };

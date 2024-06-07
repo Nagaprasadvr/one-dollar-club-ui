@@ -12,8 +12,12 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PoolConfig } from "@/sdk/poolConfig";
 import { SDK, UIWallet } from "@/sdk/sdk";
 import { Position } from "@/sdk/Position";
-import { BirdeyeTokenPriceData, TokenPriceHistory } from "@/utils/types";
-import { fetchTokenChartData } from "@/utils/helpers";
+import {
+  BirdeyeTokenPriceData,
+  PoolConfigAccount,
+  TokenPriceHistory,
+} from "@/utils/types";
+import { fetchPoolConfigFromAPI, fetchTokenChartData } from "@/utils/helpers";
 import toast from "react-hot-toast";
 
 interface AppContextType {
@@ -300,6 +304,24 @@ export const AppContextProvider = ({
       }
     };
     if (sdk) fetchPoolConfig();
+
+    if (sdk) {
+      sdk.connection.onAccountChange(
+        new solana.PublicKey(DEVNET_POOL_CONFIG_PUBKEY),
+        async () => {
+          const newPoolConfigAccount: PoolConfigAccount | null =
+            await fetchPoolConfigFromAPI();
+
+          if (!newPoolConfigAccount) return;
+          const newPoolConfigInstance = PoolConfig.fromPoolConfigAccount(
+            newPoolConfigAccount,
+            sdk
+          );
+          console.log("Pool config updated");
+          setPoolConfig(newPoolConfigInstance);
+        }
+      );
+    }
   }, [sdk]);
 
   return (

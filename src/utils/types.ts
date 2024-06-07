@@ -65,3 +65,15 @@ export type LeaderBoardDataType = {
 export type ExtendedLeaderBoardDataType = LeaderBoardDataType & {
   id: number;
 };
+
+export type PoolConfigAccount = {
+  poolState: PoolState;
+  poolAddress: string;
+  poolAuthority: string;
+  poolActiveMint: string;
+  poolDepositPerUser: number;
+  poolRoundWinAllocation: number;
+  squadsAuthorityPubkey: string;
+  poolBalance: number;
+  poolDepositsPaused: boolean;
+};
