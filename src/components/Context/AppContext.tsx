@@ -309,9 +309,11 @@ export const AppContextProvider = ({
       sdk.connection.onAccountChange(
         new solana.PublicKey(DEVNET_POOL_CONFIG_PUBKEY),
         async () => {
+          console.log("triggered pool config update");
           const newPoolConfigAccount: PoolConfigAccount | null =
             await fetchPoolConfigFromAPI();
 
+          console.log("newPoolConfigAccount", newPoolConfigAccount);
           if (!newPoolConfigAccount) return;
           const newPoolConfigInstance = PoolConfig.fromPoolConfigAccount(
             newPoolConfigAccount,
