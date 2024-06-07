@@ -326,7 +326,7 @@ export const AppContextProvider = ({
             toast.success("State updated", {
               id: "update-pool-config",
             });
-          }, 2000);
+          }, 1000);
         }
       );
     }

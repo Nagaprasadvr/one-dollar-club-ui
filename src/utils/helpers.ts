@@ -238,7 +238,6 @@ export const fetchYourStats = async (pubkey: string) => {
 export const fetchPoolConfigFromAPI = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/poolConfig`);
-    console.log(response);
     if (!response.data.poolConfig) return null;
     return response.data.poolConfig;
   } catch (e) {
