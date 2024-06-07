@@ -1,3 +1,5 @@
+import { PoolState } from "@/sdk/types";
+
 export interface TokenPrice {
   name: string;
   price: number;
