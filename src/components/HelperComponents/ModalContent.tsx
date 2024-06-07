@@ -11,27 +11,9 @@ export const ModalContent = React.forwardRef(function ModalContent(
   ref: React.Ref<HTMLDivElement>
 ) {
   const { breakpoints } = useTheme();
-  const MODAL_CONTENT_STYLES: SxProps = {
-    flex: "1",
-    minWidth: "auto",
-    width: "100vw",
-    height: "100dvh",
-    [breakpoints.up("sm")]: {
-      borderRadius: "20px",
-      maxHeight: "90vh",
-      maxWidth: "490px",
-    },
-    [breakpoints.up("lg")]: {
-      display: "flex",
-      flexDirection: "column",
-      width: "unset",
-      height: "unset",
-    },
-  };
 
   const { children, sx } = props;
   return (
-    //@ts-ignore
     <Box
       sx={{
         display: "flex",
@@ -41,8 +23,9 @@ export const ModalContent = React.forwardRef(function ModalContent(
         padding: "16px",
         borderRadius: "10px",
         boxShadow: "0px 4px 30px 4px #87cefa",
+        height: "80vh",
+        maxHeight: "700px",
         ...(sx as SxProps),
-        ...(MODAL_CONTENT_STYLES as SxProps),
       }}
     >
       {children}

@@ -117,6 +117,14 @@ export const CreatePositionModal = ({
       tokenMint: tokenAddress,
     }
   );
+  const currentPointsRemaining = useMemo(() => {
+    if (pointsRemaining === null) return 0;
+    if (positionsInputData.length === 0) return pointsRemaining;
+    const currentPoints = positionsInputData.reduce((acc, position) => {
+      return acc + Number(position.pointsAllocated);
+    }, 0);
+    return pointsRemaining - currentPoints;
+  }, [positionsInputData]);
 
   const [liquidationPrice, setLiquidationPrice] = useState<number>(0);
 
@@ -176,6 +184,14 @@ export const CreatePositionModal = ({
   };
 
   const handleCreatePosition = async () => {
+    if (
+      !positionExists &&
+      Number(positionInputData.pointsAllocated) > currentPointsRemaining
+    ) {
+      toast.error("Points allocated cannot be greater than points remaining");
+      return;
+    }
+
     if (!connected || !publicKey || !wallet) {
       toast.error("Please connect your wallet");
       return;
@@ -262,6 +278,7 @@ export const CreatePositionModal = ({
           width: "30vw",
           padding: "20px",
           minWidth: "250px",
+          overflowY: "auto",
         }}
       >
         <Box
@@ -290,6 +307,12 @@ export const CreatePositionModal = ({
             width: "100%",
           }}
         >
+          <TextWithValue
+            text="Current Points Remaining"
+            value={String(currentPointsRemaining)}
+            gap="5px"
+          />
+
           <Box
             sx={{
               display: "flex",
@@ -465,7 +488,7 @@ export const CreatePositionModal = ({
             </Box>
             <Box>
               <Typography fontSize={"15px"} color="primary" fontWeight={"bold"}>
-                {getLabel("pointsAllocated")} (Remaining: {pointsRemaining})
+                {getLabel("pointsAllocated")}
               </Typography>
               <Input
                 value={
@@ -484,6 +507,17 @@ export const CreatePositionModal = ({
               />
             </Box>
           </Box>
+          {!positionExists && currentPointsRemaining === 0 && (
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                fontSize: "15px",
+                color: "red",
+              }}
+            >
+              You have exhausted your points
+            </Typography>
+          )}
           <Box
             sx={{
               display: "flex",
@@ -493,7 +527,12 @@ export const CreatePositionModal = ({
               alignItems: "center",
             }}
           >
-            <Button onClick={handleCreatePosition}>Confirm</Button>
+            <Button
+              disabled={!positionExists && currentPointsRemaining === 0}
+              onClick={handleCreatePosition}
+            >
+              Confirm
+            </Button>
             {positionExists && (
               <Button
                 onClick={() => {

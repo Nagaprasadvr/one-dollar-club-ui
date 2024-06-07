@@ -17,7 +17,11 @@ import {
   PoolConfigAccount,
   TokenPriceHistory,
 } from "@/utils/types";
-import { fetchPoolConfigFromAPI, fetchTokenChartData } from "@/utils/helpers";
+import {
+  calculateResultingPoints,
+  fetchPoolConfigFromAPI,
+  fetchTokenChartData,
+} from "@/utils/helpers";
 import toast from "react-hot-toast";
 
 interface AppContextType {
@@ -49,6 +53,8 @@ interface AppContextType {
   setFooterModalOpen: (footerOpen: boolean) => void;
   footerDataToDisplay: string;
   setFooterDataToDisplay: (footerDataToDisplay: string) => void;
+  resultingPoints: number | null;
+  setResultingPoints: (resultingPoints: number) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -80,6 +86,8 @@ export const AppContext = createContext<AppContextType>({
   setFooterModalOpen: () => {},
   footerDataToDisplay: "Steps",
   setFooterDataToDisplay: () => {},
+  resultingPoints: null,
+  setResultingPoints: () => {},
 });
 export const API_URL = "/api/birdeye";
 
@@ -123,6 +131,8 @@ export const AppContextProvider = ({
   const [positions, setPositions] = useState<Position[]>([]);
   const [triggerRefetchUserData, setTriggerRefetchUserData] =
     useState<boolean>(false);
+
+  const [resultingPoints, setResultingPoints] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -280,12 +290,7 @@ export const AppContextProvider = ({
     if (!poolServerId) fetchPoolServerId();
     // if (!fetchedChartsData && tokensPriceHistory.length === 0)
     //   fetchChartsData();
-  }, [
-    fetchedTokensPrices,
-    fetchedChartsData,
-    tokenPriceHistoryLastUpdated,
-    tokenPriceLastUpdated,
-  ]);
+  }, [fetchedChartsData, tokenPriceHistoryLastUpdated, tokenPriceLastUpdated]);
 
   useEffect(() => {
     const fetchPoolConfig = async () => {
@@ -332,6 +337,12 @@ export const AppContextProvider = ({
     }
   }, [sdk]);
 
+  useEffect(() => {
+    if (positions.length === 0 || tokensPrices.length === 0) return;
+    const calulatedPoints = calculateResultingPoints(positions, tokensPrices);
+    setResultingPoints(calulatedPoints);
+  }, [positions, tokensPrices]);
+
   return (
     <AppContext.Provider
       value={{
@@ -363,6 +374,8 @@ export const AppContextProvider = ({
         setFooterModalOpen,
         footerDataToDisplay,
         setFooterDataToDisplay,
+        resultingPoints,
+        setResultingPoints,
       }}
     >
       {children}

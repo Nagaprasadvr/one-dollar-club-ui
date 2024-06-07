@@ -10,7 +10,7 @@ import {
 import { Logo } from "../Logo/Logo";
 import { Wallet } from "./Wallet";
 import { MobileNav } from "./MobileNav";
-import React, { useContext, useEffect, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../Context/AppContext";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,7 +18,7 @@ import Link from "next/link";
 export const Navbar = () => {
   const { breakpoints } = useTheme();
   const mobileScreen = useMediaQuery(breakpoints.down("md"));
-  const { pointsRemaining } = useContext(AppContext);
+  const { pointsRemaining, resultingPoints } = useContext(AppContext);
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
 
@@ -164,7 +164,7 @@ export const Navbar = () => {
               justifyContent: "center",
             }}
           >
-            {pointsRemaining !== null && (
+            {pointsRemaining ? (
               <Box
                 sx={{
                   p: "10px",
@@ -180,6 +180,29 @@ export const Navbar = () => {
                     }}
                   >
                     {pointsRemaining ?? 0}
+                  </span>
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  p: "10px",
+                  backgroundColor: "#aff6ff",
+                  borderRadius: "10px",
+                }}
+              >
+                <Typography fontWeight={"bold"} fontSize={"18px"} color="black">
+                  Resulting Points:{" "}
+                  <span
+                    style={{
+                      color: "black",
+                    }}
+                  >
+                    {resultingPoints
+                      ? resultingPoints.toLocaleString("en-US", {
+                          maximumFractionDigits: 4,
+                        })
+                      : 0}
                   </span>
                 </Typography>
               </Box>

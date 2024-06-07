@@ -14,6 +14,7 @@ import {
   GridKeyValue,
 } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
+import { type Position } from "@/sdk/Position";
 
 import axios from "axios";
 
@@ -260,4 +261,75 @@ export const fromRawConfigPoolDataToHumanReadableData = (
     poolRoundWinAllocation: rawConfig.poolRoundWinAllocation,
     squadsAuthorityPubkey: rawConfig.squadsAuthorityPubkey.toBase58(),
   };
+};
+
+export const calculateResultingPoints = (
+  positions: Position[],
+  tokensData: BirdeyeTokenPriceData[]
+) => {
+  let totalPoints = 0;
+  positions.forEach((position) => {
+    const tokenData = tokensData.find(
+      (token) => token.address === position.tokenMint
+    );
+    if (!tokenData) return 0;
+    const result = calculateResult({
+      entryPrice: position.entryPrice,
+      leverage: position.leverage,
+      currentPrice: tokenData.value,
+      liquidationPrice: getLiquidationPrice({
+        entryPrice: position.entryPrice,
+        leverage: position.leverage,
+        positionType: position.positionType,
+      }),
+      pointsAllocated: position.pointsAllocated,
+      positionType: position.positionType,
+    });
+    totalPoints += result;
+  });
+  return totalPoints;
+};
+
+export const calculateTop3Positions = (
+  positions: Position[],
+  tokensData: BirdeyeTokenPriceData[]
+) => {
+  const positionsWithResult: {
+    tokenName: string;
+    result: number;
+  }[] = [];
+
+  positions.forEach((position) => {
+    const tokenData = tokensData.find(
+      (token) => token.address === position.tokenMint
+    );
+    if (!tokenData) return "";
+    const result = calculateResult({
+      entryPrice: position.entryPrice,
+      leverage: position.leverage,
+      currentPrice: tokenData.value,
+      liquidationPrice: getLiquidationPrice({
+        entryPrice: position.entryPrice,
+        leverage: position.leverage,
+        positionType: position.positionType,
+      }),
+      pointsAllocated: position.pointsAllocated,
+      positionType: position.positionType,
+    });
+    positionsWithResult.push({
+      tokenName: position.tokenName,
+      result,
+    });
+  });
+  const top3 = positionsWithResult
+    .sort((a, b) => b.result - a.result)
+    .slice(0, 3)
+    .map((position) => position.tokenName)
+    .join(", ");
+
+  return top3;
+};
+
+export const getTotalPoints = (positions: Position[]) => {
+  return positions.reduce((acc, position) => acc + position.pointsAllocated, 0);
 };

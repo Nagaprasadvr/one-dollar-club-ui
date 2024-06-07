@@ -3,7 +3,7 @@ import {
   ExtendedLeaderBoardDataType,
   LeaderBoardDataType,
 } from "@/utils/types";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { DataGrid, GridColDef, GridKeyValue } from "@mui/x-data-grid";
 import {
@@ -15,14 +15,17 @@ import {
   Typography,
 } from "@mui/material";
 import {
+  calculateTop3Positions,
   fetchLeaderBoards,
   fetchYourStats,
   getRow,
+  getTotalPoints,
   minimizePubkey,
 } from "@/utils/helpers";
 import CopyIcon from "@mui/icons-material/ContentCopy";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { InfoRounded } from "@mui/icons-material";
+import { AppContext } from "@/components/Context/AppContext";
 const LeaderBoardHeaders = [
   {
     name: "Rank",
@@ -67,8 +70,9 @@ const LeaderBoard = () => {
   >([]);
 
   const wallet = useWallet();
-  const [yourStats, setYourStats] =
-    useState<ExtendedLeaderBoardDataType | null>(null);
+  const { resultingPoints, positions, poolServerId, tokensPrices } =
+    useContext(AppContext);
+  const [yourStats, setYourStats] = useState<LeaderBoardDataType | null>(null);
 
   useEffect(() => {
     const getLeaderBoardData = async () => {
@@ -81,25 +85,37 @@ const LeaderBoard = () => {
       }));
       setLeaderboardData(extendedLeaderBoardData);
     };
-    const getYourStats = async () => {
-      if (!wallet?.connected || !wallet?.publicKey) return;
-      const yourStats = await fetchYourStats(wallet.publicKey.toString());
-      if (!yourStats) return;
+    const getYourStats = () => {
+      if (
+        positions.length === 0 ||
+        resultingPoints === null ||
+        poolServerId === null ||
+        tokensPrices.length === 0
+      )
+        return;
+
+      const yourStats: LeaderBoardDataType = {
+        pointsAllocated: getTotalPoints(positions),
+        finalPoints: resultingPoints,
+        poolId: poolServerId,
+        pubkey: wallet.publicKey?.toBase58() as string,
+        top3Positions: calculateTop3Positions(positions, tokensPrices),
+      };
       setYourStats(yourStats);
     };
 
     if (leaderboardData.length === 0) getLeaderBoardData();
-    if (wallet?.connected && wallet?.publicKey && !yourStats) getYourStats();
+    if (yourStats === null) getYourStats();
 
     const id = setInterval(() => {
       getLeaderBoardData();
-      if (wallet?.connected && wallet?.publicKey) getYourStats();
+      getYourStats();
     }, 1000 * 60 * 10);
 
     return () => {
       clearInterval(id);
     };
-  }, [wallet]);
+  }, [wallet, positions, resultingPoints, poolServerId, tokensPrices]);
 
   const columns: GridColDef[] = LeaderBoardHeaders.map((header) => {
     if (header.key === "top3Positions") {
@@ -241,7 +257,7 @@ const LeaderBoard = () => {
           >
             Your Stats
           </Typography>
-          <Tooltip title="Stats and LeaderBoard Data is updated every 10 minutes, also theres some delay bettween your stats data and leaderboard data and they are not in sync">
+          <Tooltip title="Note that Your Stats Data and Leaderboard data can be out of sync because Leaderboard data is calculated at the backend">
             <IconButton>
               <InfoRounded />
             </IconButton>
