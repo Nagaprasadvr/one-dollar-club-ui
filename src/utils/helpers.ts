@@ -223,6 +223,28 @@ export const fetchLeaderBoards = async () => {
   }
 };
 
+export const fetchLeaderBoardHistory = async (
+  date?: string,
+  poolId?: string
+) => {
+  const queryparams = new URLSearchParams({});
+  if (date) queryparams.append("date", date);
+  if (poolId) queryparams.append("poolId", poolId);
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/getLeaderBoardHistory?${queryparams.toString()}`
+    );
+
+    if (response.data.data instanceof Array) {
+      return response.data.data;
+    }
+    return [];
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+};
+
 export const fetchYourStats = async (pubkey: string) => {
   try {
     const response = await axios.get(

@@ -43,18 +43,15 @@ export type PositionData = {
   liquidationPrice: number;
 };
 
-// export type LeaderBoardDataType = {
-//   id: number;
-//   pubkey: string;
-//   totalPoints: number;
-//   rank: number;
-//   topGainer: string;
-//   totalPositions: number;
-//   totalWins: number;
-//   totalLosses: number;
-//   avgLeverage: number;
-//   top3Positions: string;
-// };
+export type LeaderBoardHistory = {
+  pubkey: string;
+  pointsAllocated: number;
+  poolId: string;
+  finalPoints: number;
+  top3Positions: string;
+  rank: number;
+  date: string;
+};
 
 export type LeaderBoardDataType = {
   pubkey: string;
@@ -65,6 +62,10 @@ export type LeaderBoardDataType = {
 };
 
 export type ExtendedLeaderBoardDataType = LeaderBoardDataType & {
+  id: number;
+};
+
+export type ExtendedLeaderBoardHistory = LeaderBoardHistory & {
   id: number;
 };
 
