@@ -183,7 +183,7 @@ export const Navbar = () => {
                   </span>
                 </Typography>
               </Box>
-            ) : (
+            ) : resultingPoints ? (
               <Box
                 sx={{
                   p: "10px",
@@ -198,15 +198,13 @@ export const Navbar = () => {
                       color: "black",
                     }}
                   >
-                    {resultingPoints
-                      ? resultingPoints.toLocaleString("en-US", {
-                          maximumFractionDigits: 4,
-                        })
-                      : 0}
+                    {resultingPoints.toLocaleString("en-US", {
+                      maximumFractionDigits: 4,
+                    })}
                   </span>
                 </Typography>
               </Box>
-            )}
+            ) : null}
 
             <Wallet setOpen={null} />
           </Box>
