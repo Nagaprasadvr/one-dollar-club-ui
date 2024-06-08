@@ -36,7 +36,7 @@ export const TextWithValue = ({
         sx={{
           color: palette.primary.main,
           fontWeight: "bold",
-          fontSize: mobScreen ? "13px" : "16px",
+          fontSize: mobScreen ? "13px" : "14px",
           textWrap: "nowrap",
         }}
       >
@@ -63,7 +63,7 @@ export const TextWithValue = ({
           color="inherit"
           fontWeight={"bold"}
           sx={{
-            fontSize: mobScreen ? "18px" : "22px",
+            fontSize: "18px",
             textWrap: "nowrap",
           }}
         >

@@ -31,7 +31,7 @@ export const Footer = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "60px",
+        height: "40px",
         borderTop: `1px solid ${CHARCOAL}`,
         overflowX: "auto",
         width: "100%",
@@ -59,7 +59,7 @@ export const Footer = () => {
           <Typography
             key={content}
             sx={{
-              fontSize: "20px",
+              fontSize: "16px",
               fontWeight: "bold",
               cursor: "pointer",
               paddingLeft: "10px",

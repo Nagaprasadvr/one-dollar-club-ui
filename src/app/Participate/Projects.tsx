@@ -303,17 +303,18 @@ export const Projects = () => {
       >
         {RenderHeader}
         <Tooltip title="Refresh">
-          <Button
+          <IconButton
             onClick={() => {
               setTriggerRefetchUserData(!triggerRefetchUserData);
             }}
           >
             <Refresh
               sx={{
-                fontSize: "25px",
+                fontSize: "22px",
+                color: "#87cefa",
               }}
             />
-          </Button>
+          </IconButton>
         </Tooltip>
       </Box>
 

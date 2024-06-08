@@ -295,7 +295,7 @@ const LeaderBoard = () => {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "center",
+        justifyContent: "flex-start",
         alignItems: "center",
         width: "100%",
         flexDirection: "column",
@@ -325,16 +325,19 @@ const LeaderBoard = () => {
         >
           <Typography
             sx={{
-              fontSize: "30px",
+              fontSize: "25px",
               fontWeight: "bold",
             }}
           >
             Your Stats
           </Typography>
-          <Tooltip title="Note that Your Stats Data and Leaderboard data can be out of sync because Leaderboard data is calculated at the backend">
-            <IconButton>
-              <InfoRounded />
-            </IconButton>
+          <Tooltip
+            sx={{
+              cursor: "pointer",
+            }}
+            title="Note that Your Stats Data is updated frequently and LeaderBoard data is updated every 10 minutes"
+          >
+            <InfoRounded />
           </Tooltip>
         </Box>
         <Box
@@ -365,7 +368,7 @@ const LeaderBoard = () => {
               >
                 <Typography
                   sx={{
-                    fontSize: "20px",
+                    fontSize: "18px",
                     fontWeight: "bold",
                     width: "100%",
                     textAlign: "left",
@@ -382,7 +385,7 @@ const LeaderBoard = () => {
                 {stat[0] === "pubkey" ? (
                   <Typography
                     sx={{
-                      fontSize: "20px",
+                      fontSize: "18px",
                       width: "100%",
                       textAlign: "left",
                       fontWeight: "bold",
@@ -394,7 +397,7 @@ const LeaderBoard = () => {
                 ) : (
                   <Typography
                     sx={{
-                      fontSize: "20px",
+                      fontSize: "18px",
                       width: "100%",
                       textAlign: "left",
                       fontWeight: "bold",
@@ -432,7 +435,7 @@ const LeaderBoard = () => {
           <Typography
             sx={{
               textAlign: "start",
-              fontSize: "30px",
+              fontSize: "25px",
               fontWeight: "bold",
             }}
           >
@@ -445,109 +448,114 @@ const LeaderBoard = () => {
           <Tooltip
             title={
               tabValue === "1"
-                ? "Live LeaderBoard is updated every 10 min in the backend"
-                : "LeaderBoard history is updated after each round ends"
+                ? "Live LeaderBoard is updated every 10 minutes"
+                : "LeaderBoard history is updated after each round"
             }
+            sx={{
+              cursor: "pointer",
+            }}
           >
-            <IconButton>
-              <InfoRounded />
-            </IconButton>
+            <InfoRounded />
           </Tooltip>
         </Box>
-        <TabPanel
-          value="1"
-          sx={{
-            width: "95%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {leaderboardData.length > 0 ? (
-            <DataGrid
-              sx={{
-                width: "90%",
-                ".MuiDataGrid-cell": {
-                  color: "whitesmoke",
+        {tabValue === "1" && (
+          <TabPanel
+            value="1"
+            sx={{
+              width: "95%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {leaderboardData.length > 0 ? (
+              <DataGrid
+                sx={{
+                  width: "90%",
+                  ".MuiDataGrid-cell": {
+                    color: "whitesmoke",
+                    fontWeight: "bold",
+                    backgroundColor: "transparent",
+                  },
+                  ".css-t89xny-MuiDataGrid-columnHeaderTitle": {
+                    color: "#aff6ff",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  },
+                  borderCollapse: "white",
+                }}
+                rows={leaderboardData}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
+                }}
+                pageSizeOptions={[5, 10]}
+                checkboxSelection
+              />
+            ) : (
+              <Typography
+                sx={{
+                  fontSize: "20px",
                   fontWeight: "bold",
-                  backgroundColor: "transparent",
-                },
-                ".css-t89xny-MuiDataGrid-columnHeaderTitle": {
-                  color: "#aff6ff",
+                }}
+              >
+                Syncing...
+              </Typography>
+            )}
+          </TabPanel>
+        )}
+        {tabValue === "2" && (
+          <TabPanel
+            value="2"
+            sx={{
+              width: "95%",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {leaderboardHistory.length > 0 ? (
+              <DataGrid
+                sx={{
+                  width: "90%",
+                  ".MuiDataGrid-cell": {
+                    color: "whitesmoke",
+                    fontWeight: "bold",
+                    backgroundColor: "transparent",
+                  },
+                  ".css-t89xny-MuiDataGrid-columnHeaderTitle": {
+                    color: "#aff6ff",
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                  },
+                  borderCollapse: "white",
+                }}
+                rows={leaderboardHistory}
+                columns={columns}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 10 },
+                  },
+                }}
+                pageSizeOptions={[5, 10]}
+                checkboxSelection
+              />
+            ) : (
+              <Typography
+                sx={{
+                  fontSize: "20px",
                   fontWeight: "bold",
-                  fontSize: "18px",
-                },
-                borderCollapse: "white",
-              }}
-              rows={leaderboardData}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
-              }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
-            />
-          ) : (
-            <Typography
-              sx={{
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              Syncing...
-            </Typography>
-          )}
-        </TabPanel>
-        <TabPanel
-          value="2"
-          sx={{
-            width: "95%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {leaderboardHistory.length > 0 ? (
-            <DataGrid
-              sx={{
-                width: "90%",
-                ".MuiDataGrid-cell": {
-                  color: "whitesmoke",
-                  fontWeight: "bold",
-                  backgroundColor: "transparent",
-                },
-                ".css-t89xny-MuiDataGrid-columnHeaderTitle": {
-                  color: "#aff6ff",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                },
-                borderCollapse: "white",
-              }}
-              rows={leaderboardHistory}
-              columns={columns}
-              initialState={{
-                pagination: {
-                  paginationModel: { page: 0, pageSize: 10 },
-                },
-              }}
-              pageSizeOptions={[5, 10]}
-              checkboxSelection
-            />
-          ) : (
-            <Typography
-              sx={{
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              Syncing...
-            </Typography>
-          )}
-        </TabPanel>
+                }}
+              >
+                LeaderBoard History will be updated after each round
+              </Typography>
+            )}
+          </TabPanel>
+        )}
       </TabContext>
     </Box>
   );

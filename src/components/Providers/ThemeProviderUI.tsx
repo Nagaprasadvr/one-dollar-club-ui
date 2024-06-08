@@ -17,14 +17,16 @@ const darkTheme = createTheme({
   },
   typography: {
     fontFamily: '"Roboto Mono", sans-serif',
-    fontSize: 20,
+    fontSize: 18,
     fontWeightRegular: 550,
     fontWeightBold: 700,
   },
   components: {
     MuiTypography: {
       styleOverrides: {
-        root: {},
+        root: {
+          fontSize: "18px",
+        },
       },
     },
 
@@ -33,7 +35,7 @@ const darkTheme = createTheme({
         root: {
           multiline: {
             fontWeight: "bold",
-            fontSize: "20px",
+            fontSize: "18px",
             color: "white",
           },
         },

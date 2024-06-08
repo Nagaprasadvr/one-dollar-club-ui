@@ -84,7 +84,7 @@ export const FooterModal = ({ content }: { content: string }) => {
           <Typography
             sx={{
               fontWeight: "bold",
-              fontSize: "50px",
+              fontSize: "25px",
               width: "100%",
               height: "100%",
               textAlign: "center",
