@@ -70,20 +70,20 @@ export const HomePage = () => {
         }
       >
         <Typography
-          variant="h3"
           sx={{
             fontWeight: "bold",
             textAlign: mobileScreen ? "start" : "center",
             width: "100%",
+            fontSize: "50px",
           }}
         >
-          One Dollar Club, LFG!
+          One Dollar Club,LFG!
         </Typography>
         <Typography
-          variant="body1"
           sx={{
             fontWeight: "bold",
             textWrap: "wrap",
+            fontSize: "30px",
             width: "100%",
             textAlign: mobileScreen ? "start" : "center",
           }}

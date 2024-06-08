@@ -165,9 +165,27 @@ type PositionResult = {
 };
 
 export const calculateResult = (result: PositionResult) => {
-  const { entryPrice, leverage, currentPrice, pointsAllocated, positionType } =
-    result;
+  const {
+    entryPrice,
+    leverage,
+    currentPrice,
+    pointsAllocated,
+    positionType,
+    liquidationPrice,
+  } = result;
 
+  switch (positionType) {
+    case "long":
+      if (currentPrice < liquidationPrice) {
+        return 0;
+      }
+      break;
+    case "short":
+      if (currentPrice > liquidationPrice) {
+        return 0;
+      }
+      break;
+  }
   const pointsPerEntryPrice = safeDivide(pointsAllocated, entryPrice);
 
   const mulCurrentPrice = pointsPerEntryPrice * currentPrice;
