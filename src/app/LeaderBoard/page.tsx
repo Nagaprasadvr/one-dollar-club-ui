@@ -302,7 +302,8 @@ const LeaderBoard = () => {
         gap: "20px",
         height: "auto",
         maxHeight: "80vh",
-        overflow: "auto",
+        overflowY: "auto",
+        overflowX: "hidden",
       }}
     >
       <Box
@@ -409,7 +410,13 @@ const LeaderBoard = () => {
       </Box>
 
       <TabContext value={tabValue}>
-        <TabList onChange={handleChange}>
+        <TabList
+          onChange={handleChange}
+          variant="scrollable"
+          sx={{
+            margin: "20px",
+          }}
+        >
           <Tab value="1" label="Live LeaderBoard" />
           <Tab value="2" label="LeaderBoard history" />
         </TabList>
