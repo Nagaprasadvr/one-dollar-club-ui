@@ -96,7 +96,12 @@ export const MobDrawer = () => {
           </Link>
         )}
         {pathName === "/LeaderBoard" && (
-          <Link href="/Participate">
+          <Link
+            href="/Participate"
+            style={{
+              paddingBottom: "20px",
+            }}
+          >
             <Button
               sx={{
                 color: "white",

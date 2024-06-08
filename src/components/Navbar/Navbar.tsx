@@ -42,8 +42,7 @@ export const Navbar = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent:
-            !mobileScreen && pathName === "/" ? "flex-start" : "space-around",
+          justifyContent: pathName === "/" ? "flex-start" : "space-around",
           alignItems: "center",
           width: "100%",
           height: "50px",
@@ -141,7 +140,7 @@ export const Navbar = () => {
               }}
             />
           </Box>
-        ) : mobileScreen ? (
+        ) : pathName !== "/" && mobileScreen ? (
           <Box
             sx={{
               display: mobileScreen ? "flex" : "none",

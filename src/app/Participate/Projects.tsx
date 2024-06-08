@@ -58,40 +58,40 @@ export const Projects = () => {
     }
   }, [tokensPrices]);
 
-    const handlePoolDeposit = async () => {
-      if (!poolConfig) return;
-      if (sdk) {
-        toast.loading("Depositing to play...", {
+  const handlePoolDeposit = async () => {
+    if (!poolConfig) return;
+    if (sdk) {
+      toast.loading("Depositing to play...", {
+        id: "depositing",
+      });
+      try {
+        await poolConfig.deposit();
+        toast.success("Deposit successful", {
           id: "depositing",
         });
-        try {
-          await poolConfig.deposit();
-          toast.success("Deposit successful", {
-            id: "depositing",
-          });
-          setIsAllowedToPlay(true);
-          const responsePoints = await fetch(
-            `${API_BASE_URL}/poolPoints?pubkey=${sdk.wallet.publicKey.toBase58()}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-          const responsePointsJson = await responsePoints.json();
-          setPointsRemaining(responsePointsJson.data);
-        } catch (err) {
-          let errString = "";
-          if (err instanceof Error) {
-            errString = err.message;
+        setIsAllowedToPlay(true);
+        const responsePoints = await fetch(
+          `${API_BASE_URL}/poolPoints?pubkey=${sdk.wallet.publicKey.toBase58()}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-          toast.error("Error while depositing to play" + errString, {
-            id: "depositing",
-          });
+        );
+        const responsePointsJson = await responsePoints.json();
+        setPointsRemaining(responsePointsJson.data);
+      } catch (err) {
+        let errString = "";
+        if (err instanceof Error) {
+          errString = err.message;
         }
+        toast.error("Error while depositing to play" + errString, {
+          id: "depositing",
+        });
       }
-    };
+    }
+  };
 
   const RenderHeader = useMemo(() => {
     if (!poolConfig) return null;
@@ -277,8 +277,6 @@ export const Projects = () => {
     }
   };
 
-
-
   if (!sdk || !poolConfig) {
     return <Message message="Loading..." />;
   }
@@ -300,6 +298,7 @@ export const Projects = () => {
           justifyContent: "space-evenly",
           alignItems: "center",
           gap: "30px",
+          flexWrap: "wrap",
         }}
       >
         {RenderHeader}
