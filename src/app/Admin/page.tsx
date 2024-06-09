@@ -126,6 +126,9 @@ const Admin = () => {
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
+        height: "80vh",
+        overflowY: "auto",
+        marginBottom: "20px",
       }}
     >
       <Typography variant="h3">Admin Actions</Typography>

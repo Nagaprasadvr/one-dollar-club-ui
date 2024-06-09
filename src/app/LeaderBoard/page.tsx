@@ -123,7 +123,6 @@ const LeaderBoard = () => {
     };
 
     const getLeaderBoardHistory = async () => {
-      console.log("trigger");
       try {
         setFetchingLeaderBoardData(true);
         const leaderBoardHistory: LeaderBoardHistory[] =
@@ -185,6 +184,23 @@ const LeaderBoard = () => {
       clearInterval(id);
     };
   });
+
+  const getHeader = () => {
+    if (fetchingLeaderBoardData) {
+      return "Fetching...";
+    }
+    switch (tabValue) {
+      case "1":
+        return leaderboardData.length > 0
+          ? "LeaderBoard"
+          : "No positions created yet";
+
+      case "2":
+        return leaderboardHistory.length > 0
+          ? "LeaderBoard History"
+          : "LeaderBoard History will be updated after each round";
+    }
+  };
 
   const columns: GridColDef[] = LeaderBoardHeaders.map((header) => {
     if (header.key === "top3Positions") {
@@ -435,15 +451,11 @@ const LeaderBoard = () => {
           <Typography
             sx={{
               textAlign: "start",
-              fontSize: "25px",
+              fontSize: smallScreen ? "20px" : "25px",
               fontWeight: "bold",
             }}
           >
-            {fetchingLeaderBoardData
-              ? "Fetching..."
-              : leaderboardData.length > 0
-              ? "LeaderBoard"
-              : "No positions created yet"}
+            {getHeader()}
           </Typography>
           <Tooltip
             title={
@@ -469,7 +481,7 @@ const LeaderBoard = () => {
               justifyContent: "center",
             }}
           >
-            {leaderboardData.length > 0 ? (
+            {leaderboardData.length > 0 && (
               <DataGrid
                 sx={{
                   width: "90%",
@@ -495,15 +507,6 @@ const LeaderBoard = () => {
                 pageSizeOptions={[5, 10]}
                 checkboxSelection
               />
-            ) : (
-              <Typography
-                sx={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                }}
-              >
-                Syncing...
-              </Typography>
             )}
           </TabPanel>
         )}

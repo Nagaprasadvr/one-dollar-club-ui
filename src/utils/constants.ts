@@ -55,5 +55,5 @@ export const PROJECTS_TO_PLAY = [
 
 export const GREY_TEXT = "#AEB9B8";
 
-export const API_BASE_URL = "https://onedollarclub.fun";
+export const API_BASE_URL = "https://server.onedollarclub.fun/";
 export const birdeyeUrl = "https://birdeye.so/token/";
