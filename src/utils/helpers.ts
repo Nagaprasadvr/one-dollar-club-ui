@@ -24,7 +24,7 @@ import {
   TokenPriceHistory,
 } from "./types";
 import { API_URL } from "@/components/Context/AppContext";
-import { API_BASE_URL } from "./constants";
+import { API_BASE_URL, PROJECTS_TO_PLAY } from "./constants";
 import { RawPoolConfig } from "@/sdk/sdk";
 
 export const minimizePubkey = (pubkey: string) => {
@@ -372,4 +372,10 @@ export const calculateTop3Positions = (
 
 export const getTotalPoints = (positions: Position[]) => {
   return positions.reduce((acc, position) => acc + position.pointsAllocated, 0);
+};
+
+export const getTokenSymbolFromMint = (mint: string) => {
+  const symbol = PROJECTS_TO_PLAY.find((project) => project.mint === mint);
+  if (symbol) return symbol.name;
+  return "dBONK";
 };
