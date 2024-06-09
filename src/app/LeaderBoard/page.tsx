@@ -63,6 +63,38 @@ const LeaderBoardHeaders = [
   },
 ];
 
+const LeaderBoardHistoryHeaders = [
+  {
+    name: "Rank",
+    key: "id",
+  },
+  {
+    name: "Pool Id",
+    key: "poolId",
+  },
+  {
+    name: "Date",
+    key: "date",
+  },
+  {
+    name: "Pubkey",
+    key: "pubkey",
+  },
+  {
+    name: "Points Allocated",
+    key: "pointsAllocated",
+  },
+  {
+    name: "Resulting Points",
+    key: "finalPoints",
+  },
+
+  {
+    name: "Top 3 Positions",
+    key: "top3Positions",
+  },
+];
+
 const YourStatsHeadingMap = {
   pubkey: "Pubkey",
   pointsAllocated: "Points Allocated",
@@ -202,7 +234,7 @@ const LeaderBoard = () => {
     }
   };
 
-  const columns: GridColDef[] = LeaderBoardHeaders.map((header) => {
+  const columns1: GridColDef[] = LeaderBoardHeaders.map((header) => {
     if (header.key === "top3Positions") {
       return {
         field: header.key,
@@ -256,7 +288,6 @@ const LeaderBoard = () => {
                     fontWeight={"bold"}
                     fontSize={"18px"}
                     sx={{
-                      padding: "5px",
                       borderRadius: "10px",
                     }}
                   >
@@ -294,6 +325,151 @@ const LeaderBoard = () => {
         field: header.key,
         headerName: header.name,
         width: 300,
+      };
+    }
+    if (header.key === "id") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 100,
+      };
+    }
+    return {
+      field: header.key,
+      headerName: header.name,
+      width: 250,
+    };
+  });
+
+  const columns2: GridColDef[] = LeaderBoardHistoryHeaders.map((header) => {
+    if (header.key === "top3Positions") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 350,
+        renderCell: (params) => {
+          const thisRow: Record<string, GridKeyValue> = getRow(params);
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "10px",
+                alignItems: "center",
+              }}
+            >
+              {thisRow["top3Positions"]}
+            </Box>
+          );
+        },
+      };
+    }
+    if (header.key === "pubkey") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 250,
+        renderCell: (params) => {
+          const thisRow: Record<string, GridKeyValue> = getRow(params);
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <Tooltip title={thisRow["pubkey"] as string}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "10px",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    fontWeight={"bold"}
+                    fontSize={"18px"}
+                    sx={{
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {minimizePubkey(thisRow["pubkey"] as string)}
+                  </Typography>
+                  <Button
+                    sx={{
+                      backgroundColor: "transparent",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        color: "white",
+                      },
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <CopyIcon
+                      sx={{
+                        fontSize: "20px",
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Button>
+                </Box>
+              </Tooltip>
+            </Box>
+          );
+        },
+      };
+    }
+    if (header.key === "date") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 200,
+        renderCell: (params) => {
+          const thisRow: Record<string, GridKeyValue> = getRow(params);
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                fontWeight={"bold"}
+                fontSize={"18px"}
+                sx={{
+                  borderRadius: "10px",
+                }}
+              >
+                {new Date(String(thisRow["date"])).toDateString()}
+              </Typography>
+            </Box>
+          );
+        },
+      };
+    }
+    if (header.key === "poolId") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 250,
+      };
+    }
+    if (header.key === "id") {
+      return {
+        field: header.key,
+        headerName: header.name,
+        width: 100,
       };
     }
     return {
@@ -498,7 +674,7 @@ const LeaderBoard = () => {
                   borderCollapse: "white",
                 }}
                 rows={leaderboardData}
-                columns={columns}
+                columns={columns1}
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 10 },
@@ -538,7 +714,7 @@ const LeaderBoard = () => {
                   borderCollapse: "white",
                 }}
                 rows={leaderboardHistory}
-                columns={columns}
+                columns={columns2}
                 initialState={{
                   pagination: {
                     paginationModel: { page: 0, pageSize: 10 },
