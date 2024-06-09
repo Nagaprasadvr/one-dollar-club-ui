@@ -18,9 +18,13 @@ import Link from "next/link";
 export const Navbar = () => {
   const { breakpoints } = useTheme();
   const mobileScreen = useMediaQuery(breakpoints.down("md"));
-  const { pointsRemaining, resultingPoints } = useContext(AppContext);
+  const { pointsRemaining, resultingPoints, sdk } = useContext(AppContext);
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
+
+  const isDevnet = useMemo(() => {
+    return sdk && sdk.connection.rpcEndpoint.includes("devnet");
+  }, [sdk]);
 
   const pathName = usePathname();
 
@@ -120,6 +124,22 @@ export const Navbar = () => {
                   }}
                 >
                   Participate
+                </Button>
+              </Link>
+            )}
+            {isDevnet && (
+              <Link href="/Faucet">
+                <Button
+                  sx={{
+                    color: "white",
+                    backgroundColor: "transparent",
+                    "&:hover": {
+                      color: "#87cefa",
+                      backgroundColor: "transparent",
+                    },
+                  }}
+                >
+                  Faucet
                 </Button>
               </Link>
             )}

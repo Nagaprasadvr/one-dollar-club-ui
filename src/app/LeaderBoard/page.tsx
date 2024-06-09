@@ -29,10 +29,11 @@ import {
 } from "@/utils/helpers";
 import CopyIcon from "@mui/icons-material/ContentCopy";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { InfoRounded } from "@mui/icons-material";
+import { CallMade, InfoRounded } from "@mui/icons-material";
 import { AppContext } from "@/components/Context/AppContext";
 import toast from "react-hot-toast";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { SOLANA_EXPLORER_URL } from "@/utils/constants";
 const LeaderBoardHeaders = [
   {
     name: "Rank",
@@ -313,6 +314,20 @@ const LeaderBoard = () => {
                       }}
                     />
                   </Button>
+                  <IconButton
+                    onClick={() => {
+                      window.open(
+                        `${SOLANA_EXPLORER_URL}/${thisRow["pubkey"]}`,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    <CallMade
+                      sx={{
+                        fontSize: "20px",
+                      }}
+                    />
+                  </IconButton>
                 </Box>
               </Tooltip>
             </Box>
@@ -420,6 +435,20 @@ const LeaderBoard = () => {
                       }}
                     />
                   </Button>
+                  <IconButton
+                    onClick={() => {
+                      window.open(
+                        `${SOLANA_EXPLORER_URL}/${thisRow["pubkey"]}`,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    <CallMade
+                      sx={{
+                        fontSize: "20px",
+                      }}
+                    />
+                  </IconButton>
                 </Box>
               </Tooltip>
             </Box>

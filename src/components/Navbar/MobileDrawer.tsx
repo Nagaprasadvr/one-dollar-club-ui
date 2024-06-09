@@ -15,7 +15,7 @@ import Link from "next/link";
 
 export const MobDrawer = () => {
   const [open, setOpen] = React.useState(false);
-  const { pointsRemaining } = React.useContext(AppContext);
+  const { pointsRemaining, sdk } = React.useContext(AppContext);
   const router = useRouter();
 
   const pathName = usePathname();
@@ -34,6 +34,10 @@ export const MobDrawer = () => {
     router.push(link);
     setOpen(false);
   };
+
+  const isDevnet = React.useMemo(() => {
+    return sdk && sdk.connection.rpcEndpoint.includes("devnet");
+  }, [sdk]);
 
   const DrawerList = (
     <Box
@@ -114,6 +118,22 @@ export const MobDrawer = () => {
               onClick={handleClose}
             >
               Participate
+            </Button>
+          </Link>
+        )}
+        {isDevnet && (
+          <Link href="/Faucet">
+            <Button
+              sx={{
+                color: "white",
+                backgroundColor: "transparent",
+                "&:hover": {
+                  color: "#87cefa",
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              Faucet
             </Button>
           </Link>
         )}
