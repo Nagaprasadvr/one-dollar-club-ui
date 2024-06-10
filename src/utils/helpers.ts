@@ -376,9 +376,13 @@ export const getTotalPoints = (positions: Position[]) => {
 };
 
 export const getTokenSymbolFromMint = (poolConfig: PoolConfig) => {
-  if (!poolConfig) return "dBONK";
-  const mint = poolConfig?.poolActiveMint?.toBase58();
-  const symbol = PROJECTS_TO_PLAY.find((project) => project.mint === mint);
-  if (symbol) return symbol.name;
-  return "dBONK";
+  try {
+    if (!poolConfig) return "dBONK";
+    const mint = poolConfig?.poolActiveMint?.toBase58();
+    const symbol = PROJECTS_TO_PLAY.find((project) => project.mint === mint);
+    if (symbol) return symbol.name;
+    return "dBONK";
+  } catch (e) {
+    return "dBONK";
+  }
 };
