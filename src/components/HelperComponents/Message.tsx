@@ -8,7 +8,14 @@ export const Message = ({ message }: { message: string }) => {
         margin: "20px",
       }}
     >
-      <Typography variant="h4">{message}</Typography>
+      <Typography
+        sx={{
+          fontWeight: "bold",
+        }}
+        variant="h4"
+      >
+        {message}
+      </Typography>
     </Box>
   );
 };

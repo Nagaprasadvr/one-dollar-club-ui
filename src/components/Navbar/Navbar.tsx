@@ -95,7 +95,7 @@ export const Navbar = () => {
               cursor: "pointer",
             }}
           >
-            {pathName === "/Participate" && (
+            {(pathName === "/Participate" || pathName === "/Faucet") && (
               <Link href="/LeaderBoard">
                 <Button
                   sx={{
@@ -111,7 +111,7 @@ export const Navbar = () => {
                 </Button>
               </Link>
             )}
-            {pathName === "/LeaderBoard" && (
+            {(pathName === "/LeaderBoard" || pathName === "/Faucet") && (
               <Link href="/Participate">
                 <Button
                   sx={{

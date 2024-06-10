@@ -44,9 +44,9 @@ const ModalContentData = [
   {
     contentName: "Prizes and Contributions",
     contentData: [
-      "The player with the highest points at 23:00 UTC wins 50% of the pool prize.",
+      "The player with the highest points at 23:00 UTC wins 50% of the pool .",
       "Remaining 50% of the pool is allocated as follows:",
-      "25% to support community projects like WildlifeSOS, bonk dao treasury,Telega Charity , fund public goods, buy and burn bonk for 30 days.",
+      "25% to support community projects like WildlifeSOS, BonkDAO Treasury Fund,Telega Charity ,Fund Public Good projects on Cubic, buy and burn bonk for 30 days.",
       "25% to cover expenses such as platform audits, devs need to eat, marketing, apeing into memecoins, NFT collections or … 🪂[redacted]",
     ],
   },
@@ -90,7 +90,7 @@ export const FooterModal = ({ content }: { content: string }) => {
               textAlign: "center",
             }}
           >
-            {content.contentData as string}
+            {highlightCapitalWords(content.contentData as string)}
           </Typography>
         );
       case "Steps":
@@ -113,14 +113,14 @@ export const FooterModal = ({ content }: { content: string }) => {
                   color: palette.primary.main,
                 }}
               >
-                {data.step}
+                {highlightCapitalWords(data.step)}
               </Typography>
               <Typography
                 sx={{
                   fontSize: "20px",
                 }}
               >
-                {data.result}
+                {highlightCapitalWords(data.result)}
               </Typography>
             </Box>
           );
@@ -139,7 +139,7 @@ export const FooterModal = ({ content }: { content: string }) => {
                   fontSize: "20px",
                 }}
               >
-                {data as string}
+                {highlightCapitalWords(data as string)}
               </Typography>
             ))}
           </Box>
@@ -158,7 +158,7 @@ export const FooterModal = ({ content }: { content: string }) => {
                   fontSize: "20px",
                 }}
               >
-                {data as string}
+                {highlightCapitalWords(data as string)}
               </Typography>
             ))}
           </Box>
@@ -230,4 +230,20 @@ export const FooterModal = ({ content }: { content: string }) => {
       </ModalContent>
     </Modal>
   );
+};
+
+const highlightCapitalWords = (text: string) => {
+  if (text.includes("The") || text.includes("UTC")) return text;
+  const words = text.split(" ");
+  return words.map((word, index) => {
+    const startsWithCapital = /^[A-Z]/.test(word);
+    return (
+      <span
+        key={index}
+        style={{ color: startsWithCapital ? "#87cefa" : "inherit" }}
+      >
+        {word + (index < words.length - 1 ? " " : "")}
+      </span>
+    );
+  });
 };

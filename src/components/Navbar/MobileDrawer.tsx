@@ -60,7 +60,6 @@ export const MobDrawer = () => {
           pl: "20px",
           pt: "20px",
           pb: "20px",
-          borderBottom: `1px solid ${CHARCOAL}`,
         }}
       >
         <Button onClick={handleClose} size="small">
@@ -70,75 +69,100 @@ export const MobDrawer = () => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
           alignItems: "center",
-          gap: "20px",
+          justifyContent: "center",
           width: "100%",
-          borderBottom: `1px solid ${CHARCOAL}`,
+          borderTop: `1px solid ${CHARCOAL}`,
         }}
       >
-        {pathName === "/Participate" && (
-          <Link
-            href="/LeaderBoard"
-            style={{
-              paddingBottom: "20px",
+        {(pathName === "/Participate" || pathName === "Faucet") && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px",
+              width: "100%",
+              borderBottom: `1px solid ${CHARCOAL}`,
+              p: "10px",
             }}
           >
-            <Button
-              sx={{
-                color: "white",
-                backgroundColor: "transparent",
-                "&:hover": {
-                  color: "#87cefa",
+            <Link href="/LeaderBoard">
+              <Button
+                sx={{
+                  color: "white",
                   backgroundColor: "transparent",
-                },
-              }}
-              onClick={handleClose}
-            >
-              LeaderBoard
-            </Button>
-          </Link>
+                  "&:hover": {
+                    color: "#87cefa",
+                    backgroundColor: "transparent",
+                  },
+                }}
+                onClick={handleClose}
+              >
+                LeaderBoard
+              </Button>
+            </Link>
+          </Box>
         )}
-        {pathName === "/LeaderBoard" && (
-          <Link
-            href="/Participate"
-            style={{
-              paddingBottom: "20px",
+        {(pathName === "/LeaderBoard" || pathName === "/Faucet") && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px",
+              width: "100%",
+              borderBottom: `1px solid ${CHARCOAL}`,
+              p: "10px",
             }}
           >
-            <Button
-              sx={{
-                color: "white",
-                backgroundColor: "transparent",
-                "&:hover": {
-                  color: "#87cefa",
+            <Link href="/Participate">
+              <Button
+                sx={{
+                  color: "white",
                   backgroundColor: "transparent",
-                },
-              }}
-              onClick={handleClose}
-            >
-              Participate
-            </Button>
-          </Link>
+                  "&:hover": {
+                    color: "#87cefa",
+                    backgroundColor: "transparent",
+                  },
+                }}
+                onClick={handleClose}
+              >
+                Participate
+              </Button>
+            </Link>
+          </Box>
         )}
         {isDevnet && (
-          <Link href="/Faucet">
-            <Button
-              sx={{
-                color: "white",
-                backgroundColor: "transparent",
-                "&:hover": {
-                  color: "#87cefa",
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px",
+              width: "100%",
+              borderBottom: `1px solid ${CHARCOAL}`,
+              p: "10px",
+            }}
+          >
+            <Link href="/Faucet">
+              <Button
+                sx={{
+                  color: "white",
                   backgroundColor: "transparent",
-                },
-              }}
-            >
-              Faucet
-            </Button>
-          </Link>
+                  "&:hover": {
+                    color: "#87cefa",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                Faucet
+              </Button>
+            </Link>
+          </Box>
         )}
       </Box>
-
       <Box
         sx={{
           display: isHomePage ? "none" : "flex",
