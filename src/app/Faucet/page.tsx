@@ -66,7 +66,7 @@ const Faucet = () => {
   if (!poolConfig) return <Message message="Pool config not found" />;
 
   const handleMint = async () => {
-    if (!sdk || !wallet || !publicKey) return;
+    if (!sdk || !wallet || !publicKey || !poolConfig) return;
     const tokenMintKeypair = solana.Keypair.fromSecretKey(
       new Uint8Array(tokenMintAuth)
     );
@@ -171,9 +171,9 @@ const Faucet = () => {
             fontWeight: "bold",
           }}
         >
-          {tokenBalance.toLocaleString() +
-            " " +
-            getTokenSymbolFromMint(poolConfig.poolActiveMint.toBase58())}
+          {tokenBalance.toLocaleString() + " " + poolConfig
+            ? getTokenSymbolFromMint(poolConfig.poolActiveMint.toBase58())
+            : ""}
         </Typography>
       </Box>
       <Button onClick={handleMint}>Mint</Button>
