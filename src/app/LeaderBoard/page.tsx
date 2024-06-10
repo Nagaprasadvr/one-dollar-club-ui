@@ -726,7 +726,7 @@ const LeaderBoard = () => {
               justifyContent: "center",
             }}
           >
-            {leaderboardHistory.length > 0 ? (
+            {leaderboardHistory.length > 0 && (
               <DataGrid
                 sx={{
                   width: "90%",
@@ -752,15 +752,6 @@ const LeaderBoard = () => {
                 pageSizeOptions={[5, 10]}
                 checkboxSelection
               />
-            ) : (
-              <Typography
-                sx={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                }}
-              >
-                LeaderBoard History will be updated after each round
-              </Typography>
             )}
           </TabPanel>
         )}
