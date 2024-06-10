@@ -115,7 +115,7 @@ export const Projects = () => {
       );
     }
 
-    if (isAllowedToPlay && pointsRemaining) {
+    if (isAllowedToPlay && pointsRemaining && positions?.length === 0) {
       return (
         <Typography variant="h6" fontWeight={"bold"}>
           Create Positions

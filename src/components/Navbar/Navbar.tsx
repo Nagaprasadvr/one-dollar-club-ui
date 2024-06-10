@@ -18,7 +18,8 @@ import Link from "next/link";
 export const Navbar = () => {
   const { breakpoints } = useTheme();
   const mobileScreen = useMediaQuery("(max-width: 1120px)");
-  const { pointsRemaining, resultingPoints, sdk } = useContext(AppContext);
+  const { pointsRemaining, resultingPoints, sdk, positions } =
+    useContext(AppContext);
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
 
@@ -184,7 +185,7 @@ export const Navbar = () => {
               justifyContent: "center",
             }}
           >
-            {pointsRemaining ? (
+            {positions?.length === 0 && pointsRemaining ? (
               <Box
                 sx={{
                   p: "10px",
