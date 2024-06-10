@@ -46,7 +46,7 @@ const ModalContentData = [
     contentData: [
       "The player with the highest points at 23:00 UTC wins 50% of the pool .",
       "Remaining 50% of the pool is allocated as follows:",
-      "25% to support community projects like WildlifeSOS, BonkDAO Treasury Fund,Telega Charity ,Fund Public Good projects on Cubic, buy and burn bonk for 30 days.",
+      "25% to support community projects like WildlifeSOS, BonkDAO Treasury Fund,Telega Charity ,Fund Public Good projects on Cubik, buy and burn bonk for 30 days.",
       "25% to cover expenses such as platform audits, devs need to eat, marketing, apeing into memecoins, NFT collections or … 🪂[redacted]",
     ],
   },
