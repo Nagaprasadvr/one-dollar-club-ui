@@ -55,6 +55,7 @@ interface AppContextType {
   setFooterDataToDisplay: (footerDataToDisplay: string) => void;
   resultingPoints: number | null;
   setResultingPoints: (resultingPoints: number) => void;
+  updatePoolConfig: () => Promise<void>;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -88,6 +89,7 @@ export const AppContext = createContext<AppContextType>({
   setFooterDataToDisplay: () => {},
   resultingPoints: null,
   setResultingPoints: () => {},
+  updatePoolConfig: async () => {},
 });
 export const API_URL = "/api/birdeye";
 
@@ -292,6 +294,19 @@ export const AppContextProvider = ({
     //   fetchChartsData();
   }, [fetchedChartsData, tokenPriceHistoryLastUpdated, tokenPriceLastUpdated]);
 
+  const updatePoolConfig = async () => {
+    if (!sdk) return;
+    try {
+      setIsFetchingPoolConfig(true);
+      const poolConfig = await fetchPoolConfigFromAPI();
+      setPoolConfig(poolConfig);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsFetchingPoolConfig(false);
+    }
+  };
+
   useEffect(() => {
     const fetchPoolConfig = async () => {
       if (!sdk) return;
@@ -376,6 +391,7 @@ export const AppContextProvider = ({
         setFooterDataToDisplay,
         resultingPoints,
         setResultingPoints,
+        updatePoolConfig,
       }}
     >
       {children}

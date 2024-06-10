@@ -37,6 +37,7 @@ export const Projects = () => {
     triggerRefetchUserData,
     positions,
     resultingPoints,
+    updatePoolConfig,
   } = useContext(AppContext);
 
   const wallet = useWallet();
@@ -306,6 +307,7 @@ export const Projects = () => {
           <IconButton
             onClick={() => {
               setTriggerRefetchUserData(!triggerRefetchUserData);
+              updatePoolConfig();
             }}
           >
             <Refresh
