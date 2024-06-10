@@ -304,6 +304,7 @@ export const AppContextProvider = ({
         newPoolConfigAccount,
         sdk
       );
+
       setPoolConfig(newPoolConfigInstance);
     } catch (e) {
       console.error(e);

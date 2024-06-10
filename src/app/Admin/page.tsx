@@ -2,7 +2,7 @@
 
 import { AppContext } from "@/components/Context/AppContext";
 import { Box, Button, Input, Typography } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { adminGate } from "./adminGate";
 import { Message } from "@/components/HelperComponents/Message";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -16,18 +16,25 @@ const Admin = () => {
   const { connected, publicKey } = useWallet();
 
   const [authSecret, setAuthSecret] = useState("");
+  const [newDepositPerUser, setNewDepositPerUser] = useState<string | number>(
+    ""
+  );
 
-  if (!publicKey || !connected || !sdk || !poolConfig) return null;
-  if (!adminGate(publicKey)) return <Message message="You are not an admin" />;
+  useEffect(() => {
+    if (!poolConfig) return;
+    setNewDepositPerUser(poolConfig.poolDepositPerUser);
+  }, [poolConfig]);
 
   const handleAuthSecretChange = (e: any) => {
     setAuthSecret(e.target.value);
   };
 
   const handleActivatePool = async () => {
+    if (!poolConfig) return;
     toast.loading("Activating pool", {
       id: "activate-pool",
     });
+
     try {
       const updatedPoolConfig = await poolConfig.activatePool();
 
@@ -42,12 +49,38 @@ const Admin = () => {
     }
   };
 
+  const handleChangePoolDepositPerUser = async () => {
+    if (!poolConfig) return;
+    if (Number(poolConfig.poolDepositPerUser) === Number(newDepositPerUser)) {
+      toast.error("New deposit per user is the same as the current", {
+        id: "change-deposit-per-user",
+      });
+      return;
+    }
+    toast.loading("changing pool deposit per user", {
+      id: "change-deposit-per-user",
+    });
+
+    try {
+      await poolConfig.changeDepositPerUser(Number(newDepositPerUser));
+      toast.success("Pool deposit per user changed", {
+        id: "change-deposit-per-user",
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to change pool deposit per user", {
+        id: "change-deposit-per-user",
+      });
+    }
+  };
+
   const handleInactivatePool = async () => {
+    if (!poolConfig) return;
     toast.loading("Inactivating pool", {
       id: "inactivate-pool",
     });
     try {
-      const updatedPoolConfig = await poolConfig.pausePool();
+      await poolConfig.pausePool();
       toast.success("Pool inactivated", {
         id: "inactivate-pool",
       });
@@ -60,11 +93,12 @@ const Admin = () => {
   };
 
   const handlePauseDeposit = async () => {
+    if (!poolConfig) return;
     toast.loading("Pausing deposits", {
       id: "pause-deposit",
     });
     try {
-      const updatedPoolConfig = await poolConfig.pauseDeposits();
+      await poolConfig.pauseDeposits();
       toast.success("Deposits paused", {
         id: "pause-deposit",
       });
@@ -77,11 +111,12 @@ const Admin = () => {
   };
 
   const handleResumeDeposit = async () => {
+    if (!poolConfig) return;
     toast.loading("Resuming deposits", {
       id: "resume-deposit",
     });
     try {
-      const updatedPoolConfig = await poolConfig.activateDeposits();
+      await poolConfig.activateDeposits();
       toast.success("Deposits resumed", {
         id: "resume-deposit",
       });
@@ -94,17 +129,15 @@ const Admin = () => {
   };
 
   const handleClickChangePoolId = async () => {
+    if (!poolConfig) return;
     toast.loading("Changing pool id", {
       id: "change-pool-id",
     });
     const authHash = sha256.sha256(authSecret);
     try {
-      const response = await axios.post(
-        API_BASE_URL + "/changePoolIdByAuthority",
-        {
-          authHash,
-        }
-      );
+      await axios.post(API_BASE_URL + "/changePoolIdByAuthority", {
+        authHash,
+      });
       toast.success("Pool id changed", {
         id: "change-pool-id",
       });
@@ -116,6 +149,9 @@ const Admin = () => {
       });
     }
   };
+
+  if (!publicKey || !connected || !sdk || !poolConfig) return null;
+  if (!adminGate(publicKey)) return <Message message="You are not an admin" />;
 
   return (
     <Box
@@ -165,6 +201,18 @@ const Admin = () => {
           type="password"
         />
         <Button onClick={handleClickChangePoolId}>Change Pool Id</Button>
+        <Typography fontWeight={"bold"}>
+          Change Pool Deposit Per User
+        </Typography>
+        <Input
+          placeholder="New Deposit Per User"
+          value={newDepositPerUser}
+          onChange={(e) => setNewDepositPerUser(parseInt(e.target.value))}
+          type="number"
+        />
+        <Button onClick={handleChangePoolDepositPerUser}>
+          Change Deposit Per User
+        </Button>
       </Box>
     </Box>
   );

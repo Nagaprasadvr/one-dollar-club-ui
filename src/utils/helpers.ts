@@ -298,7 +298,7 @@ export const fromRawConfigPoolDataToHumanReadableData = (
     poolState: rawConfig.poolState.active ? "Active" : "Inactive",
     poolDepositsPaused: rawConfig.poolDepositsPaused,
     poolBalance: rawConfig.poolBalance,
-    poolDepositPerUser: rawConfig.poolDepositPerUser,
+    poolDepositPerUser: Number(rawConfig.poolDepositPerUser),
     poolRoundWinAllocation: rawConfig.poolRoundWinAllocation,
     squadsAuthorityPubkey: rawConfig.squadsAuthorityPubkey.toBase58(),
   };

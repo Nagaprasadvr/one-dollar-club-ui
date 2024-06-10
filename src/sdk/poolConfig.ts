@@ -6,6 +6,7 @@ import * as spl from "@solana/spl-token";
 import { API_BASE_URL } from "@/utils/constants";
 import { PoolConfigAccount } from "@/utils/types";
 import { fromRawConfigPoolDataToHumanReadableData } from "@/utils/helpers";
+import { BN } from "bn.js";
 
 export class PoolConfig {
   private sdk: SDK;
@@ -127,7 +128,7 @@ export class PoolConfig {
   ): Promise<PoolConfig> {
     await sdk.program.methods
       .initializeConfig(
-        poolDepositPerUser,
+        new BN(poolDepositPerUser),
         poolRoundWinAllocation,
         squadsPubkey
       )
@@ -182,6 +183,18 @@ export class PoolConfig {
   async activateDeposits(): Promise<PoolConfig> {
     await this.sdk.program.methods
       .resumeDeposits()
+      .accountsStrict({
+        poolAuthority: this.poolAuthority,
+        poolConfig: this.poolAddress,
+      })
+      .rpc();
+
+    return this.reload();
+  }
+
+  async changeDepositPerUser(newDepositPerUser: number): Promise<PoolConfig> {
+    await this.sdk.program.methods
+      .changeDepositPerUser(new BN(newDepositPerUser))
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
