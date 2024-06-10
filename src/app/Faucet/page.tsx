@@ -171,9 +171,9 @@ const Faucet = () => {
             fontWeight: "bold",
           }}
         >
-          {tokenBalance.toLocaleString() + " " + poolConfig
-            ? getTokenSymbolFromMint(poolConfig.poolActiveMint.toBase58())
-            : ""}
+          {tokenBalance.toLocaleString() +
+            " " +
+            getTokenSymbolFromMint(poolConfig)}
         </Typography>
       </Box>
       <Button onClick={handleMint}>Mint</Button>

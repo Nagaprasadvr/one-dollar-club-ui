@@ -26,6 +26,7 @@ import {
 import { API_URL } from "@/components/Context/AppContext";
 import { API_BASE_URL, PROJECTS_TO_PLAY } from "./constants";
 import { RawPoolConfig } from "@/sdk/sdk";
+import { PoolConfig } from "@/sdk/poolConfig";
 
 export const minimizePubkey = (pubkey: string) => {
   return pubkey.slice(0, 5) + "..." + pubkey.slice(-5);
@@ -374,7 +375,9 @@ export const getTotalPoints = (positions: Position[]) => {
   return positions.reduce((acc, position) => acc + position.pointsAllocated, 0);
 };
 
-export const getTokenSymbolFromMint = (mint: string) => {
+export const getTokenSymbolFromMint = (poolConfig: PoolConfig) => {
+  if (!poolConfig) return "dBONK";
+  const mint = poolConfig?.poolActiveMint?.toBase58();
   const symbol = PROJECTS_TO_PLAY.find((project) => project.mint === mint);
   if (symbol) return symbol.name;
   return "dBONK";

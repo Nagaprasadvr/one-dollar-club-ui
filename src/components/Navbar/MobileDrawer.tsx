@@ -15,7 +15,8 @@ import Link from "next/link";
 
 export const MobDrawer = () => {
   const [open, setOpen] = React.useState(false);
-  const { pointsRemaining, sdk } = React.useContext(AppContext);
+  const { pointsRemaining, sdk, resultingPoints } =
+    React.useContext(AppContext);
   const router = useRouter();
 
   const pathName = usePathname();
@@ -173,18 +174,47 @@ export const MobDrawer = () => {
           width: "100%",
         }}
       >
-        {pointsRemaining && (
-          <Typography fontWeight={"bold"} fontSize={"18px"}>
-            Points:{" "}
-            <span
-              style={{
-                color: "#87cefa",
-              }}
-            >
-              {pointsRemaining}
-            </span>
-          </Typography>
-        )}
+        {pointsRemaining ? (
+          <Box
+            sx={{
+              p: "10px",
+              backgroundColor: "#aff6ff",
+              borderRadius: "10px",
+            }}
+          >
+            <Typography fontWeight={"bold"} fontSize={"15px"} color="black">
+              Points:{" "}
+              <span
+                style={{
+                  color: "black",
+                }}
+              >
+                {pointsRemaining ?? 0}
+              </span>
+            </Typography>
+          </Box>
+        ) : resultingPoints ? (
+          <Box
+            sx={{
+              p: "10px",
+              backgroundColor: "#aff6ff",
+              borderRadius: "10px",
+            }}
+          >
+            <Typography fontWeight={"bold"} fontSize={"15px"} color="black">
+              Resulting Points:{" "}
+              <span
+                style={{
+                  color: "black",
+                }}
+              >
+                {resultingPoints.toLocaleString("en-US", {
+                  maximumFractionDigits: 4,
+                })}
+              </span>
+            </Typography>
+          </Box>
+        ) : null}
         <Box
           sx={{
             display: "flex",

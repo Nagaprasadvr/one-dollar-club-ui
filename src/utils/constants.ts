@@ -51,6 +51,14 @@ export const PROJECTS_TO_PLAY = [
     name: "CWIF",
     mint: "7atgF8KQo4wJrD5ATGX7t1V2zVvykPJbFfNeVf1icFv1",
   },
+  {
+    name: "BODEN",
+    mint: "3psH1Mj1f7yUfaD5gh6Zj7epE8hhrMkMETgv5TshQA4o",
+  },
+  {
+    name: "MOTHER",
+    mint: "3S8qX1MsMqRbiwKg2cQyx7nis1oHMgaCuc9c4VfvVdPN",
+  },
 ];
 
 export const GREY_TEXT = "#AEB9B8";

@@ -17,7 +17,7 @@ import Link from "next/link";
 
 export const Navbar = () => {
   const { breakpoints } = useTheme();
-  const mobileScreen = useMediaQuery(breakpoints.down("md"));
+  const mobileScreen = useMediaQuery("(max-width: 1120px)");
   const { pointsRemaining, resultingPoints, sdk } = useContext(AppContext);
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
@@ -27,6 +27,7 @@ export const Navbar = () => {
   }, [sdk]);
 
   const pathName = usePathname();
+  const smallScreen = useMediaQuery("(max-width: 1300px)");
 
   useEffect(() => {
     setTimeout(() => {
@@ -191,7 +192,11 @@ export const Navbar = () => {
                   borderRadius: "10px",
                 }}
               >
-                <Typography fontWeight={"bold"} fontSize={"18px"} color="black">
+                <Typography
+                  fontWeight={"bold"}
+                  fontSize={smallScreen ? "15px" : "16px"}
+                  color="black"
+                >
                   Points:{" "}
                   <span
                     style={{
@@ -210,7 +215,11 @@ export const Navbar = () => {
                   borderRadius: "10px",
                 }}
               >
-                <Typography fontWeight={"bold"} fontSize={"18px"} color="black">
+                <Typography
+                  fontWeight={"bold"}
+                  fontSize={smallScreen ? "15px" : "16px"}
+                  color="black"
+                >
                   Resulting Points:{" "}
                   <span
                     style={{
