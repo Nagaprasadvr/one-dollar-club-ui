@@ -298,8 +298,13 @@ export const AppContextProvider = ({
     if (!sdk) return;
     try {
       setIsFetchingPoolConfig(true);
-      const poolConfig = await fetchPoolConfigFromAPI();
-      setPoolConfig(poolConfig);
+      const newPoolConfigAccount = await fetchPoolConfigFromAPI();
+      if (!newPoolConfigAccount) return;
+      const newPoolConfigInstance = PoolConfig.fromPoolConfigAccount(
+        newPoolConfigAccount,
+        sdk
+      );
+      setPoolConfig(newPoolConfigInstance);
     } catch (e) {
       console.error(e);
     } finally {
