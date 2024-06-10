@@ -54,7 +54,7 @@ interface AppContextType {
   footerDataToDisplay: string;
   setFooterDataToDisplay: (footerDataToDisplay: string) => void;
   resultingPoints: number | null;
-  setResultingPoints: (resultingPoints: number) => void;
+  setResultingPoints: (resultingPoints: number | null) => void;
   updatePoolConfig: () => Promise<void>;
 }
 

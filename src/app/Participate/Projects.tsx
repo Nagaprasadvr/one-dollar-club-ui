@@ -101,9 +101,15 @@ export const Projects = () => {
         return (
           <Typography variant="h6" fontWeight={"bold"}>
             Resulting Points:{" "}
-            {resultingPoints.toLocaleString("en-US", {
-              maximumFractionDigits: 4,
-            })}
+            <span
+              style={{
+                color: "#87cefa",
+              }}
+            >
+              {resultingPoints.toLocaleString("en-US", {
+                maximumFractionDigits: 4,
+              })}
+            </span>
           </Typography>
         );
       }
@@ -126,10 +132,16 @@ export const Projects = () => {
     if (resultingPoints !== null) {
       return (
         <Typography variant="h6" fontWeight={"bold"}>
-          Resulting Points:
-          {resultingPoints.toLocaleString("en-US", {
-            maximumFractionDigits: 4,
-          })}
+          Resulting Points:{" "}
+          <span
+            style={{
+              color: "#87cefa",
+            }}
+          >
+            {resultingPoints.toLocaleString("en-US", {
+              maximumFractionDigits: 4,
+            })}
+          </span>
         </Typography>
       );
     }
