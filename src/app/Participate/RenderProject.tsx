@@ -69,6 +69,25 @@ export const RenderProject = ({
     return tokenPriceData;
   }, [tokensPrices, project.mint]);
 
+  const getButtonState = () => {
+    if (
+      !poolConfig ||
+      poolConfig.poolDepositsPaused ||
+      poolConfig.poolState === "Inactive"
+    )
+      return "hidden";
+
+    if (pointsRemaining === 0 || !isAllowedToPlay || activePosition) {
+      return "hidden";
+    }
+
+    if (positionInputData) {
+      return "update";
+    }
+
+    return "create";
+  };
+
   return (
     <Card
       key={project.mint}
@@ -161,35 +180,31 @@ export const RenderProject = ({
 
         <ApexChartComponent tokenAddress={project.mint} />
 
-        {isAllowedToPlay &&
-          poolConfig &&
-          poolConfig.poolState === "Active" &&
-          !activePosition &&
-          (positionInputData ? (
-            <Button
-              disabled={pointsRemaining === 0}
-              onClick={() => {
-                setModalOpen(true);
-                setSelectedToken(project.name);
-                setSelectedTokenAddress(project.mint);
-                setSelectedTokenData(tokenDetails);
-              }}
-            >
-              Update Position
-            </Button>
-          ) : (
-            <Button
-              disabled={pointsRemaining === 0}
-              onClick={() => {
-                setModalOpen(true);
-                setSelectedToken(project.name);
-                setSelectedTokenAddress(project.mint);
-                setSelectedTokenData(tokenDetails);
-              }}
-            >
-              Create Position
-            </Button>
-          ))}
+        {getButtonState() === "update" ? (
+          <Button
+            disabled={pointsRemaining === 0}
+            onClick={() => {
+              setModalOpen(true);
+              setSelectedToken(project.name);
+              setSelectedTokenAddress(project.mint);
+              setSelectedTokenData(tokenDetails);
+            }}
+          >
+            Update Position
+          </Button>
+        ) : getButtonState() === "create" ? (
+          <Button
+            disabled={pointsRemaining === 0}
+            onClick={() => {
+              setModalOpen(true);
+              setSelectedToken(project.name);
+              setSelectedTokenAddress(project.mint);
+              setSelectedTokenData(tokenDetails);
+            }}
+          >
+            Create Position
+          </Button>
+        ) : null}
       </Box>
       {activePosition ? (
         <RenderPositionStats

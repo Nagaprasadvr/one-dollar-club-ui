@@ -7,7 +7,7 @@ import {
 } from "@/utils/helpers";
 import { BirdeyeTokenPriceData, PositionInputData } from "@/utils/types";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
-import { Divider, Box } from "@mui/material";
+import { Divider, Box, useMediaQuery } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 
 export const RenderPositionStats = ({
@@ -19,6 +19,7 @@ export const RenderPositionStats = ({
   positionInputData: PositionInputData;
   positionExists: boolean;
 }) => {
+  const threshold = useMediaQuery("(max-width: 900px)");
   const [liquidationPrice, setLiquidationPrice] = useState<number>(0);
   const percentageChange = useMemo(() => {
     const change =
@@ -75,10 +76,10 @@ export const RenderPositionStats = ({
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: threshold ? "column" : "row",
           justifyContent: "space-between",
           alignItems: "flex-start",
-          gap: "10px",
+          gap: "20px",
           width: "100%",
           overflowX: "auto",
         }}
