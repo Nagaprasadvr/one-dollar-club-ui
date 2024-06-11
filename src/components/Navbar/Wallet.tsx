@@ -20,8 +20,7 @@ export const Wallet = ({
 }: {
   setOpen: React.Dispatch<React.SetStateAction<boolean>> | null;
 }) => {
-  const { setSdk, setPointsRemaining, setPositions, setResultingPoints } =
-    useContext(AppContext);
+  const { resetUserData } = useContext(AppContext);
   const { setVisible } = useWalletModal();
   const handleConnect = () => {
     if (setOpen) {
@@ -45,11 +44,7 @@ export const Wallet = ({
     disconnect().then(() => {
       toast.success("Disconnected from wallet !");
     });
-    setSdk(null);
     setAnchorEl(null);
-    setPointsRemaining(null);
-    setResultingPoints(null);
-    setPositions([]);
   };
 
   return (

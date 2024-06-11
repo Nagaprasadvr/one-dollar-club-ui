@@ -33,7 +33,7 @@ interface AppContextType {
   setPoolConfig: (poolConfig: PoolConfig | null) => void;
   poolServerId: string | null;
   setPoolServerId: (poolServerId: string | null) => void;
-  isAllowedToPlay: boolean;
+  isAllowedToPlay: boolean | null;
   setIsAllowedToPlay: (isAllowedToPlay: boolean) => void;
   pointsRemaining: number | null;
   setPointsRemaining: (pointsRemaining: number | null) => void;
@@ -56,6 +56,7 @@ interface AppContextType {
   resultingPoints: number | null;
   setResultingPoints: (resultingPoints: number | null) => void;
   updatePoolConfig: () => Promise<void>;
+  resetUserData: () => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -67,7 +68,7 @@ export const AppContext = createContext<AppContextType>({
   setPoolConfig: () => {},
   poolServerId: null,
   setPoolServerId: () => {},
-  isAllowedToPlay: false,
+  isAllowedToPlay: null,
   setIsAllowedToPlay: () => {},
   pointsRemaining: null,
   setPointsRemaining: () => {},
@@ -90,6 +91,7 @@ export const AppContext = createContext<AppContextType>({
   resultingPoints: null,
   setResultingPoints: () => {},
   updatePoolConfig: async () => {},
+  resetUserData: () => {},
 });
 export const API_URL = "/api/birdeye";
 
@@ -103,7 +105,7 @@ export const AppContextProvider = ({
     boolean | null
   >(null);
 
-  const [isAllowedToPlay, setIsAllowedToPlay] = useState<boolean>(false);
+  const [isAllowedToPlay, setIsAllowedToPlay] = useState<boolean | null>(null);
   const connection = useMemo(
     () => new Connection(HELIUS_RPC_ENDPOINT, "confirmed"),
     []
@@ -135,6 +137,10 @@ export const AppContextProvider = ({
     useState<boolean>(false);
 
   const [resultingPoints, setResultingPoints] = useState<number | null>(null);
+
+  useEffect(() => {
+    resetUserData();
+  }, [publicKey]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -211,6 +217,15 @@ export const AppContextProvider = ({
     poolServerId,
     triggerRefetchUserData,
   ]);
+
+  const resetUserData = () => {
+    console.log("resetting user data");
+    setPositions([]);
+    setPointsRemaining(null);
+    setSdk(null);
+    setIsAllowedToPlay(null);
+    setResultingPoints(null);
+  };
 
   useEffect(() => {
     if (!sdk || !connected) return;
@@ -398,6 +413,7 @@ export const AppContextProvider = ({
         resultingPoints,
         setResultingPoints,
         updatePoolConfig,
+        resetUserData,
       }}
     >
       {children}
