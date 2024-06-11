@@ -196,8 +196,7 @@ export const AppContextProvider = ({
       connected &&
       publicKey &&
       wallet.signAllTransactions &&
-      wallet.signTransaction &&
-      !sdk
+      wallet.signTransaction
     ) {
       const uiWallet: UIWallet = {
         publicKey,
@@ -219,9 +218,7 @@ export const AppContextProvider = ({
   ]);
 
   const resetUserData = () => {
-    setPositions([]);
     setPointsRemaining(null);
-    setSdk(null);
     setIsAllowedToPlay(null);
     setResultingPoints(null);
   };
