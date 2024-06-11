@@ -264,6 +264,22 @@ export const fetchLeaderBoardHistory = async (
   }
 };
 
+export const fetchLeaderBoardLastUpdated = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/getLeaderBoardLastUpdated`
+    );
+
+    if (response.data.data) {
+      return response.data.data;
+    }
+    return null;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};
+
 export const fetchYourStats = async (pubkey: string) => {
   try {
     const response = await axios.get(
@@ -385,4 +401,10 @@ export const getTokenSymbolFromMint = (poolConfig: PoolConfig) => {
   } catch (e) {
     return "dBONK";
   }
+};
+
+export const getLeaderBoardExpiryTimeStamp = (lastUpdated: number) => {
+  const lastUpdatedTime = new Date(lastUpdated).getTime() + 5 * 60 * 1000;
+
+  return lastUpdatedTime;
 };

@@ -21,8 +21,10 @@ import {
 import {
   calculateTop3Positions,
   fetchLeaderBoardHistory,
+  fetchLeaderBoardLastUpdated,
   fetchLeaderBoards,
   fetchYourStats,
+  getLeaderBoardExpiryTimeStamp,
   getRow,
   getTotalPoints,
   minimizePubkey,
@@ -34,6 +36,7 @@ import { AppContext } from "@/components/Context/AppContext";
 import toast from "react-hot-toast";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { SOLANA_EXPLORER_URL } from "@/utils/constants";
+import { useTimer } from "react-timer-hook";
 const LeaderBoardHeaders = [
   {
     name: "Rank",
@@ -108,7 +111,9 @@ const LeaderBoard = () => {
   const [leaderboardData, setLeaderboardData] = useState<
     ExtendedLeaderBoardDataType[]
   >([]);
-
+  const [liveLeaderBoardLastUpdated, setLiveLeaderBoardLastUpdated] = useState<
+    number | null
+  >(null);
   const [leaderboardHistory, setLeaderboardHistory] = useState<
     ExtendedLeaderBoardHistory[]
   >([]);
@@ -121,75 +126,75 @@ const LeaderBoard = () => {
     useState<boolean>(false);
 
   const [tabValue, setTabValue] = useState("1");
-  useEffect(() => {
-    const getLeaderBoardData = async () => {
-      try {
-        setFetchingLeaderBoardData(true);
-        toast.loading("fetching Leaderboard data...", {
-          id: "leaderboard-data",
-        });
-        const leaderBoardData: LeaderBoardDataType[] =
-          await fetchLeaderBoards();
 
-        if (leaderBoardData.length === 0) {
-          setFetchingLeaderBoardData(false);
-          return;
-        }
+  const getLeaderBoardData = async () => {
+    try {
+      setFetchingLeaderBoardData(true);
+      toast.loading("fetching Leaderboard data...", {
+        id: "leaderboard-data",
+      });
+      const leaderBoardData: LeaderBoardDataType[] = await fetchLeaderBoards();
 
-        const extendedLeaderBoardData = leaderBoardData.map((data, index) => ({
+      if (leaderBoardData.length === 0) {
+        setFetchingLeaderBoardData(false);
+        return;
+      }
+
+      const extendedLeaderBoardData = leaderBoardData.map((data, index) => ({
+        ...data,
+        id: index + 1,
+      }));
+      setLeaderboardData(extendedLeaderBoardData);
+
+      toast.success("Leaderboard data fetched successfully", {
+        id: "leaderboard-data",
+      });
+    } catch (e) {
+      toast.error("Error fetching Leaderboard data", {
+        id: "leaderboard-data",
+      });
+    } finally {
+      setFetchingLeaderBoardData(false);
+    }
+  };
+
+  const getLiveLeaderBoardLastUpdated = async () => {
+    const lastUpdatedDoc = await fetchLeaderBoardLastUpdated();
+    if (lastUpdatedDoc) {
+      setLiveLeaderBoardLastUpdated(lastUpdatedDoc.lastUpdatedTs * 1000);
+    }
+  };
+
+  const getLeaderBoardHistory = async () => {
+    try {
+      setFetchingLeaderBoardData(true);
+      const leaderBoardHistory: LeaderBoardHistory[] =
+        await fetchLeaderBoardHistory();
+      if (leaderBoardHistory.length === 0) return;
+      const extendedLeaderBoardHistory = leaderBoardHistory.map(
+        (data, index) => ({
           ...data,
           id: index + 1,
-        }));
-        setLeaderboardData(extendedLeaderBoardData);
+        })
+      );
+      setLeaderboardHistory(extendedLeaderBoardHistory);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setFetchingLeaderBoardData(false);
+    }
+  };
 
-        toast.success("Leaderboard data fetched successfully", {
-          id: "leaderboard-data",
-        });
-      } catch (e) {
-        toast.error("Error fetching Leaderboard data", {
-          id: "leaderboard-data",
-        });
-      } finally {
-        setFetchingLeaderBoardData(false);
-        toast.dismiss("leaderboard-data");
-      }
-    };
-
-    const getLeaderBoardHistory = async () => {
-      try {
-        setFetchingLeaderBoardData(true);
-        const leaderBoardHistory: LeaderBoardHistory[] =
-          await fetchLeaderBoardHistory();
-        if (leaderBoardHistory.length === 0) return;
-        const extendedLeaderBoardHistory = leaderBoardHistory.map(
-          (data, index) => ({
-            ...data,
-            id: index + 1,
-          })
-        );
-        setLeaderboardHistory(extendedLeaderBoardHistory);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setFetchingLeaderBoardData(false);
-      }
-    };
-
+  useEffect(() => {
     if (leaderboardData.length === 0) getLeaderBoardData();
     if (leaderboardHistory.length === 0) getLeaderBoardHistory();
-
-    const id = setInterval(() => {
-      getLeaderBoardData();
-    }, 1000 * 60 * 10);
-
-    return () => {
-      clearInterval(id);
-    };
-  }, [wallet, positions, resultingPoints, poolServerId, tokensPrices]);
+    if (liveLeaderBoardLastUpdated === null) getLiveLeaderBoardLastUpdated();
+  }, []);
 
   useEffect(() => {
     const getYourStats = () => {
       if (
+        !wallet ||
         positions.length === 0 ||
         resultingPoints === null ||
         poolServerId === null ||
@@ -216,7 +221,7 @@ const LeaderBoard = () => {
     return () => {
       clearInterval(id);
     };
-  });
+  }, [wallet, positions, resultingPoints, poolServerId, tokensPrices]);
 
   const getHeader = () => {
     if (fetchingLeaderBoardData) {
@@ -234,6 +239,24 @@ const LeaderBoard = () => {
           : "LeaderBoard History will be updated after each round";
     }
   };
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!liveLeaderBoardLastUpdated) return;
+      const timeNow = Date.now();
+
+      if (
+        timeNow >= getLeaderBoardExpiryTimeStamp(liveLeaderBoardLastUpdated)
+      ) {
+        getLeaderBoardData();
+        getLiveLeaderBoardLastUpdated();
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [liveLeaderBoardLastUpdated]);
 
   const columns1: GridColDef[] = LeaderBoardHeaders.map((header) => {
     if (header.key === "top3Positions") {
@@ -650,30 +673,58 @@ const LeaderBoard = () => {
             flexDirection: "row",
             gap: "20px",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent:
+              leaderboardData.length === 0 || leaderboardHistory.length === 0
+                ? "center"
+                : "space-between",
+            width: "80%",
+            flexWrap: "wrap",
           }}
         >
-          <Typography
+          <Box
             sx={{
-              textAlign: "start",
-              fontSize: smallScreen ? "20px" : "25px",
-              fontWeight: "bold",
+              display: "flex",
+              flexDirection: "row",
+              gap: "10px",
+              alignItems: "center",
             }}
           >
-            {getHeader()}
-          </Typography>
-          <Tooltip
-            title={
-              tabValue === "1"
-                ? "Live LeaderBoard is updated every 5 minutes"
-                : "LeaderBoard history is updated after each round"
-            }
-            sx={{
-              cursor: "pointer",
-            }}
-          >
-            <InfoRounded />
-          </Tooltip>
+            <Typography
+              sx={{
+                textAlign: "start",
+                fontSize: smallScreen ? "20px" : "25px",
+                fontWeight: "bold",
+              }}
+            >
+              {getHeader()}
+            </Typography>
+            <Tooltip
+              title={
+                tabValue === "1"
+                  ? "Live LeaderBoard is updated every 5 minutes"
+                  : "LeaderBoard history is updated after each round"
+              }
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              <InfoRounded />
+            </Tooltip>
+          </Box>
+          {liveLeaderBoardLastUpdated && tabValue === "1" && (
+            <Typography
+              sx={{
+                fontSize: "15px",
+                fontWeight: "bold",
+                textWrap: "wrap",
+              }}
+            >
+              Updates at :{" "}
+              {new Date(
+                getLeaderBoardExpiryTimeStamp(liveLeaderBoardLastUpdated)
+              ).toLocaleTimeString()}
+            </Typography>
+          )}
         </Box>
         {tabValue === "1" && (
           <TabPanel
