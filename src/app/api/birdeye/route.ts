@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       { error: "Data is too fresh" },
       {
         headers: responseHeaders,
-        status: 400,
+        status: 200,
       }
     );
   }
