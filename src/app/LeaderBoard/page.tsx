@@ -226,7 +226,7 @@ const LeaderBoard = () => {
       case "1":
         return leaderboardData.length > 0
           ? "LeaderBoard"
-          : "No positions created yet";
+          : "No positions created for this round yet";
 
       case "2":
         return leaderboardHistory.length > 0
