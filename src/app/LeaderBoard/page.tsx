@@ -556,7 +556,7 @@ const LeaderBoard = () => {
             sx={{
               cursor: "pointer",
             }}
-            title="Note that Your Stats Data is updated frequently and LeaderBoard data is updated every 10 minutes"
+            title="Note that Your Stats Data is updated frequently and LeaderBoard data is updated every 5 minutes"
           >
             <InfoRounded />
           </Tooltip>
@@ -665,7 +665,7 @@ const LeaderBoard = () => {
           <Tooltip
             title={
               tabValue === "1"
-                ? "Live LeaderBoard is updated every 10 minutes"
+                ? "Live LeaderBoard is updated every 5 minutes"
                 : "LeaderBoard history is updated after each round"
             }
             sx={{
