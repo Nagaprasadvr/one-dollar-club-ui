@@ -219,7 +219,6 @@ export const AppContextProvider = ({
   ]);
 
   const resetUserData = () => {
-    console.log("resetting user data");
     setPositions([]);
     setPointsRemaining(null);
     setSdk(null);
