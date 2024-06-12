@@ -128,6 +128,7 @@ const LeaderBoard = () => {
   const [tabValue, setTabValue] = useState("1");
 
   const getLeaderBoardData = async () => {
+    console.log("called");
     try {
       setFetchingLeaderBoardData(true);
       toast.loading("fetching Leaderboard data...", {
@@ -163,6 +164,8 @@ const LeaderBoard = () => {
     const lastUpdatedDoc = await fetchLeaderBoardLastUpdated();
     if (lastUpdatedDoc) {
       setLiveLeaderBoardLastUpdated(lastUpdatedDoc.lastUpdatedTs * 1000);
+    } else {
+      setLiveLeaderBoardLastUpdated(Date.now() + 5 * 60 * 1000);
     }
   };
 
@@ -249,6 +252,11 @@ const LeaderBoard = () => {
       if (
         timeNow >= getLeaderBoardExpiryTimeStamp(liveLeaderBoardLastUpdated)
       ) {
+        if (
+          timeNow - getLeaderBoardExpiryTimeStamp(liveLeaderBoardLastUpdated) >
+          5 * 60 * 1000
+        )
+          return;
         getLeaderBoardData();
         getLiveLeaderBoardLastUpdated();
       }
