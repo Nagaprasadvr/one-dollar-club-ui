@@ -59,6 +59,10 @@ export const Projects = () => {
     }
   }, [tokensPrices]);
 
+  const isDevnet = useMemo(() => {
+    return sdk && sdk.connection.rpcEndpoint.includes("devnet");
+  }, [sdk]);
+
   const handlePoolDeposit = async () => {
     if (!poolConfig) return;
     if (sdk) {
@@ -83,11 +87,13 @@ export const Projects = () => {
         const responsePointsJson = await responsePoints.json();
         setPointsRemaining(responsePointsJson.data);
       } catch (err) {
-        let errString = "";
-        if (err instanceof Error) {
-          errString = err.message;
+        let errString = "Error while depositing to play" + " ";
+        errString += err + " ";
+
+        if (isDevnet) {
+          errString += "Go to Faucet and get some devnet tokens to play";
         }
-        toast.error("Error while depositing to play" + errString, {
+        toast.error(errString, {
           id: "depositing",
         });
       }

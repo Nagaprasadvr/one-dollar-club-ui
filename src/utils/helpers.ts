@@ -408,3 +408,11 @@ export const getLeaderBoardExpiryTimeStamp = (lastUpdated: number) => {
 
   return lastUpdatedTime;
 };
+
+export const addDecimals = (value: number, decimals: number) => {
+  return value * 10 ** decimals;
+};
+
+export const removeDecimals = (value: number, decimals: number) => {
+  return value / 10 ** decimals;
+};

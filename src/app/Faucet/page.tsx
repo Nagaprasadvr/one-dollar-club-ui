@@ -7,14 +7,18 @@ import { useContext, useEffect, useState } from "react";
 import * as spl from "@solana/spl-token";
 import * as solana from "@solana/web3.js";
 import toast from "react-hot-toast";
-import { getTokenSymbolFromMint } from "@/utils/helpers";
+import {
+  addDecimals,
+  getTokenSymbolFromMint,
+  removeDecimals,
+} from "@/utils/helpers";
 
 const Faucet = () => {
   const { connected, publicKey } = useWallet();
   const wallet = useWallet();
   const { poolConfig, sdk } = useContext(AppContext);
 
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [tokenBalance, setTokenBalance] = useState<number | string>("");
 
   useEffect(() => {
     setTokenBalance(0);
@@ -23,17 +27,27 @@ const Faucet = () => {
   const fetchTokenBalance = async () => {
     if (!sdk || !publicKey || !connected || !poolConfig) return;
     try {
+      toast.loading("Fetching balance", {
+        id: "fetch-balance",
+      });
       const ataAddress = await spl.getAssociatedTokenAddress(
         poolConfig.poolActiveMint,
         publicKey
       );
 
       const ataAccount = await spl.getAccount(sdk.connection, ataAddress);
-      if (!ataAccount) return;
-      const balance = Number(ataAccount.amount) / Math.pow(10, 9);
+      if (!ataAccount) {
+        setTokenBalance(0);
+        toast.dismiss("fetch-balance");
+        return;
+      }
+      const balance = removeDecimals(Number(ataAccount.amount), 9);
       setTokenBalance(balance);
+      toast.dismiss("fetch-balance");
     } catch (e) {
       console.error(e);
+      setTokenBalance(0);
+      toast.dismiss("fetch-balance");
     }
   };
 
@@ -104,7 +118,7 @@ const Faucet = () => {
         poolConfig.poolActiveMint,
         ataAddress,
         tokenMintKeypair.publicKey,
-        poolConfig.poolDepositPerUser * 2 * Math.pow(10, 9)
+        addDecimals(poolConfig.poolDepositPerUser * 2, 9)
       );
       ixs.push(ix);
       const tx = new solana.Transaction();

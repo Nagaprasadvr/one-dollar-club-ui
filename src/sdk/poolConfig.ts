@@ -5,7 +5,10 @@ import * as solana from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
 import { API_BASE_URL } from "@/utils/constants";
 import { PoolConfigAccount } from "@/utils/types";
-import { fromRawConfigPoolDataToHumanReadableData } from "@/utils/helpers";
+import {
+  fromRawConfigPoolDataToHumanReadableData,
+  removeDecimals,
+} from "@/utils/helpers";
 import { BN } from "bn.js";
 
 export class PoolConfig {
@@ -63,7 +66,24 @@ export class PoolConfig {
       this.sdk.wallet.publicKey
     );
 
-    await this.sdk.program.methods
+    const depositorTokenAccountInfo = await spl.getAccount(
+      this.sdk.connection,
+      depositorTokenAccount
+    );
+
+    if (!depositorTokenAccountInfo) {
+      throw new Error("Depositor token account not found");
+    }
+
+    if (
+      !depositorTokenAccountInfo?.amount ||
+      removeDecimals(Number(depositorTokenAccountInfo.amount), 9) <
+        this.poolDepositPerUser
+    ) {
+      throw new Error("Insufficient funds");
+    }
+
+    const signature = await this.sdk.program.methods
       .deposit()
       .accountsStrict({
         poolConfig: this.poolAddress,
