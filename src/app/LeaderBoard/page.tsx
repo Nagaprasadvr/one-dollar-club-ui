@@ -137,6 +137,7 @@ const LeaderBoard = () => {
 
       if (leaderBoardData.length === 0) {
         setFetchingLeaderBoardData(false);
+        toast.dismiss("leaderboard-data");
         return;
       }
 
