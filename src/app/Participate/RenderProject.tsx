@@ -116,6 +116,7 @@ export const RenderProject = ({
             flexDirection: "row",
             alignItems: "center",
             gap: "10px",
+            minWidth: "200px",
           }}
         >
           <Image
