@@ -64,10 +64,12 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           Ends in : {hours} Hours {minutes} Minutes {seconds} Seconds
         </Typography>
       ) : (
-        <Typography variant="h6" fontWeight={"bold"}>
-          Next Round Starts in : {24 - hours} Hours {minutes} Minutes {seconds}{" "}
-          Seconds
-        </Typography>
+        poolConfig.poolState === "Inactive" && (
+          <Typography variant="h6" fontWeight={"bold"}>
+            Next Round Starts in : {25 - hours} Hours {minutes} Minutes{" "}
+            {seconds} Seconds
+          </Typography>
+        )
       )}
 
       <Box

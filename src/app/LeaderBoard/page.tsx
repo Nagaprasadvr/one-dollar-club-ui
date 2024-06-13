@@ -178,7 +178,7 @@ const LeaderBoard = () => {
       const extendedLeaderBoardHistory = leaderBoardHistory.map(
         (data, index) => ({
           ...data,
-          id: index + 1,
+          id: data.rank,
         })
       );
       setLeaderboardHistory(extendedLeaderBoardHistory);
