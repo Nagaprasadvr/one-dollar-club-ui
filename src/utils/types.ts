@@ -80,3 +80,19 @@ export type PoolConfigAccount = {
   poolBalance: number;
   poolDepositsPaused: boolean;
 };
+
+export interface JupTokenInfo {
+  name: string;
+  symbol: string;
+  address: string;
+  decimals: number;
+  logoURI: string;
+  chainId: number;
+  coingeckoId: string;
+}
+
+export type Project = {
+  name: string;
+  mint: string;
+  logoURI: string;
+};

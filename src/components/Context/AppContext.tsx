@@ -14,6 +14,7 @@ import { SDK, UIWallet } from "@/sdk/sdk";
 import { Position } from "@/sdk/Position";
 import {
   BirdeyeTokenPriceData,
+  JupTokenInfo,
   PoolConfigAccount,
   TokenPriceHistory,
 } from "@/utils/types";
@@ -58,6 +59,7 @@ interface AppContextType {
   updatePoolConfig: () => Promise<void>;
   resetUserData: () => void;
   gamesPlayed: number | null;
+  tokensMetadata: JupTokenInfo[];
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -94,6 +96,7 @@ export const AppContext = createContext<AppContextType>({
   updatePoolConfig: async () => {},
   resetUserData: () => {},
   gamesPlayed: null,
+  tokensMetadata: [],
 });
 export const API_URL = "/api/birdeye";
 
@@ -113,6 +116,7 @@ export const AppContextProvider = ({
     []
   );
 
+  const [tokensMetadata, setTokensMetadata] = useState<JupTokenInfo[]>([]);
   const [footerModalOpen, setFooterModalOpen] = useState<boolean>(true);
 
   const [poolConfig, setPoolConfig] = useState<PoolConfig | null>(null);
@@ -144,6 +148,7 @@ export const AppContextProvider = ({
     resetUserData();
   }, [publicKey]);
 
+  console.log("tokensMetadata", tokensMetadata);
   useEffect(() => {
     const fetchData = async () => {
       if (!poolServerId || !publicKey) return;
@@ -319,8 +324,36 @@ export const AppContextProvider = ({
         console.error(e);
       }
     };
+    // const fetchJupTokenList = async () => {
+    //   try {
+    //     const response = await fetch("https://token.jup.ag/strict");
+    //     const data = await response.json();
+    //     const tokens: JupTokenInfo[] = data.map((token: any) => {
+    //       return {
+    //         name: token?.name.toLowerCase(),
+    //         symbol: token?.symbol.toLowerCase(),
+    //         address: token?.address,
+    //         decimals: token?.decimals,
+    //         logoURI: token?.logoURI,
+    //         chainId: token?.chainId,
+    //         coingeckoId: token?.extensions?.coingeckoId,
+    //       };
+    //     });
+    //     const mintsAllowedToPlay = PROJECTS_TO_PLAY.map(
+    //       (project) => project.mint
+    //     );
+    //     const filteredTokens = tokens.filter((token) => {
+    //       return mintsAllowedToPlay.includes(token.address);
+    //     });
+    //     setTokensMetadata(filteredTokens);
+    //   } catch (error) {
+    //     console.error("Failed to fetch the jupiter token list:", error);
+    //   }
+    // };
+
     if (!poolServerId) fetchPoolServerId();
     if (gamesPlayed === null) fetchTotalGamesPlayed();
+    // if (tokensMetadata.length === 0) fetchJupTokenList();
     // if (!fetchedChartsData && tokensPriceHistory.length === 0)
     //   fetchChartsData();
   }, []);
@@ -431,6 +464,7 @@ export const AppContextProvider = ({
         updatePoolConfig,
         resetUserData,
         gamesPlayed,
+        tokensMetadata,
       }}
     >
       {children}

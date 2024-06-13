@@ -14,7 +14,12 @@ import toast from "react-hot-toast";
 import { RenderPositionStats } from "./RenderPositionStats";
 import { useContext, useMemo } from "react";
 import { AppContext } from "@/components/Context/AppContext";
-import { BirdeyeTokenPriceData, PositionInputData } from "@/utils/types";
+import {
+  BirdeyeTokenPriceData,
+  PositionInputData,
+  Project,
+} from "@/utils/types";
+import Image from "next/image";
 
 export const RenderProject = ({
   project,
@@ -24,17 +29,14 @@ export const RenderProject = ({
   setSelectedTokenData,
   positionsInputData,
 }: {
-  project: {
-    name: string;
-    mint: string;
-  };
+  project: Project;
   setModalOpen: (value: boolean) => void;
   setSelectedToken: (value: string) => void;
   setSelectedTokenAddress: (value: string) => void;
   setSelectedTokenData: (value: BirdeyeTokenPriceData) => void;
   positionsInputData: PositionInputData[];
 }) => {
-  const { poolConfig } = useContext(AppContext);
+  const { poolConfig, tokensMetadata } = useContext(AppContext);
   const defaultTokenPriceData: BirdeyeTokenPriceData = {
     address: project.mint,
     value: 0,
@@ -108,29 +110,48 @@ export const RenderProject = ({
           overflowY: "hidden",
         }}
       >
-        <TextWithValue
-          text="Project"
-          value={project.name}
-          gap="5px"
-          endComponent={
-            <Tooltip title="Click to view project on Birdeye">
-              <IconButton
-                onClick={() => {
-                  window.open(
-                    `${birdeyeUrl}${project.mint}?chain=solana`,
-                    "_blank"
-                  );
-                }}
-              >
-                <CallMade
-                  sx={{
-                    fontSize: "20px",
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <Image
+            src={project.logoURI}
+            alt="token logo"
+            width={50}
+            height={50}
+            style={{
+              borderRadius: "50%",
+            }}
+          />
+
+          <TextWithValue
+            text="Project"
+            value={project.name}
+            gap="5px"
+            endComponent={
+              <Tooltip title="Click to view project on Birdeye">
+                <IconButton
+                  onClick={() => {
+                    window.open(
+                      `${birdeyeUrl}${project.mint}?chain=solana`,
+                      "_blank"
+                    );
                   }}
-                />
-              </IconButton>
-            </Tooltip>
-          }
-        />
+                >
+                  <CallMade
+                    sx={{
+                      fontSize: "20px",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+            }
+          />
+        </Box>
 
         <TextWithValue
           text="Mint"

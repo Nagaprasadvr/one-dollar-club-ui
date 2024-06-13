@@ -19,7 +19,7 @@ import { CallMade, Close as CloseIcon, ContentCopy } from "@mui/icons-material";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
 import { useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { API_BASE_URL, birdeyeUrl } from "@/utils/constants";
+import { API_BASE_URL, birdeyeUrl, PROJECTS_TO_PLAY } from "@/utils/constants";
 import { AppContext } from "@/components/Context/AppContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
@@ -36,6 +36,7 @@ import {
 import { Message } from "@/components/HelperComponents/Message";
 import { Position } from "@/sdk/Position";
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import Image from "next/image";
 
 export const getPlaceHolder = (data: string) => {
   switch (data) {
@@ -118,6 +119,11 @@ export const CreatePositionModal = ({
       tokenMint: tokenAddress,
     }
   );
+
+  const tokenLogo =
+    PROJECTS_TO_PLAY.find((project) => project.name === tokenSymbol)?.logoURI ??
+    null;
+
   const currentPointsRemaining = useMemo(() => {
     if (pointsRemaining === null) return 0;
     if (positionsInputData.length === 0) return pointsRemaining;
@@ -318,86 +324,130 @@ export const CreatePositionModal = ({
             sx={{
               display: "flex",
               flexDirection: midScreen ? "column" : "row",
-              justifyContent: "space-between",
+              justifyContent: "start",
               width: "100%",
               gap: "20px",
             }}
           >
-            <TextWithValue
-              text="Token Symbol"
-              value={tokenSymbol}
-              gap="5px"
-              endComponent={
-                <Tooltip title="Click to view project on Birdeye">
-                  <IconButton
-                    onClick={() => {
-                      window.open(
-                        `${birdeyeUrl}${tokenAddress}?chain=solana`,
-                        "_blank"
-                      );
-                    }}
-                  >
-                    <CallMade
-                      sx={{
-                        fontSize: "20px",
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "10px",
+                width: mobileScreen ? "100%" : "50%",
+              }}
+            >
+              {tokenLogo && (
+                <Image
+                  src={tokenLogo}
+                  alt="token logo"
+                  width={50}
+                  height={50}
+                  style={{
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
+              <TextWithValue
+                text="Token"
+                value={tokenSymbol}
+                gap="5px"
+                endComponent={
+                  <Tooltip title="Click to view project on Birdeye">
+                    <IconButton
+                      onClick={() => {
+                        window.open(
+                          `${birdeyeUrl}${tokenAddress}?chain=solana`,
+                          "_blank"
+                        );
                       }}
-                    />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-            <TextWithValue
-              text="Token Address"
-              value={minimizePubkey(tokenAddress)}
-              gap="5px"
-              endComponent={
-                <Tooltip title="Copy Token Address">
-                  <IconButton
-                    onClick={() => {
-                      toast.success("Token Address Copied");
-                      navigator.clipboard.writeText(tokenAddress);
-                    }}
-                  >
-                    <ContentCopy
-                      sx={{
-                        fontSize: "20px",
+                    >
+                      <CallMade
+                        sx={{
+                          fontSize: "20px",
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                }
+              />
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                width: mobileScreen ? "100%" : "50%",
+              }}
+            >
+              <TextWithValue
+                text="Token Address"
+                value={minimizePubkey(tokenAddress)}
+                gap="5px"
+                endComponent={
+                  <Tooltip title="Copy Token Address">
+                    <IconButton
+                      onClick={() => {
+                        toast.success("Token Address Copied");
+                        navigator.clipboard.writeText(tokenAddress);
                       }}
-                    />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
+                    >
+                      <ContentCopy
+                        sx={{
+                          fontSize: "20px",
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                }
+              />
+            </Box>
           </Box>
           <Box
             sx={{
               display: "flex",
               flexDirection: midScreen ? "column" : "row",
-              justifyContent: "space-between",
+              justifyContent: "start",
               width: "100%",
               gap: "20px",
             }}
           >
-            <TextWithValue
-              text="Current Price"
-              value={
-                activeTokenData.value.toLocaleString("en-US", {
-                  maximumFractionDigits: 9,
-                }) ?? ""
-              }
-              gap="5px"
-            />
-            <TextWithValue
-              text="24Hr Change"
-              value={get24Change(activeTokenData.priceChange24h)}
-              gap="5px"
-              endComponent={
-                activeTokenData.priceChange24h > 0 ? (
-                  <ArrowUpward sx={{ color: "lightgreen", fontSize: "20px" }} />
-                ) : (
-                  <ArrowDownward sx={{ color: "red", fontSize: "20px" }} />
-                )
-              }
-            />
+            <Box
+              sx={{
+                display: "flex",
+                width: mobileScreen ? "100%" : "50%",
+              }}
+            >
+              <TextWithValue
+                text="Current Price"
+                value={
+                  activeTokenData.value.toLocaleString("en-US", {
+                    maximumFractionDigits: 9,
+                  }) ?? ""
+                }
+                gap="5px"
+              />
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                width: mobileScreen ? "100%" : "50%",
+              }}
+            >
+              <TextWithValue
+                text="24Hr Change"
+                value={get24Change(activeTokenData.priceChange24h)}
+                gap="5px"
+                endComponent={
+                  activeTokenData.priceChange24h > 0 ? (
+                    <ArrowUpward
+                      sx={{ color: "lightgreen", fontSize: "20px" }}
+                    />
+                  ) : (
+                    <ArrowDownward sx={{ color: "red", fontSize: "20px" }} />
+                  )
+                }
+              />
+            </Box>
           </Box>
           <Box
             sx={{
