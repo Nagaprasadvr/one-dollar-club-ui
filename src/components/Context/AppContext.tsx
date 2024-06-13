@@ -148,7 +148,6 @@ export const AppContextProvider = ({
     resetUserData();
   }, [publicKey]);
 
-  console.log("tokensMetadata", tokensMetadata);
   useEffect(() => {
     const fetchData = async () => {
       if (!poolServerId || !publicKey) return;

@@ -128,7 +128,6 @@ const LeaderBoard = () => {
   const [tabValue, setTabValue] = useState("1");
 
   const getLeaderBoardData = async () => {
-    console.log("called");
     try {
       setFetchingLeaderBoardData(true);
       toast.loading("fetching Leaderboard data...", {
