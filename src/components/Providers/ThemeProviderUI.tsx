@@ -71,7 +71,7 @@ const darkTheme = createTheme({
           justifyContent: "center",
           alignItems: "center",
           justifyItems: "center",
-          fontSize: "18px",
+          fontSize: "16px",
 
           "&:hover": {
             backgroundColor: "#aff6ff",

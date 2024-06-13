@@ -191,6 +191,9 @@ export const Navbar = () => {
                   p: "10px",
                   backgroundColor: "#aff6ff",
                   borderRadius: "10px",
+                  height: "18px",
+                  alignItems: "center",
+                  display: "flex",
                 }}
               >
                 <Typography
@@ -214,6 +217,9 @@ export const Navbar = () => {
                   p: "10px",
                   backgroundColor: "#aff6ff",
                   borderRadius: "10px",
+                  height: "18px",
+                  alignItems: "center",
+                  display: "flex",
                 }}
               >
                 <Typography

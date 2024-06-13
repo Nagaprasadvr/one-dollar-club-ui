@@ -23,7 +23,7 @@ export const Modal = ({
         minWidth: "500px",
         minHeight: "600px",
         gap: "16px",
-        backdropFilter: "blur(2px)",
+        backdropFilter: "blur(10px)",
       }}
     >
       {children}

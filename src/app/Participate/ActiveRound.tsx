@@ -7,7 +7,7 @@ import { useContext } from "react";
 import { useTimer } from "react-timer-hook";
 
 export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
-  const { poolServerId } = useContext(AppContext);
+  const { poolServerId, gamesPlayed } = useContext(AppContext);
   const {
     seconds,
     minutes,
@@ -44,6 +44,17 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
         flexWrap: smallScreen ? "wrap" : "nowrap",
       }}
     >
+      <Typography
+        variant="h4"
+        fontWeight={"bold"}
+        color="#87cefa"
+        sx={{
+          textAlign: "start",
+          width: "100%",
+        }}
+      >
+        Game #{gamesPlayed}
+      </Typography>
       <Typography variant="h5" fontWeight={"bold"}>
         Pool:{" "}
         <span
@@ -89,6 +100,7 @@ export const ActiveRound = ({ poolConfig }: { poolConfig: PoolConfig }) => {
           gap="5px"
           value={minimizePubkey(poolConfig.poolAddress.toBase58())}
         /> */}
+
         <TextWithValue
           justifyContent="flex-start"
           text="Pool Id"

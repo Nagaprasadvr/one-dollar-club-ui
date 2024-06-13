@@ -57,6 +57,7 @@ interface AppContextType {
   setResultingPoints: (resultingPoints: number | null) => void;
   updatePoolConfig: () => Promise<void>;
   resetUserData: () => void;
+  gamesPlayed: number | null;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -92,6 +93,7 @@ export const AppContext = createContext<AppContextType>({
   setResultingPoints: () => {},
   updatePoolConfig: async () => {},
   resetUserData: () => {},
+  gamesPlayed: null,
 });
 export const API_URL = "/api/birdeye";
 
@@ -104,7 +106,7 @@ export const AppContextProvider = ({
   const [isFetchingPoolConfig, setIsFetchingPoolConfig] = useState<
     boolean | null
   >(null);
-
+  const [gamesPlayed, setGamesPlayed] = useState<number | null>(null);
   const [isAllowedToPlay, setIsAllowedToPlay] = useState<boolean | null>(null);
   const connection = useMemo(
     () => new Connection(HELIUS_RPC_ENDPOINT, "confirmed"),
@@ -282,6 +284,23 @@ export const AppContextProvider = ({
       }
     };
 
+    const fetchTotalGamesPlayed = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/poolGamesPlayed`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const responseJson = await response.json();
+
+        setGamesPlayed(responseJson.data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     const fetchChartsData = async () => {
       if (tokensPriceHistory.length > 0) return;
       try {
@@ -301,9 +320,10 @@ export const AppContextProvider = ({
       }
     };
     if (!poolServerId) fetchPoolServerId();
+    if (gamesPlayed === null) fetchTotalGamesPlayed();
     // if (!fetchedChartsData && tokensPriceHistory.length === 0)
     //   fetchChartsData();
-  }, [fetchedChartsData, tokenPriceHistoryLastUpdated, tokenPriceLastUpdated]);
+  }, []);
 
   const updatePoolConfig = async () => {
     if (!sdk) return;
@@ -410,6 +430,7 @@ export const AppContextProvider = ({
         setResultingPoints,
         updatePoolConfig,
         resetUserData,
+        gamesPlayed,
       }}
     >
       {children}

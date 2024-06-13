@@ -24,7 +24,11 @@ import {
   TokenPriceHistory,
 } from "./types";
 import { API_URL } from "@/components/Context/AppContext";
-import { API_BASE_URL, PROJECTS_TO_PLAY } from "./constants";
+import {
+  API_BASE_URL,
+  HELIUS_RPC_ENDPOINT,
+  PROJECTS_TO_PLAY,
+} from "./constants";
 import { RawPoolConfig } from "@/sdk/sdk";
 import { PoolConfig } from "@/sdk/poolConfig";
 
