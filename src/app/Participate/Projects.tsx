@@ -326,6 +326,9 @@ export const Projects = () => {
             onClick={() => {
               setTriggerRefetchUserData(!triggerRefetchUserData);
               updatePoolConfig();
+              toast.loading("Refreshing...", {
+                duration: 2000,
+              });
             }}
           >
             <Refresh

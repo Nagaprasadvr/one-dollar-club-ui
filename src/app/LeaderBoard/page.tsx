@@ -36,7 +36,7 @@ import { AppContext } from "@/components/Context/AppContext";
 import toast from "react-hot-toast";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { SOLANA_EXPLORER_URL } from "@/utils/constants";
-import { useTimer } from "react-timer-hook";
+
 const LeaderBoardHeaders = [
   {
     name: "Rank",
@@ -69,8 +69,12 @@ const LeaderBoardHeaders = [
 
 const LeaderBoardHistoryHeaders = [
   {
-    name: "Rank",
+    name: "#",
     key: "id",
+  },
+  {
+    name: "Rank",
+    key: "rank",
   },
   {
     name: "Pool Id",
@@ -174,12 +178,18 @@ const LeaderBoard = () => {
       const leaderBoardHistory: LeaderBoardHistory[] =
         await fetchLeaderBoardHistory();
       if (leaderBoardHistory.length === 0) return;
+      leaderBoardHistory.sort((a, b) => {
+        if (new Date(a.date).getTime() > new Date(b.date).getTime()) return -1;
+        if (new Date(a.date).getTime() < new Date(b.date).getTime()) return 1;
+        return 0;
+      });
       const extendedLeaderBoardHistory = leaderBoardHistory.map(
         (data, index) => ({
           ...data,
-          id: data.rank,
+          id: index + 1,
         })
       );
+
       setLeaderboardHistory(extendedLeaderBoardHistory);
     } catch (e) {
       console.error(e);

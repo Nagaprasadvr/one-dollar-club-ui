@@ -151,9 +151,6 @@ export const AppContextProvider = ({
   useEffect(() => {
     const fetchData = async () => {
       if (!poolServerId || !publicKey) return;
-      toast.loading("Fetching user data...", {
-        id: "fetchUserData",
-      });
       try {
         const response = await fetch(
           `${API_BASE_URL}/isAllowedToPlay?pubkey=${publicKey.toBase58()}`,
@@ -186,14 +183,8 @@ export const AppContextProvider = ({
           publicKey.toBase58()
         );
         setPositions(fetchedPositions);
-        toast.success("User data fetched successfully", {
-          id: "fetchUserData",
-        });
       } catch (e) {
         console.error(e);
-        toast.error("Error while fetching user data", {
-          id: "fetchUserData",
-        });
       }
     };
 
