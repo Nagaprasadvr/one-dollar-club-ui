@@ -20,7 +20,7 @@ const ModalContentData = [
     contentName: "Steps",
     contentData: [
       {
-        step: "Connect your wallet and Deposit 35,000 $BONK to get started",
+        step: "Connect your wallet and Deposit 40,000 $BONK to get started",
         result: "Upon successful deposit, receive 100 points.",
       },
       {
