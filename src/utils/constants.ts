@@ -86,7 +86,7 @@ export const HELIUS_MAINNET_RPC_ENDPOINT =
   "https://mainnet.helius-rpc.com/?api-key=52d3aae3-07be-4900-a393-49d36a260649";
 
 export const POOL_AUTH_PUBKEY = new PublicKey(
-  "AsM97N16ejpKcVJTwEWtnLsDMz7jFPGr6SU1vzJD9xZt"
+  "CNiF4Y8VdsA7aMftkF6kumEBz67AsCAyvnZDr6zopYSC"
 );
 
 export const BONK_MAINNET_MINT = "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263";

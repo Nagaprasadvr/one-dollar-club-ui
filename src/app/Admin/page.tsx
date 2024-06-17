@@ -161,7 +161,6 @@ const Admin = () => {
         gap: "40px",
         width: "100%",
         alignItems: "center",
-        justifyContent: "center",
         height: "80vh",
         overflowY: "auto",
         marginBottom: "20px",
@@ -174,7 +173,6 @@ const Admin = () => {
           flexDirection: "column",
           gap: "40px",
           alignItems: "center",
-          justifyContent: "center",
         }}
       >
         <Typography fontWeight={"bold"}>
