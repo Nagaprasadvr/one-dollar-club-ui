@@ -123,7 +123,7 @@ export const Projects = () => {
 
     if (!isAllowedToPlay && !poolConfig.poolDepositsPaused) {
       return (
-        <Button onClick={handlePoolDeposit}>Deposit 35k BONK to Play</Button>
+        <Button onClick={handlePoolDeposit}>Deposit 40k BONK to Play</Button>
       );
     }
 
