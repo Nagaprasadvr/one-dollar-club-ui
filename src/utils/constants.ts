@@ -1,9 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { Project } from "./types";
 
-export const HELIUS_RPC_ENDPOINT =
-  "https://devnet.helius-rpc.com/?api-key=17f7af93-4fe5-409c-b871-6a01323f3760";
-
 export const CHARCOAL = "#36454F";
 
 export const MAX_ACCESS_FEE = 100;
@@ -12,12 +9,6 @@ export const MAX_DESCRIPTION_LENGTH = 500;
 
 export const MAX_RESEARCH_PAPER_SIZE_IN_BYTES = 100 * 1024 * 1024;
 export const MAX_IMAGE_SIZE_IN_BYTES = 10 * 1024 * 1024;
-
-export const DEVNET_POOL_CONFIG_PUBKEY =
-  "7d9QiPPQ4q9DV4UyLS3j9ZSR71NRwCQ4NMYeHaCkXByz";
-export const POOL_AUTH_PUBKEY = new PublicKey(
-  "CNiF4Y8VdsA7aMftkF6kumEBz67AsCAyvnZDr6zopYSC"
-);
 
 export const PROJECTS_TO_PLAY: Project[] = [
   {
@@ -87,3 +78,21 @@ export const API_BASE_URL = "https://server.onedollarclub.fun/";
 export const birdeyeUrl = "https://birdeye.so/token/";
 
 export const SOLANA_EXPLORER_URL = "https://explorer.solana.com/address";
+
+export const HELIUS_DEVNET_RPC_ENDPOINT =
+  "https://devnet.helius-rpc.com/?api-key=52d3aae3-07be-4900-a393-49d36a260649";
+
+export const HELIUS_MAINNET_RPC_ENDPOINT =
+  "https://mainnet.helius-rpc.com/?api-key=52d3aae3-07be-4900-a393-49d36a260649";
+
+export const POOL_AUTH_PUBKEY = new PublicKey(
+  "AsM97N16ejpKcVJTwEWtnLsDMz7jFPGr6SU1vzJD9xZt"
+);
+
+export const BONK_MAINNET_MINT = "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263";
+export const BONK_DEVNET_MINT = "31nhKDV3WudEC8Nfwa8sfPiGq9FEeXknSmDZTSKQiru1";
+export const MAINNET_POOL_CONFIG_PUBKEY =
+  "4NGsmgPxgdZtw9F6hbZdWFQbFq7zMbGKi3Jt9ZKQqgQA";
+
+export const DEVNET_POOL_CONFIG_PUBKEY =
+  "7d9QiPPQ4q9DV4UyLS3j9ZSR71NRwCQ4NMYeHaCkXByz";

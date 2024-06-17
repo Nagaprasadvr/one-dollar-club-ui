@@ -1,7 +1,7 @@
 import {
   API_BASE_URL,
-  DEVNET_POOL_CONFIG_PUBKEY,
-  HELIUS_RPC_ENDPOINT,
+  HELIUS_MAINNET_RPC_ENDPOINT,
+  MAINNET_POOL_CONFIG_PUBKEY,
   PROJECTS_TO_PLAY,
 } from "@/utils/constants";
 import { Connection } from "@solana/web3.js";
@@ -63,7 +63,7 @@ interface AppContextType {
 }
 
 export const AppContext = createContext<AppContextType>({
-  connection: new Connection(HELIUS_RPC_ENDPOINT),
+  connection: new Connection(HELIUS_MAINNET_RPC_ENDPOINT, "confirmed"),
   poolConfig: null,
   sdk: null,
   isFetchingPoolConfig: false,
@@ -112,7 +112,7 @@ export const AppContextProvider = ({
   const [gamesPlayed, setGamesPlayed] = useState<number | null>(null);
   const [isAllowedToPlay, setIsAllowedToPlay] = useState<boolean | null>(null);
   const connection = useMemo(
-    () => new Connection(HELIUS_RPC_ENDPOINT, "confirmed"),
+    () => new Connection(HELIUS_MAINNET_RPC_ENDPOINT, "confirmed"),
     []
   );
 
@@ -374,7 +374,7 @@ export const AppContextProvider = ({
         setIsFetchingPoolConfig(true);
         const poolConfig = await PoolConfig.fetch(
           sdk,
-          new solana.PublicKey(DEVNET_POOL_CONFIG_PUBKEY)
+          new solana.PublicKey(MAINNET_POOL_CONFIG_PUBKEY)
         );
         setPoolConfig(poolConfig);
       } catch (e) {
@@ -387,7 +387,7 @@ export const AppContextProvider = ({
 
     if (sdk) {
       sdk.connection.onAccountChange(
-        new solana.PublicKey(DEVNET_POOL_CONFIG_PUBKEY),
+        new solana.PublicKey(MAINNET_POOL_CONFIG_PUBKEY),
         async () => {
           toast.loading("Updating state", {
             id: "update-pool-config",

@@ -1,9 +1,4 @@
-import {
-  AnchorProvider,
-  Program,
-  Wallet,
-  type IdlAccounts,
-} from "@coral-xyz/anchor";
+import { AnchorProvider, Program, type IdlAccounts } from "@coral-xyz/anchor";
 
 import {
   type OneDollarClub as OneDollarClubTypes,

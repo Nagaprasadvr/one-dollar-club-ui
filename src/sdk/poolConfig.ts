@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import type { PoolState } from "./types";
-import type { RawPoolConfig, SDK } from "./sdk";
+import type { SDK } from "./sdk";
 import * as solana from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
 import { API_BASE_URL } from "@/utils/constants";
