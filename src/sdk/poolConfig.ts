@@ -3,7 +3,7 @@ import type { PoolState } from "./types";
 import type { SDK } from "./sdk";
 import * as solana from "@solana/web3.js";
 import * as spl from "@solana/spl-token";
-import { API_BASE_URL } from "@/utils/constants";
+import { API_BASE_URL, BONK_DECIMALS } from "@/utils/constants";
 import { PoolConfigAccount } from "@/utils/types";
 import {
   fromRawConfigPoolDataToHumanReadableData,
@@ -75,9 +75,14 @@ export class PoolConfig {
       throw new Error("Depositor token account not found");
     }
 
+    console.log(
+      "depositorTokenAccountInfo.amount",
+      Number(depositorTokenAccountInfo?.amount)
+    );
+    console.log("this.poolDepositPerUser", this.poolDepositPerUser);
     if (
       !depositorTokenAccountInfo?.amount ||
-      removeDecimals(Number(depositorTokenAccountInfo.amount), 9) <
+      removeDecimals(Number(depositorTokenAccountInfo.amount), BONK_DECIMALS) <
         this.poolDepositPerUser
     ) {
       throw new Error("Insufficient funds");

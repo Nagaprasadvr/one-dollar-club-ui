@@ -12,6 +12,7 @@ import {
   getTokenSymbolFromMint,
   removeDecimals,
 } from "@/utils/helpers";
+import { BONK_DECIMALS } from "@/utils/constants";
 
 const Faucet = () => {
   const { connected, publicKey } = useWallet();
@@ -41,7 +42,7 @@ const Faucet = () => {
         toast.dismiss("fetch-balance");
         return;
       }
-      const balance = removeDecimals(Number(ataAccount.amount), 9);
+      const balance = removeDecimals(Number(ataAccount.amount), BONK_DECIMALS);
       setTokenBalance(balance);
       toast.dismiss("fetch-balance");
     } catch (e) {
@@ -118,7 +119,7 @@ const Faucet = () => {
         poolConfig.poolActiveMint,
         ataAddress,
         tokenMintKeypair.publicKey,
-        addDecimals(poolConfig.poolDepositPerUser * 2, 9)
+        addDecimals(poolConfig.poolDepositPerUser * 2, BONK_DECIMALS)
       );
       ixs.push(ix);
       const tx = new solana.Transaction();
