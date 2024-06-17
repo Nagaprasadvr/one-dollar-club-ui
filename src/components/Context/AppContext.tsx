@@ -414,6 +414,7 @@ export const AppContextProvider = ({
 
   useEffect(() => {
     if (positions.length === 0 || tokensPrices.length === 0) return;
+
     const calulatedPoints = calculateResultingPoints(positions, tokensPrices);
     setResultingPoints(calulatedPoints);
   }, [positions, tokensPrices]);

@@ -75,11 +75,6 @@ export class PoolConfig {
       throw new Error("Depositor token account not found");
     }
 
-    console.log(
-      "depositorTokenAccountInfo.amount",
-      Number(depositorTokenAccountInfo?.amount)
-    );
-    console.log("this.poolDepositPerUser", this.poolDepositPerUser);
     if (
       !depositorTokenAccountInfo?.amount ||
       removeDecimals(Number(depositorTokenAccountInfo.amount), BONK_DECIMALS) <

@@ -12,9 +12,9 @@ const headers = {
 };
 
 const responseHeaders = {
-  "Cache-Control": "public s-maxage=600",
-  "CDN-Cache-Control": "public s-maxage=600",
-  "Vercel-CDN-Cache-Control": "public s-maxage=600",
+  "Cache-Control": "public s-maxage=300",
+  "CDN-Cache-Control": "public s-maxage=300",
+  "Vercel-CDN-Cache-Control": "public s-maxage=300",
 };
 
 export async function POST(req: NextRequest) {
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     );
   }
   const timeNow = Math.floor(Date.now() / 1000);
-  if (timeNow - lastUpdated < 600) {
+  if (timeNow - lastUpdated < 300) {
     return NextResponse.json(
       { error: "Data is too fresh" },
       {
