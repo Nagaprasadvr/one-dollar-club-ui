@@ -118,7 +118,7 @@ export const Projects = () => {
             </span>
           </Typography>
         );
-      }
+      } else return null;
     }
 
     if (!isAllowedToPlay && !poolConfig.poolDepositsPaused) {
