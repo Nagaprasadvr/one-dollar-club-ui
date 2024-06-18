@@ -21,16 +21,16 @@ const ModalContentData = [
     contentData: [
       {
         step: "Connect your wallet and Deposit 40,000 $BONK to get started",
-        result: "Upon successful deposit, receive 100 points.",
+        result: "upon successful deposit, receive 100 points.",
       },
       {
         step: "Pick a set of coins and allocate points",
-        result: "Set the position of your trade to maximize winning chances.",
+        result: "set the position of your trade to maximize winning chances.",
       },
       {
         step: "Confirm the positions by signing from the connected wallet",
         result:
-          "Remember, positions cannot be updated or modified once signed.",
+          "remember, positions cannot be updated or modified once signed.",
       },
     ],
   },

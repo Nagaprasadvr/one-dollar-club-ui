@@ -185,7 +185,7 @@ export const Navbar = () => {
               justifyContent: "center",
             }}
           >
-            {positions?.length === 0 && pointsRemaining ? (
+            {positions?.length === 0 && pointsRemaining !== null ? (
               <Box
                 sx={{
                   p: "10px",
@@ -211,7 +211,7 @@ export const Navbar = () => {
                   </span>
                 </Typography>
               </Box>
-            ) : resultingPoints ? (
+            ) : resultingPoints !== null ? (
               <Box
                 sx={{
                   p: "10px",
