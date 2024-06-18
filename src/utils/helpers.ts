@@ -1,32 +1,30 @@
 import {
-  Box,
-  IconButton,
-  Skeleton,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import {
   GridRenderCellParams,
   GridTreeNodeWithRender,
   GridApi,
   GridKeyValue,
 } from "@mui/x-data-grid";
-import toast from "react-hot-toast";
 import { type Position } from "@/sdk/Position";
 
 import axios from "axios";
 
 import {
   BirdeyeTokenPriceData,
+  EstimatedPriorityFee,
   PoolConfigAccount,
   TokenPriceHistory,
 } from "./types";
 import { API_URL } from "@/components/Context/AppContext";
-import { API_BASE_URL, PROJECTS_TO_PLAY } from "./constants";
-import { RawPoolConfig } from "@/sdk/sdk";
+import {
+  API_BASE_URL,
+  DEFAULT_COMPUTE_UNIT_LIMIT,
+  DEFAULT_COMPUTE_UNIT_PRICE_ML,
+  DEFAULT_COMPUTE_UNITS_OFFSET,
+  PROJECTS_TO_PLAY,
+} from "./constants";
+import { RawPoolConfig, SDK, UIWallet } from "@/sdk/sdk";
 import { PoolConfig } from "@/sdk/poolConfig";
+import * as solana from "@solana/web3.js";
 
 export const minimizePubkey = (pubkey: string) => {
   return pubkey.slice(0, 5) + "..." + pubkey.slice(-5);
@@ -415,4 +413,148 @@ export const addDecimals = (value: number, decimals: number) => {
 
 export const removeDecimals = (value: number, decimals: number) => {
   return value / 10 ** decimals;
+};
+
+export const getEstimatedPriorityFee = async (
+  sdk: SDK
+): Promise<EstimatedPriorityFee> => {
+  try {
+    const recentPriorityFeeData =
+      await sdk.connection.getRecentPrioritizationFees();
+
+    if (recentPriorityFeeData.length === 0) {
+      return null;
+    }
+    let avgPriorityFee = recentPriorityFeeData.reduce(
+      (acc, { prioritizationFee }) => acc + prioritizationFee,
+      0
+    );
+    avgPriorityFee /= recentPriorityFeeData.length;
+    avgPriorityFee = Math.ceil(avgPriorityFee);
+
+    return {
+      microLamports: avgPriorityFee,
+    };
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getComputeUnitsToBeConsumed = async (
+  tx: solana.Transaction,
+  connection: solana.Connection
+) => {
+  try {
+    const latestBlockhash = await connection.getLatestBlockhash();
+    const ixs = tx.instructions;
+    if (!tx.feePayer) {
+      return null;
+    }
+    const txMessage = new solana.TransactionMessage({
+      payerKey: tx.feePayer,
+      recentBlockhash: latestBlockhash.blockhash,
+      instructions: ixs,
+    }).compileToV0Message();
+
+    const versionedTx = new solana.VersionedTransaction(txMessage);
+    const simulateTxResult = await connection.simulateTransaction(versionedTx, {
+      sigVerify: false,
+    });
+    const unitsConsumed = simulateTxResult.value?.unitsConsumed;
+    if (!unitsConsumed) {
+      throw new Error("Failed to get units consumed");
+    }
+    return unitsConsumed + DEFAULT_COMPUTE_UNITS_OFFSET;
+  } catch (error) {
+    return null;
+  }
+};
+
+export async function expirationRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 2
+): Promise<T> {
+  if (maxRetries === 0) return await fn();
+  let retryCount = 0;
+
+  while (retryCount < maxRetries) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (!isTransactionExpiredBlockheightExceededError(error)) throw error;
+      retryCount++;
+      console.error(`Attempt ${retryCount + 1} tx expired. Retrying...`);
+    }
+  }
+  throw new Error("Max Tx Expiration retries exceeded");
+}
+
+function isTransactionExpiredBlockheightExceededError(error: unknown) {
+  return (
+    error instanceof Error &&
+    error.message.includes("TransactionExpiredBlockheightExceededError")
+  );
+}
+
+export const sendAndConTxWithComputePriceAndRetry = async (
+  ix: solana.TransactionInstruction,
+  sdk: SDK
+) => {
+  const fn = async () => {
+    const latestBlockHash = await sdk.connection.getLatestBlockhash();
+
+    // let computeUnitsNeeded = await getComputeUnitsToBeConsumed(
+    //   tx,
+    //   sdk.connection
+    // );
+
+    // if (!computeUnitsNeeded) {
+    //   computeUnitsNeeded = DEFAULT_COMPUTE_UNIT_LIMIT;
+    // }
+
+    // let estimatedPriorityFee = await getEstimatedPriorityFee(sdk);
+    // if (!estimatedPriorityFee) {
+    //   estimatedPriorityFee = {
+    //     microLamports: DEFAULT_COMPUTE_UNIT_PRICE_ML,
+    //   };
+    // }
+    const estimatedPriorityFee = {
+      microLamports: DEFAULT_COMPUTE_UNIT_PRICE_ML,
+    };
+
+    const computeUnitPriceIx = solana.ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: estimatedPriorityFee.microLamports,
+    });
+    // const computeUnitsLimitIx = solana.ComputeBudgetProgram.setComputeUnitLimit(
+    //   {
+    //     units: computeUnitsNeeded,
+    //   }
+    // );
+    // tx.add(computeUnitsLimitIx);
+
+    const txMessage = new solana.TransactionMessage({
+      payerKey: sdk.wallet.publicKey,
+      recentBlockhash: latestBlockHash.blockhash,
+      instructions: [computeUnitPriceIx, ix],
+    }).compileToV0Message();
+
+    const versionedTx = new solana.VersionedTransaction(txMessage);
+
+    const signedTx = await sdk.wallet.signTransaction(versionedTx);
+
+    const sig = await sdk.connection.sendTransaction(signedTx);
+
+    await sdk.connection.confirmTransaction({
+      signature: sig,
+      lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+      blockhash: latestBlockHash.blockhash,
+    });
+
+    return sig;
+  };
+  try {
+    return await expirationRetry(fn, 2);
+  } catch (e) {
+    return null;
+  }
 };

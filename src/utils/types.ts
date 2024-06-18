@@ -96,3 +96,6 @@ export type Project = {
   mint: string;
   logoURI: string;
 };
+export type EstimatedPriorityFee = {
+  microLamports: number;
+} | null;

@@ -8,6 +8,7 @@ import { PoolConfigAccount } from "@/utils/types";
 import {
   fromRawConfigPoolDataToHumanReadableData,
   removeDecimals,
+  sendAndConTxWithComputePriceAndRetry,
 } from "@/utils/helpers";
 import { BN } from "bn.js";
 
@@ -55,7 +56,7 @@ export class PoolConfig {
     });
   }
 
-  async deposit(): Promise<PoolConfig> {
+  async deposit() {
     const poolTokenAccount = await spl.getAssociatedTokenAddress(
       this.poolActiveMint,
       this.poolAuthority
@@ -83,7 +84,7 @@ export class PoolConfig {
       throw new Error("Insufficient funds");
     }
 
-    const signature = await this.sdk.program.methods
+    const ix = await this.sdk.program.methods
       .deposit()
       .accountsStrict({
         poolConfig: this.poolAddress,
@@ -93,7 +94,13 @@ export class PoolConfig {
         depositorTokenAccount: depositorTokenAccount,
         tokenProgram: spl.TOKEN_PROGRAM_ID,
       })
-      .rpc();
+      .instruction();
+
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to deposit, please try again later");
+    }
 
     const response = await fetch(`${API_BASE_URL}/poolDeposit`, {
       method: "POST",
@@ -107,8 +114,6 @@ export class PoolConfig {
     if (response.status !== 200) {
       throw new Error(responseJson.error);
     }
-
-    return this.reload();
   }
 
   async reload(): Promise<PoolConfig> {
@@ -125,16 +130,22 @@ export class PoolConfig {
     });
   }
 
-  async pausePool(): Promise<PoolConfig> {
-    await this.sdk.program.methods
+  async pausePool() {
+    const ix = await this.sdk.program.methods
       .pausePoolState()
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
       })
-      .rpc();
+      .instruction();
 
-    return this.reload();
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to pause pool, please try again later");
+    }
+
+    return sig;
   }
 
   static async initializePoolConfig(
@@ -146,7 +157,7 @@ export class PoolConfig {
     poolConfig: solana.Keypair,
     poolActiveMint: PublicKey
   ): Promise<PoolConfig> {
-    await sdk.program.methods
+    const ix = await sdk.program.methods
       .initializeConfig(
         new BN(poolDepositPerUser),
         poolRoundWinAllocation,
@@ -159,68 +170,105 @@ export class PoolConfig {
         systemProgram: solana.SystemProgram.programId,
       })
       .signers([poolConfig])
-      .rpc();
+      .instruction();
 
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, sdk);
+
+    if (!sig) {
+      throw new Error("Failed to initialize pool, please try again later");
+    }
     return PoolConfig.fetch(sdk, poolConfig.publicKey);
   }
 
-  async activatePool(): Promise<PoolConfig> {
-    await this.sdk.program.methods
+  async activatePool() {
+    const ix = await this.sdk.program.methods
       .activatePoolState()
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
       })
-      .rpc();
+      .instruction();
 
-    return this.reload();
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to activate pool, please try again later");
+    }
+
+    return sig;
   }
 
-  async changeMint(newMint: PublicKey): Promise<PoolConfig> {
-    await this.sdk.program.methods
+  async changeMint(newMint: PublicKey) {
+    const ix = await this.sdk.program.methods
       .changeMint()
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
         mint: newMint,
       })
-      .rpc();
+      .instruction();
 
-    return this.reload();
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to change mint, please try again later");
+    }
+
+    return sig;
   }
 
-  async pauseDeposits(): Promise<PoolConfig> {
-    await this.sdk.program.methods
+  async pauseDeposits() {
+    const ix = await this.sdk.program.methods
       .pauseDeposits()
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
       })
-      .rpc();
+      .instruction();
 
-    return this.reload();
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to pause deposits, please try again later");
+    }
+
+    return sig;
   }
-  async activateDeposits(): Promise<PoolConfig> {
-    await this.sdk.program.methods
+  async activateDeposits() {
+    const ix = await this.sdk.program.methods
       .resumeDeposits()
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
       })
-      .rpc();
+      .instruction();
 
-    return this.reload();
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to resume deposits, please try again later");
+    }
+
+    return sig;
   }
 
-  async changeDepositPerUser(newDepositPerUser: number): Promise<PoolConfig> {
-    await this.sdk.program.methods
+  async changeDepositPerUser(newDepositPerUser: number) {
+    const ix = await this.sdk.program.methods
       .changeDepositPerUser(new BN(newDepositPerUser))
       .accountsStrict({
         poolAuthority: this.poolAuthority,
         poolConfig: this.poolAddress,
       })
-      .rpc();
+      .instruction();
 
-    return this.reload();
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error(
+        "Failed to change deposit per user, please try again later"
+      );
+    }
+
+    return sig;
   }
 }
