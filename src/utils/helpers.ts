@@ -278,19 +278,6 @@ export const fetchLeaderBoardLastUpdated = async () => {
   }
 };
 
-export const fetchYourStats = async (pubkey: string) => {
-  try {
-    const response = await axios.get(
-      `${API_BASE_URL}/getPositionsStat?pubkey=${pubkey}`
-    );
-    if (!response.data.data) return null;
-    return response.data.data;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
-};
-
 export const fetchPoolConfigFromAPI = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/poolConfig`);
