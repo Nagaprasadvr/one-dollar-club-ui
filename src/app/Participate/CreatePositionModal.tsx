@@ -19,11 +19,10 @@ import { CallMade, Close as CloseIcon, ContentCopy } from "@mui/icons-material";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
 import { useContext, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { API_BASE_URL, birdeyeUrl, PROJECTS_TO_PLAY } from "@/utils/constants";
+import { birdeyeUrl, PROJECTS_TO_PLAY } from "@/utils/constants";
 import { AppContext } from "@/components/Context/AppContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
-  get24Change,
   getLiquidationPrice,
   minimizePubkey,
   safeDivide,
@@ -427,7 +426,7 @@ export const CreatePositionModal = ({
                 gap="5px"
               />
             </Box>
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 width: mobileScreen ? "100%" : "50%",
@@ -447,7 +446,7 @@ export const CreatePositionModal = ({
                   )
                 }
               />
-            </Box>
+            </Box> */}
           </Box>
           <Box
             sx={{

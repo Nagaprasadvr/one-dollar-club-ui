@@ -22,8 +22,10 @@ import {
   calculateResultingPoints,
   fetchPoolConfigFromAPI,
   fetchTokenChartData,
+  getTokenPriceExpiryTimeStamp,
 } from "@/utils/helpers";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 interface AppContextType {
   connection: Connection;
@@ -48,8 +50,8 @@ interface AppContextType {
   setTriggerRefetchUserData: (triggerRefetchUserData: boolean) => void;
   fetchedTokensPrices: boolean;
   setFetchedTokensPrices: (fetchedTokensPrices: boolean) => void;
-  tokenPriceLastUpdated: number;
-  setTokenPriceLastUpdated: (tokenPriceLastUpdated: number) => void;
+  tokenPriceLastUpdated: number | null;
+  setTokenPriceLastUpdated: (tokenPriceLastUpdated: number | null) => void;
   footerModalOpen: boolean;
   setFooterModalOpen: (footerOpen: boolean) => void;
   footerDataToDisplay: string;
@@ -131,7 +133,9 @@ export const AppContextProvider = ({
   const [tokensPriceHistory, setTokensPriceHistory] = useState<
     TokenPriceHistory[]
   >([]);
-  const [tokenPriceLastUpdated, setTokenPriceLastUpdated] = useState<number>(0);
+  const [tokenPriceLastUpdated, setTokenPriceLastUpdated] = useState<
+    number | null
+  >(null);
   const [tokenPriceHistoryLastUpdated, setTokenPriceHistoryLastUpdated] =
     useState<number>(0);
 
@@ -220,46 +224,76 @@ export const AppContextProvider = ({
     setResultingPoints(null);
   };
 
-  useEffect(() => {
-    if (!sdk || !connected) return;
-    const fetchTokenPrices = async () => {
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            requestType: "fetchTokensPrice",
-            lastUpdated: tokenPriceLastUpdated,
-            tokenAddressArray: PROJECTS_TO_PLAY.map((project) => project.mint),
-          }),
-        });
+  const fetchTokenPrices = async () => {
+    try {
+      console.log("triggger");
+      const response = await fetch(`${API_BASE_URL}/getBirdeyeTokenPrices`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-        if (response.status !== 200) return;
-
-        const responseJson = await response.json();
-        const fetchedTokensPrices: BirdeyeTokenPriceData[] = responseJson.data;
-        if (fetchedTokensPrices?.length > 0) {
-          setFetchedTokensPrices(true);
-          setTokenPriceLastUpdated(Math.round(Date.now() / 1000));
-          setTokensPrices(fetchedTokensPrices);
-        }
-      } catch (e) {
-        console.error(e);
+      const responseJson = await response.json();
+      const fetchedTokensPrices: BirdeyeTokenPriceData[] = responseJson.data;
+      if (fetchedTokensPrices?.length > 0) {
+        setFetchedTokensPrices(true);
+        setTokensPrices(fetchedTokensPrices);
       }
-    };
-
-    if (tokenPriceHistoryLastUpdated === 0) {
-      fetchTokenPrices();
+    } catch (e) {
+      console.error(e);
     }
-    const tokenPricesFetchInterval = setInterval(() => {
-      // fetch token prices
-      if (Math.round(Date.now() / 1000) - tokenPriceLastUpdated < 60) return;
-      fetchTokenPrices();
-    }, 1000 * 60 * 5);
+  };
+
+  const fetchTokenPricesLastUpdated = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/getBirdeyeTokenPriceLastUpdated`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const responseJson = await response.json();
+
+      console.log("responseJson", responseJson);
+      const lastUpdatedTs = responseJson.data.lastUpdatedTs;
+
+      console.log("lastUpdatedts", lastUpdatedTs);
+      if (lastUpdatedTs) setTokenPriceLastUpdated(lastUpdatedTs * 1000);
+      else setTokenPriceLastUpdated(Date.now() + 5 * 60 * 1000);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    if (tokensPrices.length === 0) fetchTokenPrices();
+    if (!tokenPriceLastUpdated) fetchTokenPricesLastUpdated();
+  }, []);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (!tokenPriceLastUpdated) return;
+      const timeNow = Date.now();
+
+      if (timeNow >= getTokenPriceExpiryTimeStamp(tokenPriceLastUpdated)) {
+        if (
+          timeNow - getTokenPriceExpiryTimeStamp(tokenPriceLastUpdated) >
+          5 * 60 * 1000
+        )
+          return;
+        fetchTokenPrices();
+        fetchTokenPricesLastUpdated();
+      }
+    }, 1000);
 
     return () => {
-      clearInterval(tokenPricesFetchInterval);
+      clearInterval(id);
     };
-  }, [connected, sdk, setTokensPrices]);
+  }, [tokenPriceLastUpdated]);
 
   useEffect(() => {
     const fetchPoolServerId = async () => {
@@ -344,8 +378,8 @@ export const AppContextProvider = ({
     if (!poolServerId) fetchPoolServerId();
     if (gamesPlayed === null) fetchTotalGamesPlayed();
     // if (tokensMetadata.length === 0) fetchJupTokenList();
-    // if (!fetchedChartsData && tokensPriceHistory.length === 0)
-    //   fetchChartsData();
+    if (!fetchedChartsData && tokensPriceHistory.length === 0)
+      fetchChartsData();
   }, []);
 
   const updatePoolConfig = async () => {

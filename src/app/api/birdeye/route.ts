@@ -1,7 +1,6 @@
 import { BirdeyeTokenPriceData } from "@/utils/types";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
-import { json } from "stream/consumers";
 
 const birdeyeApiKey = process.env.BIRDEYE_API_KEY;
 
@@ -12,9 +11,9 @@ const headers = {
 };
 
 const responseHeaders = {
-  "Cache-Control": "public s-maxage=300",
-  "CDN-Cache-Control": "public s-maxage=300",
-  "Vercel-CDN-Cache-Control": "public s-maxage=300",
+  "Cache-Control": "public s-maxage=18000",
+  "CDN-Cache-Control": "public s-maxage=18000",
+  "Vercel-CDN-Cache-Control": "public s-maxage=18000",
 };
 
 export async function POST(req: NextRequest) {

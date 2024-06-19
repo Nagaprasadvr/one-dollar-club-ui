@@ -15,7 +15,6 @@ export interface BirdeyeTokenPriceData {
   value: number;
   updateUnixTime: number;
   updateHumanTime: string;
-  priceChange24h: number;
 }
 
 export type BirdeyePriceHistory = {

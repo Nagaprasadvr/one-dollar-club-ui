@@ -137,22 +137,22 @@ export const fetchTokenChartData = async (
   }
 };
 
-export const get24Change = (_24Change: number) => {
-  if (_24Change > 0) {
-    return (
-      "+" +
-      _24Change.toLocaleString("en-US", {
-        maximumFractionDigits: 4,
-      }) +
-      "%"
-    );
-  }
-  return (
-    _24Change.toLocaleString("en-US", {
-      maximumFractionDigits: 4,
-    }) + "%"
-  );
-};
+// export const get24Change = (_24Change: number) => {
+//   if (_24Change > 0) {
+//     return (
+//       "+" +
+//       _24Change.toLocaleString("en-US", {
+//         maximumFractionDigits: 4,
+//       }) +
+//       "%"
+//     );
+//   }
+//   return (
+//     _24Change.toLocaleString("en-US", {
+//       maximumFractionDigits: 4,
+//     }) + "%"
+//   );
+// };
 
 type PositionResult = {
   entryPrice: number;
@@ -402,6 +402,12 @@ export const getTokenSymbolFromMint = (poolConfig: PoolConfig) => {
 };
 
 export const getLeaderBoardExpiryTimeStamp = (lastUpdated: number) => {
+  const lastUpdatedTime = new Date(lastUpdated).getTime() + 5 * 60 * 1000;
+
+  return lastUpdatedTime;
+};
+
+export const getTokenPriceExpiryTimeStamp = (lastUpdated: number) => {
   const lastUpdatedTime = new Date(lastUpdated).getTime() + 5 * 60 * 1000;
 
   return lastUpdatedTime;

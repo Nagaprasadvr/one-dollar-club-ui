@@ -1,7 +1,7 @@
 import ApexChartComponent from "@/components/HelperComponents/ApexChartComponent";
 import { TextWithValue } from "@/components/HelperComponents/TextWithValue";
 import { birdeyeUrl } from "@/utils/constants";
-import { get24Change, minimizePubkey } from "@/utils/helpers";
+import { minimizePubkey } from "@/utils/helpers";
 import {
   ArrowDownward,
   ArrowUpward,
@@ -42,7 +42,7 @@ export const RenderProject = ({
     value: 0,
     updateUnixTime: 0,
     updateHumanTime: "",
-    priceChange24h: 0,
+    // priceChange24h: 0,
   };
 
   const positionInputData = useMemo(() => {
@@ -116,7 +116,7 @@ export const RenderProject = ({
             flexDirection: "row",
             alignItems: "center",
             gap: "10px",
-            minWidth: "200px",
+            width: "-webkit-fill-available",
           }}
         >
           <Image
@@ -186,7 +186,7 @@ export const RenderProject = ({
           }
           gap="5px"
         />
-
+        {/* 
         <TextWithValue
           text="24Hr Change"
           value={get24Change(tokenDetails.priceChange24h)}
@@ -198,7 +198,7 @@ export const RenderProject = ({
               <ArrowDownward sx={{ color: "red", fontSize: "20px" }} />
             )
           }
-        />
+        /> */}
 
         <ApexChartComponent tokenAddress={project.mint} />
 

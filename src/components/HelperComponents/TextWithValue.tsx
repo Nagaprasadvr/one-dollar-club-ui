@@ -28,7 +28,7 @@ export const TextWithValue = ({
         display: "flex",
         flexDirection,
         gap,
-        width: "100%",
+        width: "-webkit-fill-available",
         justifyContent: justifyContent,
       }}
     >
