@@ -226,7 +226,6 @@ export const AppContextProvider = ({
 
   const fetchTokenPrices = async () => {
     try {
-      console.log("triggger");
       const response = await fetch(`${API_BASE_URL}/getBirdeyeTokenPrices`, {
         method: "GET",
         headers: {
@@ -258,10 +257,8 @@ export const AppContextProvider = ({
       );
       const responseJson = await response.json();
 
-      console.log("responseJson", responseJson);
       const lastUpdatedTs = responseJson.data.lastUpdatedTs;
 
-      console.log("lastUpdatedts", lastUpdatedTs);
       if (lastUpdatedTs) setTokenPriceLastUpdated(lastUpdatedTs * 1000);
       else setTokenPriceLastUpdated(Date.now() + 5 * 60 * 1000);
     } catch (e) {
