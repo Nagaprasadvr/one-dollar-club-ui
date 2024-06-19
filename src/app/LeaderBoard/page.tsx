@@ -23,7 +23,6 @@ import {
   fetchLeaderBoardHistory,
   fetchLeaderBoardLastUpdated,
   fetchLeaderBoards,
-  fetchYourStats,
   getLeaderBoardExpiryTimeStamp,
   getRow,
   getTotalPoints,
@@ -261,7 +260,7 @@ const LeaderBoard = () => {
         getLeaderBoardData();
         getLiveLeaderBoardLastUpdated();
       }
-    }, 1000);
+    }, 1000 * 60);
 
     return () => {
       clearInterval(id);

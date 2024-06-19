@@ -285,7 +285,7 @@ export const AppContextProvider = ({
         fetchTokenPrices();
         fetchTokenPricesLastUpdated();
       }
-    }, 1000);
+    }, 1000 * 60);
 
     return () => {
       clearInterval(id);
