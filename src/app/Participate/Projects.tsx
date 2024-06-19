@@ -21,7 +21,7 @@ const defaultTokenPriceData: BirdeyeTokenPriceData = {
   value: 0,
   updateUnixTime: 0,
   updateHumanTime: "",
-  priceChange24h: 0,
+  // priceChange24h: 0,
 };
 
 export const Projects = () => {
