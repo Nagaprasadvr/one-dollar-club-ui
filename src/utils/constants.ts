@@ -74,7 +74,7 @@ export const PROJECTS_TO_PLAY: Project[] = [
 
 export const GREY_TEXT = "#AEB9B8";
 
-export const API_BASE_URL = "https://server.onedollarclub.fun/";
+export const API_BASE_URL = "https://server.onedollarclub.fun";
 export const birdeyeUrl = "https://birdeye.so/token/";
 
 export const SOLANA_EXPLORER_URL = "https://explorer.solana.com/address";
