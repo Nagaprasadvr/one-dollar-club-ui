@@ -225,15 +225,7 @@ const LeaderBoard = () => {
       setYourStats(yourStats);
     };
 
-    if (yourStats === null) getYourStats();
-
-    const id = setInterval(() => {
-      getYourStats();
-    }, 1000 * 30);
-
-    return () => {
-      clearInterval(id);
-    };
+    getYourStats();
   }, [wallet, positions, resultingPoints, poolServerId, tokensPrices]);
 
   const getHeader = () => {
