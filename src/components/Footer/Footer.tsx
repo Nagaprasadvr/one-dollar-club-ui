@@ -40,7 +40,7 @@ export const Footer = () => {
         position: "fixed",
         backdropFilter: "blur(5px)",
         backgroundColor: "transparent",
-        overflow: "hidden",
+        overflowY: "hidden",
       }}
     >
       <Box
@@ -54,7 +54,6 @@ export const Footer = () => {
           alignItems: "center",
           justifyContent: "space-around",
           padding: "12px",
-          overflow: "hidden",
         }}
       >
         {footerContents.map((content) => (

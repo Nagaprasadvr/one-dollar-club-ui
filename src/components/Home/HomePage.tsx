@@ -19,7 +19,7 @@ const mobileStyles: SxProps = {
   display: "flex",
   flexDirection: "column",
   gap: "40px",
-  alignItems: "flex-start",
+  alignItems: "center",
   marginTop: "20px",
   textWrap: "wrap",
   padding: "10px",
@@ -72,7 +72,7 @@ export const HomePage = () => {
         <Typography
           sx={{
             fontWeight: "bold",
-            textAlign: mobileScreen ? "start" : "center",
+            textAlign: "center",
             width: "100%",
             fontSize: "50px",
           }}
@@ -85,7 +85,7 @@ export const HomePage = () => {
             textWrap: "wrap",
             fontSize: "30px",
             width: "100%",
-            textAlign: mobileScreen ? "start" : "center",
+            textAlign: "center",
           }}
         >
           No Pump, No Rug, Just Fun{" "}
