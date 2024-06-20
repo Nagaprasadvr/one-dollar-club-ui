@@ -271,4 +271,46 @@ export class PoolConfig {
 
     return sig;
   }
+
+  async transferPoolWin(winner: string): Promise<string> {
+    const winnerPubkey = new solana.PublicKey(winner);
+
+    const winnerTokenAccount = spl.getAssociatedTokenAddressSync(
+      this.poolActiveMint,
+      winnerPubkey
+    );
+
+    const squadsTokenAccount = spl.getAssociatedTokenAddressSync(
+      this.poolActiveMint,
+      this.squadsAuthorityPubkey
+    );
+
+    const poolTokenAccount = spl.getAssociatedTokenAddressSync(
+      this.poolActiveMint,
+      this.poolAuthority
+    );
+
+    const ix = await this.sdk.program.methods
+      .transferWinAllocation()
+      .accountsStrict({
+        poolAuthority: this.poolAuthority,
+        poolConfig: this.poolAddress,
+        winnerTokenAccount,
+        winner: winnerPubkey,
+        squadsAuthority: this.squadsAuthorityPubkey,
+        squadsTokenAccount,
+        poolTokenAccount: poolTokenAccount,
+        mint: this.poolActiveMint,
+        tokenProgram: spl.TOKEN_PROGRAM_ID,
+        systemProgram: solana.SystemProgram.programId,
+      })
+      .instruction();
+
+    const sig = await sendAndConTxWithComputePriceAndRetry(ix, this.sdk);
+
+    if (!sig) {
+      throw new Error("Failed to transfer pool win, please try again later");
+    }
+    return sig;
+  }
 }

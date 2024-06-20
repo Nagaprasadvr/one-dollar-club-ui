@@ -20,6 +20,8 @@ const Admin = () => {
     ""
   );
 
+  const [winnerAddress, setWinnerAddress] = useState("");
+
   useEffect(() => {
     if (!poolConfig) return;
     setNewDepositPerUser(poolConfig.poolDepositPerUser);
@@ -150,6 +152,29 @@ const Admin = () => {
     }
   };
 
+  const handleWinnerAddressChange = (e: any) => {
+    setWinnerAddress(e.target.value);
+  };
+
+  const handleTransferWinningAmount = async () => {
+    if (!poolConfig) return;
+    toast.loading("Transferring winning amount", {
+      id: "transfer-winning-amount",
+    });
+
+    try {
+      const sig = await poolConfig.transferPoolWin(winnerAddress);
+      toast.success("Winning amount transferred", {
+        id: "transfer-winning-amount",
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to transfer winning amount", {
+        id: "transfer-winning-amount",
+      });
+    }
+  };
+
   if (!publicKey || !connected || !sdk || !poolConfig) return null;
   if (!adminGate(publicKey)) return <Message message="You are not an admin" />;
 
@@ -166,7 +191,14 @@ const Admin = () => {
         marginBottom: "20px",
       }}
     >
-      <Typography variant="h3">Admin Actions</Typography>
+      <Typography
+        variant="h3"
+        sx={{
+          fontWeight: "bold",
+        }}
+      >
+        Admin Actions
+      </Typography>
       <Box
         sx={{
           display: "flex",
@@ -191,6 +223,19 @@ const Admin = () => {
         ) : (
           <Button onClick={handlePauseDeposit}>Pause Deposits</Button>
         )}
+        <Typography fontWeight={"bold"}>
+          Transfer winning amount manually
+        </Typography>
+        <Input
+          placeholder="Winner Address"
+          value={winnerAddress}
+          onChange={handleWinnerAddressChange}
+          type="text"
+        />
+        <Button onClick={handleTransferWinningAmount}>
+          Transfer Winning Amount
+        </Button>
+
         <Typography fontWeight={"bold"}>Change Pool Id</Typography>
         <Input
           placeholder="Auth Secret"

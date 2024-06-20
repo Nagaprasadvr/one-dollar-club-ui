@@ -336,7 +336,9 @@ const LeaderBoard = () => {
                       },
                     }}
                     onClick={(e) => {
-                      e.stopPropagation();
+                      navigator.clipboard.writeText(
+                        thisRow["pubkey"] as string
+                      );
                     }}
                   >
                     <CopyIcon

@@ -491,7 +491,8 @@ function isTransactionExpiredBlockheightExceededError(error: unknown) {
 
 export const sendAndConTxWithComputePriceAndRetry = async (
   ix: solana.TransactionInstruction,
-  sdk: SDK
+  sdk: SDK,
+  retries = 5
 ) => {
   const fn = async () => {
     const latestBlockHash = await sdk.connection.getLatestBlockhash();
@@ -546,8 +547,9 @@ export const sendAndConTxWithComputePriceAndRetry = async (
     return sig;
   };
   try {
-    return await expirationRetry(fn, 2);
+    return await expirationRetry(fn, retries);
   } catch (e) {
+    console.error(e);
     return null;
   }
 };
