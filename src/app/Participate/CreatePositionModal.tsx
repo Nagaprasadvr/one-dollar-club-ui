@@ -125,7 +125,7 @@ export const CreatePositionModal = ({
 
   const currentPointsRemaining = useMemo(() => {
     if (pointsRemaining === null) return 0;
-    if (positionsInputData.length === 0) return pointsRemaining;
+    if (positionsInputData.length <= 0) return pointsRemaining;
     const currentPoints = positionsInputData.reduce((acc, position) => {
       return acc + Number(position.pointsAllocated);
     }, 0);
