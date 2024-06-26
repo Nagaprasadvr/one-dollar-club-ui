@@ -15,6 +15,7 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 import { safeDivide } from "@/utils/helpers";
 import { Refresh } from "@mui/icons-material";
+import { AccessGameModal } from "./AccessGameModaL";
 
 const defaultTokenPriceData: BirdeyeTokenPriceData = {
   address: "",
@@ -41,7 +42,8 @@ export const Projects = () => {
   } = useContext(AppContext);
 
   const wallet = useWallet();
-  const [modelOpen, setModelOpen] = useState(false);
+  const [createPositionModelOpen, setCreatePositionModelOpen] = useState(false);
+  const [accessGameModalOpen, setAccessGameModalOpen] = useState(false);
   const [positionsInputData, setPositionsInputData] = useState<
     PositionInputData[]
   >([]);
@@ -122,9 +124,7 @@ export const Projects = () => {
     }
 
     if (!isAllowedToPlay && !poolConfig.poolDepositsPaused) {
-      return (
-        <Button onClick={handlePoolDeposit}>Deposit 40k BONK to Play</Button>
-      );
+      return <Button onClick={() => setAccessGameModalOpen(true)}>Play</Button>;
     }
 
     if (isAllowedToPlay && pointsRemaining && positions?.length === 0) {
@@ -360,7 +360,7 @@ export const Projects = () => {
             key={project.mint}
             positionsInputData={positionsInputData}
             project={project}
-            setModalOpen={setModelOpen}
+            setModalOpen={setCreatePositionModelOpen}
             setSelectedToken={setSelectedToken}
             setSelectedTokenAddress={setSelectedTokenAddress}
             setSelectedTokenData={setSelectedTokenData}
@@ -379,10 +379,10 @@ export const Projects = () => {
         </Box>
       )}
 
-      {modelOpen && (
+      {createPositionModelOpen && (
         <CreatePositionModal
-          open={modelOpen}
-          setOpen={setModelOpen}
+          open={createPositionModelOpen}
+          setOpen={setCreatePositionModelOpen}
           tokenAddress={selectedTokenAddress}
           tokenSymbol={selectedToken}
           activeTokenData={selectedTokenData}
@@ -390,6 +390,13 @@ export const Projects = () => {
           positionsInputData={positionsInputData}
           updatePositionInputData={updatePositionInputData}
           deletePositionInputData={deletePositionInputData}
+        />
+      )}
+
+      {accessGameModalOpen && (
+        <AccessGameModal
+          open={accessGameModalOpen}
+          setOpen={setAccessGameModalOpen}
         />
       )}
     </Box>

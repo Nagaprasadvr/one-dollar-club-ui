@@ -102,3 +102,13 @@ export const BONK_DECIMALS = 5;
 export const DEFAULT_COMPUTE_UNIT_PRICE_ML = 1_000_000;
 export const DEFAULT_COMPUTE_UNITS_OFFSET = 100;
 export const DEFAULT_COMPUTE_UNIT_LIMIT = 2_000_000;
+
+export const NFTGatedTokens = [
+  {
+    name: "Saga Monkes",
+    symbol: "MONKE",
+    collectionAddress: "GokAiStXz2Kqbxwz2oqzfEXuUhE7aXySmBGEP7uejKXF",
+    imageUrl:
+      "https://shdw-drive.genesysgo.net/9DEPA5HdWF9aWYuwWB6cpnT7exK7Cpw7WvDwx8qe9GqT/8983.png",
+  },
+];
