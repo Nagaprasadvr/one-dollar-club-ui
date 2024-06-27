@@ -15,7 +15,7 @@ import {
 import { useWallet } from "@solana/wallet-adapter-react";
 import { safeDivide } from "@/utils/helpers";
 import { Refresh } from "@mui/icons-material";
-import { AccessGameModal } from "./AccessGameModaL";
+import { AccessGameModal } from "./AccessGameModal";
 
 const defaultTokenPriceData: BirdeyeTokenPriceData = {
   address: "",

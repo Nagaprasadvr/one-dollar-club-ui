@@ -211,6 +211,7 @@ export const AccessGameModal = ({
                         display: "flex",
                         flexDirection: "row",
                         gap: "10px",
+                        flexWrap: "wrap",
                       }}
                     >
                       <Image
@@ -219,7 +220,12 @@ export const AccessGameModal = ({
                         height={30}
                         width={30}
                       />
-                      <Typography>
+                      <Typography
+                        sx={{
+                          textWrap: "wrap",
+                          fontWeight: "bold",
+                        }}
+                      >
                         {nft.name} ({nft.symbol})
                       </Typography>
                     </Box>
