@@ -4,6 +4,7 @@ import { Box, Typography, useMediaQuery } from "@mui/material";
 import { NFTPointsCard } from "./NFTPointsCard";
 import { useContext, useMemo } from "react";
 import { AppContext } from "../Context/AppContext";
+import { NFTGatedTokens } from "@/utils/constants";
 
 export const NFTPoints = () => {
   const dynamicScreen = useMediaQuery("(max-width:1000px)");
@@ -11,7 +12,23 @@ export const NFTPoints = () => {
 
   const memoizedNFTPointsData = useMemo(() => {
     if (!nftPointsData || nftPointsData.length === 0) return dummyNFTPointsData;
-    return nftPointsData;
+    if (nftPointsData.length === NFTGatedTokens.length) return nftPointsData;
+    const extendedNFTPointsData = NFTGatedTokens.map((token) => {
+      const nftData = nftPointsData.find(
+        (nftData) => nftData.nftName === token.name
+      );
+      if (nftData) return nftData;
+      return {
+        nftName: token.name,
+        top3Positions: "...",
+        topGainer: "...",
+        totalPoints: 0,
+        nftSymbol: token.symbol,
+        nftUrl: token.imageUrl,
+        collectionAddress: token.collectionAddress,
+      };
+    });
+    return extendedNFTPointsData;
   }, [nftPointsData]);
   return (
     <Box
