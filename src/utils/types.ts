@@ -98,3 +98,13 @@ export type Project = {
 export type EstimatedPriorityFee = {
   microLamports: number;
 } | null;
+
+export type NFTPointsData = {
+  nftName: string;
+  nftSymbol: string;
+  totalPoints: number;
+  topGainer: string;
+  collectionAddress: string;
+  top3Positions: string;
+  nftUrl: string;
+};

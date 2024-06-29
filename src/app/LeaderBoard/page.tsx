@@ -35,6 +35,7 @@ import { AppContext } from "@/components/Context/AppContext";
 import toast from "react-hot-toast";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { SOLANA_EXPLORER_URL } from "@/utils/constants";
+import { NFTPoints } from "@/components/NFTPoints/NFTPoints";
 
 const LeaderBoardHeaders = [
   {
@@ -666,6 +667,8 @@ const LeaderBoard = () => {
             ))}
         </Box>
       </Box>
+
+      <NFTPoints />
 
       <TabContext value={tabValue}>
         <TabList

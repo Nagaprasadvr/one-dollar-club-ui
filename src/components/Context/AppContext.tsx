@@ -15,6 +15,7 @@ import { Position } from "@/sdk/Position";
 import {
   BirdeyeTokenPriceData,
   JupTokenInfo,
+  NFTPointsData,
   PoolConfigAccount,
   TokenPriceHistory,
 } from "@/utils/types";
@@ -62,6 +63,7 @@ interface AppContextType {
   resetUserData: () => void;
   gamesPlayed: number | null;
   tokensMetadata: JupTokenInfo[];
+  nftPointsData: NFTPointsData[];
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -99,6 +101,7 @@ export const AppContext = createContext<AppContextType>({
   resetUserData: () => {},
   gamesPlayed: null,
   tokensMetadata: [],
+  nftPointsData: [],
 });
 export const API_URL = "/api/birdeye";
 
@@ -120,7 +123,7 @@ export const AppContextProvider = ({
 
   const [tokensMetadata, setTokensMetadata] = useState<JupTokenInfo[]>([]);
   const [footerModalOpen, setFooterModalOpen] = useState<boolean>(true);
-
+  const [nftPointsData, setNFTPointsData] = useState<NFTPointsData[]>([]);
   const [poolConfig, setPoolConfig] = useState<PoolConfig | null>(null);
   const [sdk, setSdk] = useState<SDK | null>(null);
   const [poolServerId, setPoolServerId] = useState<string | null>(null);
@@ -151,6 +154,22 @@ export const AppContextProvider = ({
   useEffect(() => {
     resetUserData();
   }, [publicKey]);
+
+  const fetchNFTpoints = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/getNFTPoints`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseJson = await response.json();
+      if (responseJson.data instanceof Array && responseJson.data.length > 0)
+        setNFTPointsData(responseJson.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -267,11 +286,6 @@ export const AppContextProvider = ({
   };
 
   useEffect(() => {
-    if (tokensPrices.length === 0) fetchTokenPrices();
-    if (!tokenPriceLastUpdated) fetchTokenPricesLastUpdated();
-  }, []);
-
-  useEffect(() => {
     const id = setInterval(() => {
       if (!tokenPriceLastUpdated) return;
       const timeNow = Date.now();
@@ -345,38 +359,24 @@ export const AppContextProvider = ({
         console.error(e);
       }
     };
-    // const fetchJupTokenList = async () => {
-    //   try {
-    //     const response = await fetch("https://token.jup.ag/strict");
-    //     const data = await response.json();
-    //     const tokens: JupTokenInfo[] = data.map((token: any) => {
-    //       return {
-    //         name: token?.name.toLowerCase(),
-    //         symbol: token?.symbol.toLowerCase(),
-    //         address: token?.address,
-    //         decimals: token?.decimals,
-    //         logoURI: token?.logoURI,
-    //         chainId: token?.chainId,
-    //         coingeckoId: token?.extensions?.coingeckoId,
-    //       };
-    //     });
-    //     const mintsAllowedToPlay = PROJECTS_TO_PLAY.map(
-    //       (project) => project.mint
-    //     );
-    //     const filteredTokens = tokens.filter((token) => {
-    //       return mintsAllowedToPlay.includes(token.address);
-    //     });
-    //     setTokensMetadata(filteredTokens);
-    //   } catch (error) {
-    //     console.error("Failed to fetch the jupiter token list:", error);
-    //   }
-    // };
 
     if (!poolServerId) fetchPoolServerId();
     if (gamesPlayed === null) fetchTotalGamesPlayed();
-    // if (tokensMetadata.length === 0) fetchJupTokenList();
+
     if (!fetchedChartsData && tokensPriceHistory.length === 0)
       fetchChartsData();
+    if (nftPointsData.length === 0) fetchNFTpoints();
+
+    if (tokensPrices.length === 0) fetchTokenPrices();
+    if (!tokenPriceLastUpdated) fetchTokenPricesLastUpdated();
+
+    const id = setInterval(() => {
+      fetchNFTpoints();
+    }, 1000 * 60 * 5);
+
+    return () => {
+      clearInterval(id);
+    };
   }, []);
 
   const updatePoolConfig = async () => {
@@ -487,6 +487,7 @@ export const AppContextProvider = ({
         resetUserData,
         gamesPlayed,
         tokensMetadata,
+        nftPointsData,
       }}
     >
       {children}
