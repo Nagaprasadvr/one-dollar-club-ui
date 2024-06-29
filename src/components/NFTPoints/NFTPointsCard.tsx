@@ -70,7 +70,7 @@ export const NFTPointsCard = ({
           />
           <TextWithValue
             text={"Top Gainer"}
-            value={minimizePubkey(topGainer)}
+            value={topGainer !== "..." ? minimizePubkey(topGainer) : topGainer}
           />
           <TextWithValue text={"Top 3 Positions"} value={top3Positions} />
           <TextWithValue
