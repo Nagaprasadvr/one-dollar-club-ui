@@ -11,6 +11,7 @@ export const dummyNFTPointsData: NFTPointsData[] = NFTGatedTokens.map(
       nftSymbol: token.symbol,
       nftUrl: token.imageUrl,
       collectionAddress: token.collectionAddress,
+      totalPlayers: 0,
     };
   }
 );

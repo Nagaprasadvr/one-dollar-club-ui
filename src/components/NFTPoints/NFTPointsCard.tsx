@@ -2,6 +2,7 @@ import { Box, SxProps, useMediaQuery } from "@mui/material";
 import { Card } from "../HelperComponents/Card";
 import Image from "next/image";
 import { TextWithValue } from "../HelperComponents/TextWithValue";
+import { minimizePubkey } from "@/utils/helpers";
 
 interface NFTPointsCardProps {
   nftName: string;
@@ -10,6 +11,7 @@ interface NFTPointsCardProps {
   nftTotalPoints: number;
   topGainer: string;
   top3Positions: string;
+  totalPlayers: number;
 }
 
 export const NFTPointsCard = ({
@@ -19,6 +21,7 @@ export const NFTPointsCard = ({
   nftTotalPoints,
   topGainer,
   top3Positions,
+  totalPlayers,
 }: NFTPointsCardProps) => {
   const smallScreen = useMediaQuery("(max-width:500px)");
   return (
@@ -65,8 +68,15 @@ export const NFTPointsCard = ({
             text={"Total Points"}
             value={nftTotalPoints.toLocaleString()}
           />
-          <TextWithValue text={"Top Gainer"} value={topGainer} />
+          <TextWithValue
+            text={"Top Gainer"}
+            value={minimizePubkey(topGainer)}
+          />
           <TextWithValue text={"Top 3 Positions"} value={top3Positions} />
+          <TextWithValue
+            text={"Total Players"}
+            value={totalPlayers.toLocaleString()}
+          />
         </Box>
       </Box>
     </Card>

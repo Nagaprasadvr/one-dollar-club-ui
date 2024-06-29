@@ -26,6 +26,7 @@ export const NFTPoints = () => {
         nftSymbol: token.symbol,
         nftUrl: token.imageUrl,
         collectionAddress: token.collectionAddress,
+        totalPlayers: 0,
       };
     });
     return extendedNFTPointsData;
@@ -69,6 +70,7 @@ export const NFTPoints = () => {
             nftTotalPoints={nftData.totalPoints}
             topGainer={nftData.topGainer}
             top3Positions={nftData.top3Positions}
+            totalPlayers={nftData.totalPlayers}
           />
         ))}
       </Box>
